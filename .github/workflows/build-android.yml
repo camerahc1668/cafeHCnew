@@ -1,92 +1,218 @@
 name: Build Android APK
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  build-android:
-    name: Build Debug APK
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-         
+          node-version: 18
 
-      - name: Setup Java JDK 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
+          java-version: 17
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Add Android platform
+      - name: Install Capacitor
+        run: npm install @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: Add Android
         run: npx cap add android
 
-      - name: Copy web assets
-        run: npx cap copy android
-
-      - name: Sync Capacitor
+      - name: Sync Android
         run: npx cap sync android
 
-      - name: Apply network security config
+      # ── Fix 1: AndroidManifest — windowSoftInputMode + configChanges ──
+      - name: Patch AndroidManifest for Vietnamese IME
         run: |
-          mkdir -p android/app/src/main/res/xml
-          cp android-resources/network_security_config.xml android/app/src/main/res/xml/
-          sed -i 's/android:theme="@style\/AppTheme"/android:theme="@style\/AppTheme"\n        android:networkSecurityConfig="@xml\/network_security_config"/' \
-            android/app/src/main/AndroidManifest.xml
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          echo "=== Before patch ==="
+          grep -A3 "MainActivity" "$MANIFEST" || true
 
-      - name: Apply Icons & Splash Screens
+          # Thêm windowSoftInputMode="adjustResize" và configChanges đầy đủ
+          python3 - "$MANIFEST" << 'PYEOF'
+import sys, re
+
+path = sys.argv[1]
+with open(path, 'r') as f:
+    content = f.read()
+
+# Thay thế activity tag của MainActivity
+old = re.search(
+    r'(<activity\s[^>]*android:name="[^"]*MainActivity"[^>]*)(/>|>)',
+    content, re.DOTALL
+)
+if old:
+    tag = old.group(0)
+    # Thêm / đè windowSoftInputMode và configChanges
+    if 'windowSoftInputMode' not in tag:
+        tag = tag.replace(
+            old.group(2),
+            '\n            android:windowSoftInputMode="adjustResize"\n            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"'
+            + old.group(2)
+        )
+    else:
+        tag = re.sub(
+            r'android:windowSoftInputMode="[^"]*"',
+            'android:windowSoftInputMode="adjustResize"',
+            tag
+        )
+    content = content[:old.start()] + tag + content[old.end():]
+
+with open(path, 'w') as f:
+    f.write(content)
+
+print("AndroidManifest patched OK")
+PYEOF
+
+          echo "=== After patch ==="
+          grep -A5 "MainActivity" "$MANIFEST" || true
+
+      # ── Fix 2: MainActivity — hardware acceleration + IME flag ──
+      - name: Patch MainActivity for Vietnamese IME
         run: |
-          RES=android/app/src/main/res
+          # Tìm MainActivity (Kotlin hoặc Java)
+          MAIN_KT=$(find android -name "MainActivity.kt" 2>/dev/null | head -1)
+          MAIN_JAVA=$(find android -name "MainActivity.java" 2>/dev/null | head -1)
+          MAIN="${MAIN_KT:-$MAIN_JAVA}"
+          echo "Patching: $MAIN"
 
-          # Launcher icons
-          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
-            mkdir -p $RES/mipmap-$density
-            cp assets/android/mipmap-$density/ic_launcher.png        $RES/mipmap-$density/
-            cp assets/android/mipmap-$density/ic_launcher_round.png  $RES/mipmap-$density/
-            cp assets/android/mipmap-$density/ic_launcher_foreground.png $RES/mipmap-$density/
-          done
+          if echo "$MAIN" | grep -q "\.kt$"; then
+            # ── Kotlin ──
+            python3 - "$MAIN" << 'PYEOF'
+import sys, re
 
-          # Adaptive icon (Android 8+)
-          mkdir -p $RES/mipmap-anydpi-v26
-          cp assets/android/mipmap-anydpi-v26/ic_launcher.xml       $RES/mipmap-anydpi-v26/
-          cp assets/android/mipmap-anydpi-v26/ic_launcher_round.xml $RES/mipmap-anydpi-v26/
+path = sys.argv[1]
+with open(path, 'r') as f:
+    content = f.read()
 
-          # Background color for adaptive icon
-          mkdir -p $RES/values
-          cp assets/android/values/ic_launcher_background.xml $RES/values/
+# Thêm import nếu chưa có
+imports_to_add = [
+    "import android.os.Bundle",
+    "import android.view.View",
+    "import android.webkit.WebSettings",
+]
+for imp in imports_to_add:
+    if imp not in content:
+        content = content.replace("import com.getcapacitor", imp + "\nimport com.getcapacitor", 1)
 
-          # Splash screen
-          mkdir -p $RES/drawable
-          cp assets/android/drawable/splash.png      $RES/drawable/
-          cp assets/android/drawable/splash_land.png $RES/drawable/
+# Thêm override onCreate nếu chưa có
+onCreate_patch = """
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    // Fix: hỗ trợ gõ tiếng Việt trong WebView
+    bridge?.webView?.apply {
+      setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      settings.apply {
+        javaScriptEnabled = true
+        domStorageEnabled = true
+        setSupportMultipleWindows(false)
+        // Bật IME composition cho tiếng Việt
+        setNeedInitialFocus(true)
+      }
+      // Đảm bảo WebView nhận focus và hiện bàn phím đúng
+      isFocusable = true
+      isFocusableInTouchMode = true
+    }
+  }
+"""
 
-          echo "✅ Icons & splash applied"
+if "override fun onCreate" not in content:
+    # Chèn trước dấu } cuối cùng của class
+    content = content.rstrip()
+    if content.endswith('}'):
+        content = content[:-1] + onCreate_patch + "\n}"
+    
+with open(path, 'w') as f:
+    f.write(content)
 
-      - name: Make gradlew executable
-        run: chmod +x android/gradlew
+print("MainActivity.kt patched OK")
+PYEOF
 
-      - name: Build Debug APK
+          else
+            # ── Java ──
+            python3 - "$MAIN" << 'PYEOF'
+import sys, re
+
+path = sys.argv[1]
+with open(path, 'r') as f:
+    content = f.read()
+
+imports_to_add = [
+    "import android.os.Bundle;",
+    "import android.view.View;",
+    "import android.webkit.WebView;",
+    "import android.webkit.WebSettings;",
+]
+for imp in imports_to_add:
+    if imp not in content:
+        content = content.replace("import com.getcapacitor", imp + "\nimport com.getcapacitor", 1)
+
+onCreate_patch = """
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    // Fix: hỗ trợ gõ tiếng Việt trong WebView
+    WebView webView = getBridge().getWebView();
+    if (webView != null) {
+      webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+      WebSettings settings = webView.getSettings();
+      settings.setJavaScriptEnabled(true);
+      settings.setDomStorageEnabled(true);
+      settings.setSupportMultipleWindows(false);
+      webView.setFocusable(true);
+      webView.setFocusableInTouchMode(true);
+    }
+  }
+"""
+
+if "protected void onCreate" not in content:
+    content = content.rstrip()
+    if content.endswith('}'):
+        content = content[:-1] + onCreate_patch + "\n}"
+
+with open(path, 'w') as f:
+    f.write(content)
+
+print("MainActivity.java patched OK")
+PYEOF
+          fi
+
+      # ── Fix 3: gradle.properties — tắt R8 full mode có thể gây lỗi IME ──
+      - name: Patch gradle.properties
+        run: |
+          PROPS="android/gradle.properties"
+          if [ -f "$PROPS" ]; then
+            # Đảm bảo hardware accelerated
+            grep -q "android.enableJetifier" "$PROPS" || echo "android.enableJetifier=true" >> "$PROPS"
+            grep -q "android.useAndroidX" "$PROPS" || echo "android.useAndroidX=true" >> "$PROPS"
+            echo "gradle.properties patched"
+            cat "$PROPS"
+          fi
+
+      - name: Build APK
         run: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: POS-HC-Android-APK
+          name: pos-hc-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
