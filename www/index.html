@@ -1725,6 +1725,46 @@ header > div:first-child > div:nth-child(2) {
             </div>
           </div>
         </div>
+        <!-- FPT.AI TTS -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
+          <h3 class="font-semibold text-slate-800 flex items-center gap-2 mb-1">
+            <span class="text-lg">🇻🇳</span> Giọng đọc FPT.AI <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Hoạt động trên Android</span>
+          </h3>
+          <p class="text-xs text-slate-500 mb-4">Giọng Tiếng Việt chuẩn, hoạt động tốt trên Android. Miễn phí 1 triệu ký tự/tháng. Lấy key tại <a href="https://fpt.ai/products/ai-speech" target="_blank" class="text-orange-500 underline">fpt.ai</a></p>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">FPT.AI API Key</label>
+              <div class="flex gap-2">
+                <input type="password" id="setting-fpt-tts-key" placeholder="Dán API Key FPT.AI vào đây..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-green-500">
+                <button onclick="testFPTtts()" class="px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg text-xs font-bold transition-colors whitespace-nowrap">▶ Test</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Giọng đọc</label>
+                <select id="setting-fpt-tts-voice" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 bg-white">
+                  <option value="leminh">🧑 Lê Minh (Nam - Bắc)</option>
+                  <option value="myan">👩 Mỹ An (Nữ - Nam)</option>
+                  <option value="lannhi">👩 Lan Nhi (Nữ - Bắc)</option>
+                  <option value="linhsan">👩 Linh San (Nữ - Nam)</option>
+                  <option value="minhquang">🧑 Minh Quang (Nam - Nam)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tốc độ đọc</label>
+                <select id="setting-fpt-tts-speed" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 bg-white">
+                  <option value="-2">Rất chậm</option>
+                  <option value="-1">Chậm</option>
+                  <option value="0" selected>Bình thường</option>
+                  <option value="1">Nhanh</option>
+                  <option value="2">Rất nhanh</option>
+                </select>
+              </div>
+            </div>
+            <button onclick="saveFPTKey()" class="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-semibold transition-colors">💾 Lưu cấu hình FPT.AI</button>
+            <p class="text-xs text-slate-400">⚡ Khi có API Key FPT.AI, hệ thống sẽ dùng FPT.AI thay vì Web Speech API. Hoạt động trên mọi thiết bị Android/iOS/PC.</p>
+          </div>
+        </div>
         <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-semibold text-slate-800 flex items-center gap-2">
@@ -2525,7 +2565,6 @@ function syncCustomerDebts() {
 }
 
 function createSerializableState() {
-  // Tách charts ra TRƯỚC khi stringify để tránh circular reference (Chart.js instances)
   const { charts, ...stateWithoutCharts } = state;
   const snapshot = JSON.parse(JSON.stringify(stateWithoutCharts));
   snapshot.charts = {};
@@ -5193,15 +5232,15 @@ function pushNotification(title, body, icon = '⚠️') {
 }
 
 function testTTS() {
-  if (!("speechSynthesis" in window)) {
-    showToast("❌ Trình duyệt không hỗ trợ đọc giọng nói", "error"); return;
+  if (!("speechSynthesis" in window) && !localStorage.getItem('fpt_tts_key')) {
+    showToast("⚠️ Thiết bị không hỗ trợ Web Speech. Cấu hình FPT.AI TTS bên dưới để có giọng đọc.", "warning"); return;
   }
-  const voices = window.speechSynthesis.getVoices();
+  const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
   const viVoice = voices.find(v => v.lang === "vi-VN") || voices.find(v => v.lang.startsWith("vi"));
-  if (!viVoice) {
-    showToast("⚠️ Chưa có giọng Tiếng Việt! Vào Cài đặt → Trợ năng → Text-to-Speech → tải giọng Tiếng Việt", "error");
+  if (!viVoice && !localStorage.getItem('fpt_tts_key')) {
+    showToast("⚠️ Chưa có giọng Tiếng Việt! Dùng FPT.AI TTS bên dưới hoặc vào Cài đặt điện thoại → Text-to-Speech → tải giọng Tiếng Việt", "warning");
   } else {
-    showToast("✅ Đã tìm thấy giọng: " + viVoice.name);
+    showToast("✅ Đã tìm thấy giọng: " + (viVoice ? viVoice.name : 'FPT.AI'));
   }
   speakVietnamese("Có đơn mới tại Bàn A2. Đá Me một, Cam Vắt hai.");
 }
@@ -6030,39 +6069,102 @@ async function speakWithAdam(text) {
 }
 
 function speakFallback(text) {
-  if (!window.speechSynthesis) return;
+  // Ưu tiên FPT.AI nếu có key
+  const fptKey = localStorage.getItem('fpt_tts_key');
+  if (fptKey) { speakFPT(text, fptKey); return; }
+
+  if (!window.speechSynthesis) {
+    console.warn('TTS: Thiết bị không hỗ trợ Web Speech API và chưa cấu hình FPT.AI');
+    return;
+  }
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'vi-VN';
   utt.rate = 1.05;
   utt.pitch = 1;
-
-  // Áp dụng giọng Google TTS đã chọn
   const voicePref = localStorage.getItem('google_tts_voice') || 'auto';
   if (voicePref !== 'auto' && _ttsVoices.length > 0) {
-    // Tìm giọng khớp tên
     const match = _ttsVoices.find(v =>
       v.name.includes(voicePref) ||
       v.name.toLowerCase().includes(voicePref.split('-').pop().toLowerCase())
     );
     if (match) utt.voice = match;
     else {
-      // fallback: tìm giọng vi-VN bất kỳ
       const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi'));
       if (viVoice) utt.voice = viVoice;
-      // Nếu giọng là Nam (B hoặc D) thì hạ pitch
-      if (voicePref.endsWith('-B') || voicePref.endsWith('-D')) {
-        utt.pitch = 0.8; utt.rate = 1.0;
-      }
+      if (voicePref.endsWith('-B') || voicePref.endsWith('-D')) { utt.pitch = 0.8; utt.rate = 1.0; }
     }
   } else {
-    const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN') ||
-                    _ttsVoices.find(v => v.lang.startsWith('vi'));
+    const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN') || _ttsVoices.find(v => v.lang.startsWith('vi'));
     if (viVoice) utt.voice = viVoice;
   }
-
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utt);
 }
+
+// ── FPT.AI Text-to-Speech ─────────────────────────────────────
+async function speakFPT(text, apiKey) {
+  try {
+    const voice = localStorage.getItem('fpt_tts_voice') || 'leminh';
+    const speed = localStorage.getItem('fpt_tts_speed') || '0';
+    const res = await fetch('https://api.fpt.ai/hmi/tts/v5', {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'speed': speed,
+        'voice': voice,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: text
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.message || data.error);
+    if (!data.async) throw new Error('Không nhận được URL audio');
+    // FPT trả về async URL, poll sau 1-2s
+    await new Promise(r => setTimeout(r, 1200));
+    const audio = new Audio(data.async);
+    audio.play().catch(e => {
+      console.warn('FPT TTS play error:', e);
+      // fallback Web Speech nếu audio không play được
+      _tryWebSpeech(text);
+    });
+  } catch(e) {
+    console.warn('FPT TTS error:', e.message);
+    _tryWebSpeech(text);
+  }
+}
+
+function _tryWebSpeech(text) {
+  if (!window.speechSynthesis) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'vi-VN';
+  const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN') || _ttsVoices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) utt.voice = viVoice;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utt);
+}
+
+window.testFPTtts = async function() {
+  const key = document.getElementById('setting-fpt-tts-key')?.value?.trim();
+  if (!key) { showToast('Nhập FPT.AI API Key trước!', 'error'); return; }
+  showToast('⏳ Đang test FPT.AI TTS...', 'info');
+  try {
+    await speakFPT('Xin chào! Bàn A1 vừa gọi Cà Phê Đá và Cam Vắt. Tổng 45 ngàn đồng.', key);
+    showToast('✅ FPT.AI TTS hoạt động!', 'success');
+  } catch(e) {
+    showToast('❌ Lỗi FPT.AI: ' + e.message, 'error');
+  }
+};
+
+window.saveFPTKey = function() {
+  const key = document.getElementById('setting-fpt-tts-key')?.value?.trim();
+  const voice = document.getElementById('setting-fpt-tts-voice')?.value || 'leminh';
+  const speed = document.getElementById('setting-fpt-tts-speed')?.value || '0';
+  if (key) localStorage.setItem('fpt_tts_key', key);
+  else localStorage.removeItem('fpt_tts_key');
+  localStorage.setItem('fpt_tts_voice', voice);
+  localStorage.setItem('fpt_tts_speed', speed);
+  showToast('Đã lưu cấu hình FPT.AI TTS', 'success');
+};
 
 window.testGoogleTTS = function() {
   speakFallback('Xin chào! Bàn A1 vừa gọi Cà Phê Đá và Cà Phê Sữa. Tổng 32 ngàn đồng.');
@@ -7327,6 +7429,13 @@ function loadSettings() {
   if (elCustomVoiceEl) elCustomVoiceEl.value = localStorage.getItem('elevenlabs_custom_voice') || '';
   const googleVoiceSel = document.getElementById('setting-google-tts-voice');
   if (googleVoiceSel) googleVoiceSel.value = localStorage.getItem('google_tts_voice') || 'auto';
+  // FPT.AI TTS
+  const fptKeyEl = document.getElementById('setting-fpt-tts-key');
+  if (fptKeyEl) fptKeyEl.value = localStorage.getItem('fpt_tts_key') || '';
+  const fptVoiceEl = document.getElementById('setting-fpt-tts-voice');
+  if (fptVoiceEl) fptVoiceEl.value = localStorage.getItem('fpt_tts_voice') || 'leminh';
+  const fptSpeedEl = document.getElementById('setting-fpt-tts-speed');
+  if (fptSpeedEl) fptSpeedEl.value = localStorage.getItem('fpt_tts_speed') || '0';
   if (s.bankQrImage) {
     document.getElementById('bank-qr-img').src = s.bankQrImage;
     document.getElementById('bank-qr-preview').classList.remove('hidden');
