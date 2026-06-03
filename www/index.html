@@ -2525,7 +2525,9 @@ function syncCustomerDebts() {
 }
 
 function createSerializableState() {
-  const snapshot = JSON.parse(JSON.stringify(state));
+  // Tách charts ra TRƯỚC khi stringify để tránh circular reference (Chart.js instances)
+  const { charts, ...stateWithoutCharts } = state;
+  const snapshot = JSON.parse(JSON.stringify(stateWithoutCharts));
   snapshot.charts = {};
   return snapshot;
 }
