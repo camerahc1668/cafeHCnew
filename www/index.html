@@ -1201,13 +1201,13 @@ header > div:first-child > div:nth-child(2) {
         </button>
 
         <!-- Staff + Ca làm -->
-        <button onclick="logout()" class="text-right text-xs hover:bg-slate-50 rounded-xl px-2.5 py-1.5 transition-colors border border-transparent hover:border-red-200 group" title="Đăng xuất / kết thúc ca">
-          <div class="text-slate-400 text-xs group-hover:text-red-400">Ca làm việc</div>
-          <div class="flex items-center gap-1.5 justify-end mt-0.5">
-            <div id="header-staff-avatar" class="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 text-white text-xs font-bold flex items-center justify-center shrink-0">?</div>
-            <div>
-              <div id="header-staff-name" class="font-bold text-slate-700 text-sm leading-tight">Chưa đăng nhập</div>
-              <div id="current-time" class="text-slate-400 tabular-nums text-xs">--:--</div>
+        <button onclick="logout()" class="flex items-center gap-1.5 hover:bg-red-50 rounded-xl px-2 py-1.5 transition-colors border border-transparent hover:border-red-200 group shrink-0" title="Đăng xuất / kết thúc ca">
+          <div id="header-staff-avatar" class="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 text-white text-xs font-bold flex items-center justify-center shrink-0 shadow-sm">?</div>
+          <div class="text-left leading-tight">
+            <div id="header-staff-name" class="font-bold text-slate-700 text-xs leading-tight">Chưa chọn NV</div>
+            <div class="flex items-center gap-1">
+              <span id="header-shift-time" class="text-slate-400 tabular-nums text-[10px] hidden"></span>
+              <span id="current-time" class="text-slate-400 tabular-nums text-[10px]">--:--</span>
             </div>
           </div>
         </button>
@@ -1723,46 +1723,6 @@ header > div:first-child > div:nth-child(2) {
                 <span class="text-xs text-slate-400">Miễn phí, không cần API key</span>
               </div>
             </div>
-          </div>
-        </div>
-        <!-- FPT.AI TTS -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
-          <h3 class="font-semibold text-slate-800 flex items-center gap-2 mb-1">
-            <span class="text-lg">🇻🇳</span> Giọng đọc FPT.AI <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Hoạt động trên Android</span>
-          </h3>
-          <p class="text-xs text-slate-500 mb-4">Giọng Tiếng Việt chuẩn, hoạt động tốt trên Android. Miễn phí 1 triệu ký tự/tháng. Lấy key tại <a href="https://fpt.ai/products/ai-speech" target="_blank" class="text-orange-500 underline">fpt.ai</a></p>
-          <div class="space-y-3">
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">FPT.AI API Key</label>
-              <div class="flex gap-2">
-                <input type="password" id="setting-fpt-tts-key" placeholder="Dán API Key FPT.AI vào đây..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-green-500">
-                <button onclick="testFPTtts()" class="px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg text-xs font-bold transition-colors whitespace-nowrap">▶ Test</button>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Giọng đọc</label>
-                <select id="setting-fpt-tts-voice" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 bg-white">
-                  <option value="leminh">🧑 Lê Minh (Nam - Bắc)</option>
-                  <option value="myan">👩 Mỹ An (Nữ - Nam)</option>
-                  <option value="lannhi">👩 Lan Nhi (Nữ - Bắc)</option>
-                  <option value="linhsan">👩 Linh San (Nữ - Nam)</option>
-                  <option value="minhquang">🧑 Minh Quang (Nam - Nam)</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Tốc độ đọc</label>
-                <select id="setting-fpt-tts-speed" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 bg-white">
-                  <option value="-2">Rất chậm</option>
-                  <option value="-1">Chậm</option>
-                  <option value="0" selected>Bình thường</option>
-                  <option value="1">Nhanh</option>
-                  <option value="2">Rất nhanh</option>
-                </select>
-              </div>
-            </div>
-            <button onclick="saveFPTKey()" class="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-semibold transition-colors">💾 Lưu cấu hình FPT.AI</button>
-            <p class="text-xs text-slate-400">⚡ Khi có API Key FPT.AI, hệ thống sẽ dùng FPT.AI thay vì Web Speech API. Hoạt động trên mọi thiết bị Android/iOS/PC.</p>
           </div>
         </div>
         <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
@@ -2587,6 +2547,13 @@ function normalizeLoadedState() {
   if (!Array.isArray(state.pendingOrders)) state.pendingOrders = [];
   state.purchases = Array.isArray(state.purchases) ? state.purchases : [];
   state.units = Array.isArray(state.units) ? state.units : ['ly', 'phần','trái', 'muỗng cafe','muỗng lớn' ,'tô', 'cái', 'Lon','gói','kg', 'chai', 'cây'];
+  // ── Migrate inventory: thêm baseUnit + conversions nếu chưa có ──
+  state.inventory.forEach(inv => {
+    if (!inv.baseUnit) inv.baseUnit = inv.unit || 'đơn vị';
+    if (!Array.isArray(inv.conversions)) {
+      inv.conversions = [{ unit: inv.baseUnit, factor: 1 }];
+    }
+  });
   state.takeawayOrders = state.takeawayOrders || {};
   // Migrate: nếu có takeawayOrders cũ (object) → chuyển sang takeawayQueue array
   if (!Array.isArray(state.takeawayQueue)) {
@@ -2688,6 +2655,54 @@ function persistState() {
   } catch (error) {
     console.error('Không thể lưu dữ liệu:', error);
   }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ĐƠN VỊ QUY ĐỔI — Unit Conversion Helpers
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Quy đổi qty từ unit về baseUnit của nguyên liệu inv
+ * Ví dụ: convertToBase(inv, 2, 'kg') → 2000 (nếu baseUnit=gram, kg=1000)
+ */
+function convertToBase(inv, qty, unit) {
+  if (!inv) return qty;
+  const baseUnit = inv.baseUnit || inv.unit;
+  if (!unit || unit === baseUnit) return qty;
+  const conv = (inv.conversions || []).find(c => c.unit === unit);
+  if (!conv) return qty; // không tìm thấy → giữ nguyên
+  return qty * conv.factor;
+}
+
+/**
+ * Format hiển thị số lượng tồn kho + đơn vị cơ sở
+ * Nếu có đơn vị lớn hơn phù hợp → hiển thị thêm
+ */
+function formatStock(inv) {
+  const stock = inv.stock ?? 0;
+  const base = inv.baseUnit || inv.unit || '';
+  // Tìm đơn vị lớn nhất có thể biểu diễn gọn
+  const convs = (inv.conversions || [])
+    .filter(c => c.factor > 1)
+    .sort((a, b) => b.factor - a.factor);
+  if (convs.length > 0 && stock >= convs[0].factor) {
+    const val = (stock / convs[0].factor).toFixed(2).replace(/\.?0+$/, '');
+    return `${stock} ${base} (≈${val} ${convs[0].unit})`;
+  }
+  return `${stock} ${base}`;
+}
+
+/**
+ * Lấy danh sách tất cả đơn vị của một nguyên liệu (baseUnit + conversions)
+ */
+function getUnitOptions(inv) {
+  if (!inv) return [];
+  const baseUnit = inv.baseUnit || inv.unit;
+  const units = [{ unit: baseUnit, factor: 1 }];
+  (inv.conversions || []).forEach(c => {
+    if (c.unit !== baseUnit) units.push(c);
+  });
+  return units;
 }
 
 function schedulePersist() {
@@ -5233,14 +5248,14 @@ function pushNotification(title, body, icon = '⚠️') {
 
 function testTTS() {
   if (!("speechSynthesis" in window) && !localStorage.getItem('fpt_tts_key')) {
-    showToast("⚠️ Thiết bị không hỗ trợ Web Speech. Cấu hình FPT.AI TTS bên dưới để có giọng đọc.", "warning"); return;
+    showToast("⚠️ Thiết bị không hỗ trợ Web Speech. Cấu hình FPT.AI TTS trong Cài đặt.", "warning"); return;
   }
   const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
   const viVoice = voices.find(v => v.lang === "vi-VN") || voices.find(v => v.lang.startsWith("vi"));
   if (!viVoice && !localStorage.getItem('fpt_tts_key')) {
-    showToast("⚠️ Chưa có giọng Tiếng Việt! Dùng FPT.AI TTS bên dưới hoặc vào Cài đặt điện thoại → Text-to-Speech → tải giọng Tiếng Việt", "warning");
+    showToast("⚠️ Chưa có giọng Tiếng Việt! Vào Cài đặt điện thoại → Text-to-Speech → tải giọng Tiếng Việt", "warning");
   } else {
-    showToast("✅ Đã tìm thấy giọng: " + (viVoice ? viVoice.name : 'FPT.AI'));
+    showToast("✅ Giọng đọc: " + (viVoice ? viVoice.name : 'FPT.AI'));
   }
   speakVietnamese("Có đơn mới tại Bàn A2. Đá Me một, Cam Vắt hai.");
 }
@@ -5249,9 +5264,9 @@ function checkStockLevels(silent = false) {
   const warnings = [];
   state.inventory.forEach(inv => {
     if (inv.stock <= 0) {
-      warnings.push({ name: inv.name, stock: inv.stock, unit: inv.unit, level: 'out' });
+      warnings.push({ name: inv.name, stock: inv.stock, unit: inv.baseUnit || inv.unit, level: 'out' });
     } else if (inv.stock <= inv.minStock) {
-      warnings.push({ name: inv.name, stock: inv.stock, unit: inv.unit, level: 'low' });
+      warnings.push({ name: inv.name, stock: inv.stock, unit: inv.baseUnit || inv.unit, level: 'low' });
     }
   });
 
@@ -5288,10 +5303,12 @@ function deductInventoryOnSale(items) {
     menuItem.ingredients.forEach(ing => {
       const inv = state.inventory.find(i => i.id === ing.id);
       if (!inv) return;
+      // ing.qty đã được lưu theo baseUnit từ collectIngredientRows
       const needed = ing.qty * soldItem.qty;
       inv.stock = Math.max(0, inv.stock - needed);
+      const baseUnit = inv.baseUnit || inv.unit;
       if (inv.stock <= inv.minStock) {
-        warnings.push({ name: inv.name, stock: inv.stock, unit: inv.unit, min: inv.minStock, level: inv.stock <= 0 ? 'out' : 'low' });
+        warnings.push({ name: inv.name, stock: inv.stock, unit: baseUnit, min: inv.minStock, level: inv.stock <= 0 ? 'out' : 'low' });
       }
     });
   });
@@ -6069,102 +6086,39 @@ async function speakWithAdam(text) {
 }
 
 function speakFallback(text) {
-  // Ưu tiên FPT.AI nếu có key
-  const fptKey = localStorage.getItem('fpt_tts_key');
-  if (fptKey) { speakFPT(text, fptKey); return; }
-
-  if (!window.speechSynthesis) {
-    console.warn('TTS: Thiết bị không hỗ trợ Web Speech API và chưa cấu hình FPT.AI');
-    return;
-  }
+  if (!window.speechSynthesis) return;
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'vi-VN';
   utt.rate = 1.05;
   utt.pitch = 1;
+
+  // Áp dụng giọng Google TTS đã chọn
   const voicePref = localStorage.getItem('google_tts_voice') || 'auto';
   if (voicePref !== 'auto' && _ttsVoices.length > 0) {
+    // Tìm giọng khớp tên
     const match = _ttsVoices.find(v =>
       v.name.includes(voicePref) ||
       v.name.toLowerCase().includes(voicePref.split('-').pop().toLowerCase())
     );
     if (match) utt.voice = match;
     else {
+      // fallback: tìm giọng vi-VN bất kỳ
       const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi'));
       if (viVoice) utt.voice = viVoice;
-      if (voicePref.endsWith('-B') || voicePref.endsWith('-D')) { utt.pitch = 0.8; utt.rate = 1.0; }
+      // Nếu giọng là Nam (B hoặc D) thì hạ pitch
+      if (voicePref.endsWith('-B') || voicePref.endsWith('-D')) {
+        utt.pitch = 0.8; utt.rate = 1.0;
+      }
     }
   } else {
-    const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN') || _ttsVoices.find(v => v.lang.startsWith('vi'));
+    const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN') ||
+                    _ttsVoices.find(v => v.lang.startsWith('vi'));
     if (viVoice) utt.voice = viVoice;
   }
+
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utt);
 }
-
-// ── FPT.AI Text-to-Speech ─────────────────────────────────────
-async function speakFPT(text, apiKey) {
-  try {
-    const voice = localStorage.getItem('fpt_tts_voice') || 'leminh';
-    const speed = localStorage.getItem('fpt_tts_speed') || '0';
-    const res = await fetch('https://api.fpt.ai/hmi/tts/v5', {
-      method: 'POST',
-      headers: {
-        'api-key': apiKey,
-        'speed': speed,
-        'voice': voice,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: text
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.message || data.error);
-    if (!data.async) throw new Error('Không nhận được URL audio');
-    // FPT trả về async URL, poll sau 1-2s
-    await new Promise(r => setTimeout(r, 1200));
-    const audio = new Audio(data.async);
-    audio.play().catch(e => {
-      console.warn('FPT TTS play error:', e);
-      // fallback Web Speech nếu audio không play được
-      _tryWebSpeech(text);
-    });
-  } catch(e) {
-    console.warn('FPT TTS error:', e.message);
-    _tryWebSpeech(text);
-  }
-}
-
-function _tryWebSpeech(text) {
-  if (!window.speechSynthesis) return;
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'vi-VN';
-  const viVoice = _ttsVoices.find(v => v.lang === 'vi-VN') || _ttsVoices.find(v => v.lang.startsWith('vi'));
-  if (viVoice) utt.voice = viVoice;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utt);
-}
-
-window.testFPTtts = async function() {
-  const key = document.getElementById('setting-fpt-tts-key')?.value?.trim();
-  if (!key) { showToast('Nhập FPT.AI API Key trước!', 'error'); return; }
-  showToast('⏳ Đang test FPT.AI TTS...', 'info');
-  try {
-    await speakFPT('Xin chào! Bàn A1 vừa gọi Cà Phê Đá và Cam Vắt. Tổng 45 ngàn đồng.', key);
-    showToast('✅ FPT.AI TTS hoạt động!', 'success');
-  } catch(e) {
-    showToast('❌ Lỗi FPT.AI: ' + e.message, 'error');
-  }
-};
-
-window.saveFPTKey = function() {
-  const key = document.getElementById('setting-fpt-tts-key')?.value?.trim();
-  const voice = document.getElementById('setting-fpt-tts-voice')?.value || 'leminh';
-  const speed = document.getElementById('setting-fpt-tts-speed')?.value || '0';
-  if (key) localStorage.setItem('fpt_tts_key', key);
-  else localStorage.removeItem('fpt_tts_key');
-  localStorage.setItem('fpt_tts_voice', voice);
-  localStorage.setItem('fpt_tts_speed', speed);
-  showToast('Đã lưu cấu hình FPT.AI TTS', 'success');
-};
 
 window.testGoogleTTS = function() {
   speakFallback('Xin chào! Bàn A1 vừa gọi Cà Phê Đá và Cà Phê Sữa. Tổng 32 ngàn đồng.');
@@ -6458,7 +6412,7 @@ function showEditFoodModal(itemId = null) {
   // Pre-populate existing ingredients
   if (item && item.ingredients && item.ingredients.length > 0) {
     item.ingredients.forEach(ing => {
-      addIngredientRow(ing.id, ing.qty);
+      addIngredientRow(ing.id, ing.inputQty || ing.qty, ing.inputUnit || ing.unit || '');
     });
   }
   
@@ -6614,12 +6568,19 @@ function renderInventory() {
     const status = item.stock <= item.minStock ? 
       '<span class="badge bg-red-100 text-red-700">Sắp hết</span>' : 
       '<span class="badge bg-emerald-100 text-emerald-700">Còn hàng</span>';
-    
+    const baseUnit = item.baseUnit || item.unit;
+    const convStr = (item.conversions || [])
+      .filter(c => c.unit !== baseUnit && c.factor !== 1)
+      .map(c => `${c.unit}=${c.factor}`)
+      .join(', ');
     return `
       <tr class="border-b border-slate-200 hover:bg-slate-50">
         <td class="px-4 py-3 text-sm font-medium text-slate-800">${item.name}</td>
         <td class="px-4 py-3 text-sm text-slate-600">${item.stock}</td>
-        <td class="px-4 py-3 text-sm text-slate-600">${item.unit}</td>
+        <td class="px-4 py-3 text-sm text-slate-600">
+          <span class="font-semibold text-orange-600">${baseUnit}</span>
+          ${convStr ? `<div class="text-xs text-slate-400 mt-0.5">${convStr}</div>` : ''}
+        </td>
         <td class="px-4 py-3 text-sm text-slate-600">${item.minStock}</td>
         <td class="px-4 py-3">${status}</td>
         <td class="px-4 py-3 text-right">
@@ -6655,32 +6616,64 @@ document.getElementById('btn-add-ingredient').addEventListener('click', () => {
 
 function showEditInventoryModal(itemId = null) {
   const item = itemId ? state.inventory.find(i => i.id === itemId) : null;
-  
+  const baseUnit = item?.baseUnit || item?.unit || '';
+  const conversions = item?.conversions || (baseUnit ? [{ unit: baseUnit, factor: 1 }] : []);
+  const convRows = conversions.filter(c => c.unit !== baseUnit || c.factor !== 1);
+
   showModal(`
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-scale">
-      <div class="p-6 border-b border-slate-200">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-scale">
+      <div class="p-5 border-b border-slate-200">
         <h3 class="text-xl font-bold text-slate-800">${item ? 'Sửa nguyên liệu' : 'Thêm nguyên liệu'}</h3>
       </div>
-      <div class="p-6 space-y-4">
+      <div class="p-5 space-y-4 overflow-y-auto max-h-[70vh]">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-2">Tên nguyên liệu</label>
           <input type="text" id="ing-name" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${item?.name || ''}">
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Tồn kho</label>
-            <input type="number" id="ing-stock" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${item?.stock || 0}">
+            <input type="number" id="ing-stock" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${item?.stock ?? 0}">
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-2">Đơn vị</label>
-            <input type="text" id="ing-unit" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${item?.unit || 'kg'}">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Đơn vị cơ sở</label>
+            <input type="text" id="ing-base-unit" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="gram, ml, trái..." value="${baseUnit}">
           </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-700 mb-2">Định mức tối thiểu</label>
-          <input type="number" id="ing-min" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${item?.minStock || 5}">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Tối thiểu</label>
+            <input type="number" id="ing-min" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${item?.minStock ?? 5}">
+          </div>
+        </div>
+
+        <!-- Conversions -->
+        <div class="bg-orange-50 rounded-xl p-4 border border-orange-100">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <span class="text-sm font-semibold text-slate-700">📐 Bảng quy đổi</span>
+              <p class="text-xs text-slate-400 mt-0.5">Nhập kho bằng đơn vị khác → tự quy đổi về đơn vị cơ sở</p>
+            </div>
+            <button type="button" onclick="addConversionRow()" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-lg font-semibold">+ Thêm</button>
+          </div>
+          <div class="text-xs text-slate-500 mb-2 font-mono bg-white rounded px-3 py-1.5 border border-orange-100">
+            1 <span id="base-unit-preview" class="text-orange-600 font-bold">${baseUnit || '?'}</span> = 1 <span class="text-orange-600 font-bold">${baseUnit || '?'}</span> (cơ sở)
+          </div>
+          <div id="conv-rows" class="space-y-2">
+            ${convRows.map((c, idx) => `
+              <div class="conv-row flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-orange-100">
+                <span class="text-xs text-slate-400 w-4">1</span>
+                <input type="text" placeholder="Đơn vị (kg, lon...)" value="${c.unit}"
+                  class="conv-unit flex-1 border border-slate-200 px-2 py-1 rounded text-sm focus:ring-1 focus:ring-orange-400">
+                <span class="text-xs text-slate-400">=</span>
+                <input type="number" placeholder="Hệ số" value="${c.factor}" min="0.001" step="any"
+                  class="conv-factor w-20 border border-slate-200 px-2 py-1 rounded text-sm text-right focus:ring-1 focus:ring-orange-400">
+                <span class="conv-base-label text-xs text-orange-600 font-semibold w-12 truncate">${baseUnit}</span>
+                <button type="button" onclick="this.closest('.conv-row').remove()" class="text-red-400 hover:text-red-600 font-bold text-base leading-none">✕</button>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
-      <div class="p-6 border-t border-slate-200 flex gap-3">
+      <div class="p-5 border-t border-slate-200 flex gap-3">
         <button onclick="hideModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
           Hủy
         </button>
@@ -6690,28 +6683,62 @@ function showEditInventoryModal(itemId = null) {
       </div>
     </div>
   `);
-  
+
+  // Live preview baseUnit label
+  document.getElementById('ing-base-unit').addEventListener('input', function() {
+    const val = this.value || '?';
+    document.getElementById('base-unit-preview').textContent = val;
+    document.querySelectorAll('.conv-base-label').forEach(el => el.textContent = val);
+  });
+
+  window.addConversionRow = function() {
+    const baseU = document.getElementById('ing-base-unit').value || '?';
+    const row = document.createElement('div');
+    row.className = 'conv-row flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-orange-100';
+    row.innerHTML = `
+      <span class="text-xs text-slate-400 w-4">1</span>
+      <input type="text" placeholder="Đơn vị (kg, lon...)"
+        class="conv-unit flex-1 border border-slate-200 px-2 py-1 rounded text-sm focus:ring-1 focus:ring-orange-400">
+      <span class="text-xs text-slate-400">=</span>
+      <input type="number" placeholder="Hệ số" value="" min="0.001" step="any"
+        class="conv-factor w-20 border border-slate-200 px-2 py-1 rounded text-sm text-right focus:ring-1 focus:ring-orange-400">
+      <span class="conv-base-label text-xs text-orange-600 font-semibold w-12 truncate">${baseU}</span>
+      <button type="button" onclick="this.closest('.conv-row').remove()" class="text-red-400 hover:text-red-600 font-bold text-base leading-none">✕</button>
+    `;
+    document.getElementById('conv-rows').appendChild(row);
+  };
+
   window.saveIngredient = (itemId) => {
     const name = document.getElementById('ing-name').value.trim();
-    const stock = parseInt(document.getElementById('ing-stock').value);
-    const unit = document.getElementById('ing-unit').value.trim();
-    const minStock = parseInt(document.getElementById('ing-min').value);
-    
-    if (!name || !unit) {
-      showToast('Vui lòng điền đầy đủ thông tin', 'error');
+    const stock = parseFloat(document.getElementById('ing-stock').value) || 0;
+    const baseUnit = document.getElementById('ing-base-unit').value.trim();
+    const minStock = parseFloat(document.getElementById('ing-min').value) || 0;
+
+    if (!name || !baseUnit) {
+      showToast('Vui lòng điền tên và đơn vị cơ sở', 'error');
       return;
     }
-    
+
+    // Đọc conversions từ rows
+    const convRows = document.querySelectorAll('#conv-rows .conv-row');
+    const conversions = [{ unit: baseUnit, factor: 1 }];
+    convRows.forEach(row => {
+      const unit = row.querySelector('.conv-unit')?.value?.trim();
+      const factor = parseFloat(row.querySelector('.conv-factor')?.value);
+      if (unit && factor > 0) conversions.push({ unit, factor });
+    });
+
     if (itemId) {
-      const item = state.inventory.find(i => i.id === itemId);
-      Object.assign(item, {name, stock, unit, minStock});
+      const inv = state.inventory.find(i => i.id === itemId);
+      Object.assign(inv, { name, stock, unit: baseUnit, baseUnit, minStock, conversions });
       showToast('Đã cập nhật nguyên liệu');
     } else {
-      state.inventory.push({id: Date.now(), name, stock, unit, minStock});
+      state.inventory.push({ id: Date.now(), name, stock, unit: baseUnit, baseUnit, minStock, conversions });
       showToast('Đã thêm nguyên liệu');
     }
-    
+
     hideModal();
+    persistState();
     renderInventory();
   };
 }
@@ -7034,28 +7061,63 @@ function collectIngredientRows() {
   const ingredients = [];
   rows.forEach(row => {
     const id = parseInt(row.querySelector('.ingredient-id')?.value);
-    const qty = parseFloat(row.querySelector('.ingredient-qty')?.value) || 0;
-    if (id && qty > 0) ingredients.push({ id, qty });
+    const inputQty = parseFloat(row.querySelector('.ingredient-qty')?.value) || 0;
+    const inputUnit = row.querySelector('.ingredient-unit')?.value || '';
+    if (!id || inputQty <= 0) return;
+    // Quy đổi về baseUnit
+    const inv = state.inventory.find(i => i.id === id);
+    const baseQty = convertToBase(inv, inputQty, inputUnit);
+    const baseUnit = inv ? (inv.baseUnit || inv.unit) : inputUnit;
+    ingredients.push({
+      id,
+      qty: baseQty,        // lưu theo baseUnit
+      inputQty,            // giữ nguyên để hiển thị
+      inputUnit,           // đơn vị người nhập
+      unit: baseUnit       // đơn vị cơ sở
+    });
   });
   return ingredients;
 }
 
-function addIngredientRow(ingId = '', ingQty = '') {
+function addIngredientRow(ingId = '', ingQty = '', ingUnit = '') {
   const container = document.getElementById('ingredient-list');
   const html = `
     <div class="ing-row flex gap-2 items-center bg-slate-50 rounded-lg p-2 border border-slate-200">
-      <select class="ingredient-id flex-1 border border-slate-300 px-2 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-orange-500">
+      <select class="ingredient-id flex-1 border border-slate-300 px-2 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-orange-500" onchange="onIngRowChange(this)">
         <option value="">-- Chọn nguyên liệu --</option>
-        ${state.inventory.map(i => `<option value="${i.id}" ${String(i.id)===String(ingId)?'selected':''}>${i.name} (${i.unit})</option>`).join('')}
+        ${state.inventory.map(i => {
+          const base = i.baseUnit || i.unit;
+          return `<option value="${i.id}" ${String(i.id)===String(ingId)?'selected':''}>${i.name} (${base})</option>`;
+        }).join('')}
       </select>
-      <div class="relative">
-        <input type="number" class="ingredient-qty w-24 border border-slate-300 px-2 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-orange-500" placeholder="Số lượng" min="0.01" step="0.01" value="${ingQty}">
-      </div>
+      <input type="number" class="ingredient-qty w-20 border border-slate-300 px-2 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-orange-500" placeholder="SL" min="0.001" step="any" value="${ingQty}">
+      <select class="ingredient-unit w-24 border border-slate-300 px-2 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-orange-500">
+        ${(() => {
+          if (!ingId) return '<option value="">--</option>';
+          const inv = state.inventory.find(i => String(i.id) === String(ingId));
+          if (!inv) return '<option value="">--</option>';
+          return getUnitOptions(inv).map(u =>
+            `<option value="${u.unit}" ${u.unit === (ingUnit || (inv.baseUnit||inv.unit)) ? 'selected' : ''}>${u.unit}</option>`
+          ).join('');
+        })()}
+      </select>
       <button type="button" onclick="this.closest('.ing-row').remove()" class="text-red-400 hover:text-red-600 font-bold px-2 text-lg leading-none">✕</button>
     </div>
   `;
   container.insertAdjacentHTML('beforeend', html);
 }
+
+window.onIngRowChange = function(sel) {
+  const row = sel.closest('.ing-row');
+  const unitSel = row.querySelector('.ingredient-unit');
+  const itemId = parseInt(sel.value);
+  if (!itemId) { unitSel.innerHTML = '<option value="">--</option>'; return; }
+  const inv = state.inventory.find(i => i.id === itemId);
+  if (!inv) return;
+  unitSel.innerHTML = getUnitOptions(inv).map(u =>
+    `<option value="${u.unit}">${u.unit}</option>`
+  ).join('');
+};
 
 // (ingredient rows are read inside saveFood)
 
@@ -7429,13 +7491,6 @@ function loadSettings() {
   if (elCustomVoiceEl) elCustomVoiceEl.value = localStorage.getItem('elevenlabs_custom_voice') || '';
   const googleVoiceSel = document.getElementById('setting-google-tts-voice');
   if (googleVoiceSel) googleVoiceSel.value = localStorage.getItem('google_tts_voice') || 'auto';
-  // FPT.AI TTS
-  const fptKeyEl = document.getElementById('setting-fpt-tts-key');
-  if (fptKeyEl) fptKeyEl.value = localStorage.getItem('fpt_tts_key') || '';
-  const fptVoiceEl = document.getElementById('setting-fpt-tts-voice');
-  if (fptVoiceEl) fptVoiceEl.value = localStorage.getItem('fpt_tts_voice') || 'leminh';
-  const fptSpeedEl = document.getElementById('setting-fpt-tts-speed');
-  if (fptSpeedEl) fptSpeedEl.value = localStorage.getItem('fpt_tts_speed') || '0';
   if (s.bankQrImage) {
     document.getElementById('bank-qr-img').src = s.bankQrImage;
     document.getElementById('bank-qr-preview').classList.remove('hidden');
@@ -7529,17 +7584,24 @@ function getCurrentStaff() {
 
 function updateHeaderStaff() {
   const staff = getCurrentStaff();
-  const avatarEl = document.getElementById('header-staff-avatar');
-  const nameEl   = document.getElementById('header-staff-name');
+  const avatarEl    = document.getElementById('header-staff-avatar');
+  const nameEl      = document.getElementById('header-staff-name');
+  const shiftTimeEl = document.getElementById('header-shift-time');
   if (!avatarEl || !nameEl) return;
   if (staff) {
     avatarEl.textContent = staff.name.charAt(0).toUpperCase();
     avatarEl.style.background = staff.color || 'linear-gradient(135deg,#f97316,#ec4899)';
     nameEl.textContent = staff.name;
+    if (shiftTimeEl && typeof _session !== 'undefined' && _session && _session.loginAt) {
+      const t = new Date(_session.loginAt);
+      shiftTimeEl.textContent = '▶ ' + t.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      shiftTimeEl.classList.remove('hidden');
+    }
   } else {
     avatarEl.textContent = '?';
     avatarEl.style.background = 'linear-gradient(135deg,#94a3b8,#64748b)';
     nameEl.textContent = 'Chưa chọn NV';
+    if (shiftTimeEl) shiftTimeEl.classList.add('hidden');
   }
 }
 
@@ -8984,18 +9046,28 @@ function showAddPurchaseModal() {
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div class="md:col-span-2">
                             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nguyên liệu</label>
-                            <select id="p-item-select" class="w-full px-4 py-2 border rounded-lg outline-none">
+                            <select id="p-item-select" onchange="onPurchaseItemChange()" class="w-full px-4 py-2 border rounded-lg outline-none">
                                 <option value="">-- Chọn nguyên liệu --</option>
-                                ${state.inventory.map(item => `<option value="${item.id}">${item.name} (Tồn: ${item.stock} ${item.unit})</option>`).join('')}
+                                ${state.inventory.map(item => {
+                                  const base = item.baseUnit || item.unit;
+                                  return `<option value="${item.id}">${item.name} (Tồn: ${item.stock} ${base})</option>`;
+                                }).join('')}
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Số lượng</label>
-                            <input type="number" id="p-item-qty" value="1" min="1" class="w-full px-4 py-2 border rounded-lg outline-none">
+                            <input type="number" id="p-item-qty" value="1" min="0.001" step="any" class="w-full px-4 py-2 border rounded-lg outline-none">
                         </div>
-                        <div class="flex items-end">
-                            <button onclick="addItemToPurchase()" class="w-full py-2 bg-violet-600 text-white rounded-lg font-bold hover:bg-violet-700 transition-colors">Thêm</button>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Đơn vị</label>
+                            <select id="p-item-unit" class="w-full px-4 py-2 border rounded-lg outline-none">
+                                <option value="">-- Chọn NL trước --</option>
+                            </select>
                         </div>
+                    </div>
+                    <div class="mt-3 flex items-center gap-3">
+                        <div id="p-conversion-preview" class="flex-1 text-xs text-violet-600 bg-violet-50 rounded-lg px-3 py-1.5 hidden"></div>
+                        <button onclick="addItemToPurchase()" class="py-2 px-6 bg-violet-600 text-white rounded-lg font-bold hover:bg-violet-700 transition-colors">+ Thêm vào phiếu</button>
                     </div>
                 </div>
 
@@ -9004,8 +9076,9 @@ function showAddPurchaseModal() {
                         <thead>
                             <tr class="text-slate-500 border-b">
                                 <th class="text-left py-2">Tên hàng</th>
-                                <th class="text-center py-2">Số lượng</th>
-                                <th class="text-right py-2">Đơn giá nhập</th>
+                                <th class="text-center py-2">Số lượng nhập</th>
+                                <th class="text-center py-2">Quy đổi kho</th>
+                                <th class="text-right py-2">Đơn giá</th>
                                 <th class="text-right py-2">Thành tiền</th>
                                 <th class="text-center py-2"></th>
                             </tr>
@@ -9028,28 +9101,81 @@ function showAddPurchaseModal() {
     `);
 }
 
+function onPurchaseItemChange() {
+    const itemId = parseInt(document.getElementById('p-item-select').value);
+    const unitSel = document.getElementById('p-item-unit');
+    const preview = document.getElementById('p-conversion-preview');
+    if (!itemId) {
+        unitSel.innerHTML = '<option value="">-- Chọn NL trước --</option>';
+        preview.classList.add('hidden');
+        return;
+    }
+    const inv = state.inventory.find(i => i.id === itemId);
+    if (!inv) return;
+    const units = getUnitOptions(inv);
+    unitSel.innerHTML = units.map(u =>
+        `<option value="${u.unit}" data-factor="${u.factor}">${u.unit}${u.factor > 1 ? ` (×${u.factor})` : ''}</option>`
+    ).join('');
+    updatePurchasePreview(inv, units[0]);
+    unitSel.onchange = () => {
+        const sel = unitSel.options[unitSel.selectedIndex];
+        updatePurchasePreview(inv, { unit: sel.value, factor: parseFloat(sel.dataset.factor) });
+    };
+}
+
+function updatePurchasePreview(inv, conv) {
+    const preview = document.getElementById('p-conversion-preview');
+    const qty = parseFloat(document.getElementById('p-item-qty').value) || 1;
+    const base = inv.baseUnit || inv.unit;
+    if (!conv || conv.unit === base) {
+        preview.classList.add('hidden');
+        return;
+    }
+    const converted = qty * conv.factor;
+    preview.textContent = `⇒ ${qty} ${conv.unit} = ${converted} ${base} (lưu vào kho)`;
+    preview.classList.remove('hidden');
+    // Update live on qty change
+    document.getElementById('p-item-qty').oninput = () => {
+        const q = parseFloat(document.getElementById('p-item-qty').value) || 0;
+        preview.textContent = `⇒ ${q} ${conv.unit} = ${q * conv.factor} ${base} (lưu vào kho)`;
+    };
+}
+
 function addItemToPurchase() {
     const select = document.getElementById('p-item-select');
     const qtyInput = document.getElementById('p-item-qty');
+    const unitSel = document.getElementById('p-item-unit');
     const itemId = parseInt(select.value);
     const qty = parseFloat(qtyInput.value);
+    const selectedUnit = unitSel?.value || '';
 
     if (!itemId || qty <= 0) {
         showToast('Vui lòng chọn hàng và nhập số lượng!', 'error');
         return;
     }
 
-    const item = state.inventory.find(i => i.id === itemId);
-    const existing = currentPurchaseItems.find(i => i.id === itemId);
+    const inv = state.inventory.find(i => i.id === itemId);
+    if (!inv) return;
 
+    const baseUnit = inv.baseUnit || inv.unit;
+    // Tính hệ số quy đổi
+    const conv = (inv.conversions || []).find(c => c.unit === selectedUnit);
+    const factor = conv ? conv.factor : 1;
+    const baseQty = qty * factor; // số lượng quy đổi về đơn vị cơ sở
+
+    const existing = currentPurchaseItems.find(i => i.id === itemId && i.inputUnit === selectedUnit);
     if (existing) {
-        existing.qty += qty;
+        existing.inputQty += qty;
+        existing.qty += baseQty;
     } else {
         currentPurchaseItems.push({
-            id: item.id,
-            name: item.name,
-            qty: qty,
-            unit: item.unit,
+            id: inv.id,
+            name: inv.name,
+            inputQty: qty,         // số lượng người nhập (VD: 2 kg)
+            inputUnit: selectedUnit || baseUnit, // đơn vị người nhập (VD: kg)
+            qty: baseQty,          // số lượng quy đổi về baseUnit (VD: 2000 gram)
+            unit: baseUnit,        // đơn vị cơ sở
+            factor: factor,
             price: 0
         });
     }
@@ -9060,21 +9186,27 @@ function renderPurchaseItems() {
     const tbody = document.getElementById('p-items-tbody');
     if(!tbody) return;
 
-    tbody.innerHTML = currentPurchaseItems.map((item, index) => `
+    tbody.innerHTML = currentPurchaseItems.map((item, index) => {
+        const showConv = item.inputUnit !== item.unit && item.factor !== 1;
+        return `
         <tr class="border-b border-slate-50">
             <td class="py-3 font-medium">${item.name}</td>
-            <td class="py-3 text-center">${item.qty} ${item.unit}</td>
+            <td class="py-3 text-center">
+              <span class="font-semibold">${item.inputQty} ${item.inputUnit}</span>
+              ${showConv ? `<div class="text-xs text-violet-500">= ${item.qty} ${item.unit}</div>` : ''}
+            </td>
+            <td class="py-3 text-center text-xs text-emerald-600 font-semibold">+${item.qty} ${item.unit}</td>
             <td class="py-3 text-right">
                 <input type="number" onchange="updatePurchaseItemPrice(${index}, this.value)" value="${item.price}" class="w-24 px-2 py-1 border rounded text-right">
             </td>
-            <td class="py-3 text-right font-bold">${formatCurrency(item.qty * item.price)}</td>
+            <td class="py-3 text-right font-bold">${formatCurrency(item.inputQty * item.price)}</td>
             <td class="py-3 text-center">
                 <button onclick="removePurchaseItem(${index})" class="text-red-400 hover:text-red-600">✕</button>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
     
-    const total = currentPurchaseItems.reduce((sum, i) => sum + (i.qty * i.price), 0);
+    const total = currentPurchaseItems.reduce((sum, i) => sum + (i.inputQty * i.price), 0);
     const totalDisplay = document.getElementById('p-total-display');
     if(totalDisplay) totalDisplay.textContent = formatCurrency(total);
 }
@@ -9100,7 +9232,7 @@ function savePurchase() {
         return;
     }
 
-    const total = currentPurchaseItems.reduce((sum, i) => sum + (i.qty * i.price), 0);
+    const total = currentPurchaseItems.reduce((sum, i) => sum + (i.inputQty * i.price), 0);
     const purchase = {
         id: 'PN' + Date.now().toString().slice(-6),
         date: new Date().toISOString(),
@@ -9112,11 +9244,11 @@ function savePurchase() {
 
     state.purchases.unshift(purchase);
 
-    // Update inventory
+    // Cập nhật kho bằng qty đã quy đổi về đơn vị cơ sở
     currentPurchaseItems.forEach(pItem => {
         const invItem = state.inventory.find(i => i.id === pItem.id);
         if (invItem) {
-            invItem.stock += pItem.qty;
+            invItem.stock += pItem.qty; // pItem.qty = đã quy đổi về baseUnit
         }
     });
 
@@ -9124,7 +9256,10 @@ function savePurchase() {
     renderPurchases();
     if(typeof renderInventory === 'function') renderInventory();
     hideModal();
-    showToast('Đã lưu phiếu nhập hàng và cập nhật kho!');
+    const summary = currentPurchaseItems.map(i =>
+        `${i.name}: +${i.qty} ${i.unit}${i.inputUnit !== i.unit ? ` (${i.inputQty} ${i.inputUnit})` : ''}`
+    ).join('\n');
+    showToast(`✅ Đã lưu phiếu nhập! Cập nhật kho:\n${summary}`);
 }
 
 function deletePurchase(id) {
@@ -9761,7 +9896,11 @@ function addSheetMenu(wb, s) {
   const rows = (s.menuItems || []).map(m => {
     const ings = (m.ingredients || []).map(ing => {
       const inv = (s.inventory || []).find(i => i.id === ing.id);
-      return inv ? `${inv.name}: ${ing.qty} ${inv.unit}` : `ID#${ing.id}: ${ing.qty}`;
+      const baseUnit = inv ? (inv.baseUnit || inv.unit) : '';
+      const display = ing.inputUnit && ing.inputUnit !== baseUnit
+        ? `${inv?.name||'?'}: ${ing.inputQty||ing.qty} ${ing.inputUnit} (=${ing.qty} ${baseUnit})`
+        : `${inv?.name||'?'}: ${ing.qty} ${baseUnit}`;
+      return display;
     }).join('; ');
     return {
       'ID': m.id || '',
@@ -9778,16 +9917,24 @@ function addSheetMenu(wb, s) {
 }
 
 function addSheetInventory(wb, s) {
-  const rows = (s.inventory || []).map(i => ({
-    'ID': i.id || '',
-    'Tên nguyên liệu': i.name || '',
-    'Tồn kho': i.stock ?? 0,
-    'Đơn vị': i.unit || '',
-    'Mức tối thiểu': i.minStock ?? 0,
-    'Trạng thái': (i.stock ?? 0) <= 0 ? '🔴 Hết hàng' : (i.stock ?? 0) <= (i.minStock ?? 0) ? '🟡 Sắp hết' : '🟢 Còn hàng',
-  }));
+  const rows = (s.inventory || []).map(i => {
+    const baseUnit = i.baseUnit || i.unit || '';
+    const convStr = (i.conversions || [])
+      .filter(c => c.unit !== baseUnit)
+      .map(c => `1 ${c.unit} = ${c.factor} ${baseUnit}`)
+      .join('; ');
+    return {
+      'ID': i.id || '',
+      'Tên nguyên liệu': i.name || '',
+      'Tồn kho': i.stock ?? 0,
+      'Đơn vị cơ sở': baseUnit,
+      'Mức tối thiểu': i.minStock ?? 0,
+      'Quy đổi': convStr || '(chưa có)',
+      'Trạng thái': (i.stock ?? 0) <= 0 ? '🔴 Hết hàng' : (i.stock ?? 0) <= (i.minStock ?? 0) ? '🟡 Sắp hết' : '🟢 Còn hàng',
+    };
+  });
   const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{'Tên nguyên liệu':'Chưa có dữ liệu'}]);
-  styleSheet(ws, 6);
+  styleSheet(ws, 7);
   XLSX.utils.book_append_sheet(wb, ws, 'Kho NL');
 }
 
@@ -9797,7 +9944,11 @@ function addSheetPurchases(wb, s) {
     'Ngày nhập': fmtDT(p.date),
     'Nhà cung cấp': p.supplierName || p.supplier || '',
     'Số mặt hàng': (p.items || []).length,
-    'Chi tiết': (p.items || []).map(i => `${i.inventoryName||i.name||''} x${i.quantity||i.qty||''} ${i.unit||''} (${i.unitPrice ? fmtC(i.unitPrice) : ''})`).join('; '),
+    'Chi tiết nhập': (p.items || []).map(i => {
+      const inputStr = `${i.inputQty||i.qty||''} ${i.inputUnit||i.unit||''}`;
+      const baseStr = (i.inputUnit && i.inputUnit !== i.unit) ? ` → ${i.qty} ${i.unit}` : '';
+      return `${i.inventoryName||i.name||''}${inputStr}${baseStr}`;
+    }).join('; '),
     'Tổng tiền (đ)': p.total || 0,
     'Ghi chú': p.note || '',
   }));
