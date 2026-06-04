@@ -29,23 +29,37 @@ jobs:
         run: npx cap copy android
       - name: Sync Capacitor
         run: npx cap sync android
-      - name: Apply network security config
+- name: Apply network security config + Fix Vietnamese IME
         run: |
           mkdir -p android/app/src/main/res/xml
           cp android-resources/network_security_config.xml android/app/src/main/res/xml/
-          sed -i 's/android:theme="@style\/AppTheme"/android:theme="@style\/AppTheme"\n        android:networkSecurityConfig="@xml\/network_security_config"/' \
-            android/app/src/main/AndroidManifest.xml
 
-- name: Fix Vietnamese IME (tiếng Việt)
-        run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          
-          # Patch với tên ngắn .MainActivity (đúng với Capacitor)
-          sed -i 's/android:name="\.MainActivity"/android:name=".MainActivity"\n        android:windowSoftInputMode="adjustResize"/' "$MANIFEST"
-          
-          echo "✅ Đã patch AndroidManifest.xml"
-          grep -A8 "MainActivity" "$MANIFEST"
+          python3 << 'PYEOF'
+          import re
 
+          path = "android/app/src/main/AndroidManifest.xml"
+          with open(path, "r") as f:
+              content = f.read()
+
+          # Thêm networkSecurityConfig
+          content = content.replace(
+              'android:theme="@style/AppTheme"',
+              'android:theme="@style/AppTheme"\n        android:networkSecurityConfig="@xml/network_security_config"'
+          )
+
+          # Thêm windowSoftInputMode cho MainActivity
+          content = content.replace(
+              'android:name=".MainActivity"',
+              'android:name=".MainActivity"\n        android:windowSoftInputMode="adjustResize"'
+          )
+
+          with open(path, "w") as f:
+              f.write(content)
+
+          print("Done patching AndroidManifest.xml")
+          PYEOF
+
+          grep -A8 "MainActivity" android/app/src/main/AndroidManifest.xml
       - name: Apply Icons & Splash Screens
         run: |
           RES=android/app/src/main/res
