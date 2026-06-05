@@ -1681,19 +1681,107 @@ header > div:first-child > div:nth-child(2) {
               <label class="block text-sm font-medium text-slate-700 mb-1">Địa chỉ</label>
               <input type="text" id="setting-shop-address" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500">
             </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-slate-700 mb-1">Link web công khai (để khách quét QR)</label>
-              <input type="text" id="setting-public-url" placeholder="Ví dụ: https://ten-quan.yourdomain.com/pos_cafe_v11.html" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500">
-              <p class="text-xs text-slate-400 mt-1">Bắt buộc khi bạn đang mở file local file:///...</p>
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-slate-700 mb-1">Firebase Shop ID (cho QR realtime)</label>
-              <input type="text" id="setting-firebase-shop-id" placeholder="Ví dụ: huycuong16688-cafe" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500">
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-slate-700 mb-1">Firebase Config JSON (Realtime Database)</label>
-              <textarea id="setting-firebase-config" rows="4" placeholder='{"apiKey":"...","authDomain":"...","databaseURL":"...","projectId":"...","appId":"..."}' class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500"></textarea>
-              <p class="text-xs text-slate-400 mt-1">Dùng để khách quét QR và gửi đơn realtime về máy thu ngân.</p>
+            <!-- QR ORDER SETUP PANEL -->
+            <div class="md:col-span-2 mt-2">
+              <!-- Status bar -->
+              <div id="qr-setup-status" class="rounded-xl border p-3 mb-3 flex items-center gap-3 text-sm font-medium transition-all">
+                <span id="qr-status-dot" class="w-2.5 h-2.5 rounded-full flex-shrink-0"></span>
+                <span id="qr-status-text">Đang kiểm tra...</span>
+              </div>
+
+              <!-- Tabs -->
+              <div class="flex gap-1 mb-3 bg-slate-100 p-1 rounded-xl">
+                <button onclick="qrSetupTab('link')" id="qrtab-link"
+                  class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-800 shadow-sm">
+                  🔗 Link web
+                </button>
+                <button onclick="qrSetupTab('firebase')" id="qrtab-firebase"
+                  class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500">
+                  🔥 Firebase
+                </button>
+                <button onclick="qrSetupTab('guide')" id="qrtab-guide"
+                  class="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500">
+                  📖 Hướng dẫn
+                </button>
+              </div>
+
+              <!-- Tab: Link web -->
+              <div id="qrtab-body-link">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Link web công khai của app POS</label>
+                <div class="flex gap-2 mb-2">
+                  <input type="text" id="setting-public-url"
+                    placeholder="https://camerahc1668.github.io/pos-cafeHC/"
+                    oninput="refreshQrSetupStatus()"
+                    class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none">
+                  <button onclick="refreshQrSetupStatus()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition-colors">Kiểm tra</button>
+                </div>
+                <div id="qr-url-preview" class="hidden text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-600 break-all font-mono mb-2"></div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
+                  <div class="font-bold mb-1">⚠️ Khi nào cần điền?</div>
+                  <div>• Mở POS bằng <code class="bg-amber-100 px-1 rounded">file:///</code> → bắt buộc phải điền</div>
+                  <div>• Chạy trên GitHub Pages → điền link GitHub của bạn</div>
+                  <div>• Đang dùng <code class="bg-amber-100 px-1 rounded">https://...</code> → có thể để trống</div>
+                  <div id="qr-current-url-hint" class="mt-2 font-semibold text-amber-700"></div>
+                </div>
+              </div>
+
+              <!-- Tab: Firebase -->
+              <div id="qrtab-body-firebase" class="hidden">
+                <div class="space-y-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Shop ID <span class="text-slate-400 font-normal">(đặt tên tùy ý, không dấu)</span></label>
+                    <input type="text" id="setting-firebase-shop-id"
+                      placeholder="vd: cafe-hc-2024"
+                      oninput="refreshQrSetupStatus()"
+                      class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none no-ac">
+                    <p class="text-xs text-slate-400 mt-1">Dữ liệu lưu tại Firebase path: <code class="bg-slate-100 px-1 rounded">pos_data/<span id="shopid-preview">...</span>/pending_orders</code></p>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Firebase Config JSON</label>
+                    <textarea id="setting-firebase-config" rows="5"
+                      placeholder='{"apiKey":"AIza...","authDomain":"xxx.firebaseapp.com","databaseURL":"https://xxx-default-rtdb.firebaseio.com","projectId":"xxx","appId":"1:123:web:abc"}'
+                      oninput="refreshQrSetupStatus()"
+                      class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-orange-400 focus:outline-none no-ac"></textarea>
+                  </div>
+                  <div id="firebase-json-status" class="hidden text-xs rounded-lg px-3 py-2 font-medium"></div>
+                  <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 space-y-1">
+                    <div class="font-bold mb-1">🔥 Lấy Firebase Config ở đâu?</div>
+                    <div>1. Vào <a href="https://console.firebase.google.com" target="_blank" class="text-blue-600 underline font-semibold">console.firebase.google.com</a></div>
+                    <div>2. Tạo project → Realtime Database → Bật</div>
+                    <div>3. Project Settings → <b>Your apps</b> → Web → Copy Config</div>
+                    <div>4. Rules: <code class="bg-blue-100 px-1 rounded">".read":true, ".write":true</code></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab: Hướng dẫn -->
+              <div id="qrtab-body-guide" class="hidden">
+                <div class="space-y-3 text-sm">
+                  <div class="font-bold text-slate-700 mb-2">📱 Luồng khách quét QR order</div>
+                  <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-violet-100 text-violet-700 font-black text-xs flex items-center justify-center flex-shrink-0">1</div>
+                    <div><b>Thu ngân</b> nhấn icon QR trên thẻ bàn → QR code hiện ra</div>
+                  </div>
+                  <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-violet-100 text-violet-700 font-black text-xs flex items-center justify-center flex-shrink-0">2</div>
+                    <div><b>Khách quét QR</b> bằng camera điện thoại → mở trang menu của quán</div>
+                  </div>
+                  <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-violet-100 text-violet-700 font-black text-xs flex items-center justify-center flex-shrink-0">3</div>
+                    <div><b>Khách chọn món</b> → nhấn "Gửi đơn lên bếp" → đơn ghi vào Firebase</div>
+                  </div>
+                  <div class="flex gap-3 items-start">
+                    <div class="w-7 h-7 rounded-full bg-violet-100 text-violet-700 font-black text-xs flex items-center justify-center flex-shrink-0">4</div>
+                    <div><b>POS nhận đơn</b> realtime → hiện chuông thông báo → vào tab Bếp để xác nhận</div>
+                  </div>
+                  <div class="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800">
+                    <div class="font-bold mb-1">✅ Điều kiện để hoạt động:</div>
+                    <div id="guide-check-url" class="flex items-center gap-2 py-0.5">⬜ Link web công khai đã điền</div>
+                    <div id="guide-check-fb"  class="flex items-center gap-2 py-0.5">⬜ Firebase Shop ID đã điền</div>
+                    <div id="guide-check-cfg" class="flex items-center gap-2 py-0.5">⬜ Firebase Config JSON hợp lệ</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -10567,6 +10655,179 @@ function confirmResetData() {
 })();
 _applyCartState();
 updateCartBadge();
+
+// ══════════════════════════════════════════════════
+//  QR ORDER SETUP PANEL — logic
+// ══════════════════════════════════════════════════
+function qrSetupTab(name) {
+  ['link','firebase','guide'].forEach(t => {
+    const btn  = document.getElementById('qrtab-' + t);
+    const body = document.getElementById('qrtab-body-' + t);
+    if (!btn || !body) return;
+    const active = t === name;
+    btn.className  = active
+      ? 'flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-800 shadow-sm'
+      : 'flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500';
+    body.classList.toggle('hidden', !active);
+  });
+  if (name === 'guide') updateGuideChecks();
+  if (name === 'firebase') updateShopIdPreview();
+}
+
+function updateShopIdPreview() {
+  const el = document.getElementById('setting-firebase-shop-id');
+  const pre = document.getElementById('shopid-preview');
+  if (el && pre) pre.textContent = el.value.trim() || '...';
+}
+
+function updateGuideChecks() {
+  const url  = (document.getElementById('setting-public-url')?.value || '').trim();
+  const shop = (document.getElementById('setting-firebase-shop-id')?.value || '').trim();
+  const cfg  = (document.getElementById('setting-firebase-config')?.value || '').trim();
+  let cfgOk = false;
+  try { const o = JSON.parse(cfg); cfgOk = !!(o.apiKey && o.databaseURL); } catch(e) {}
+
+  const set = (id, ok) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = (ok ? '✅' : '⬜') + el.innerHTML.slice(2);
+  };
+  const elUrl = document.getElementById('guide-check-url');
+  const elFb  = document.getElementById('guide-check-fb');
+  const elCfg = document.getElementById('guide-check-cfg');
+  if (elUrl) elUrl.innerHTML = (url  ? '✅' : '⬜') + ' Link web công khai đã điền';
+  if (elFb)  elFb.innerHTML  = (shop ? '✅' : '⬜') + ' Firebase Shop ID đã điền';
+  if (elCfg) elCfg.innerHTML = (cfgOk? '✅' : '⬜') + ' Firebase Config JSON hợp lệ';
+}
+
+function refreshQrSetupStatus() {
+  const urlEl   = document.getElementById('setting-public-url');
+  const shopEl  = document.getElementById('setting-firebase-shop-id');
+  const cfgEl   = document.getElementById('setting-firebase-config');
+  const dot     = document.getElementById('qr-status-dot');
+  const txt     = document.getElementById('qr-status-text');
+  const preview = document.getElementById('qr-url-preview');
+  const hintEl  = document.getElementById('qr-current-url-hint');
+  const fbStatus= document.getElementById('firebase-json-status');
+  const shopPre = document.getElementById('shopid-preview');
+
+  if (!dot || !txt) return;
+
+  const pubUrl  = (urlEl?.value  || '').trim();
+  const shopId  = (shopEl?.value || '').trim();
+  const cfgRaw  = (cfgEl?.value  || '').trim();
+  const curProto = window.location.protocol;
+
+  // Kiểm tra URL
+  let urlOk = false;
+  if (pubUrl) {
+    urlOk = pubUrl.startsWith('https://') || pubUrl.startsWith('http://');
+  } else if (curProto === 'https:' || curProto === 'http:') {
+    urlOk = true;
+  }
+
+  // Kiểm tra Firebase config JSON
+  let cfgOk = false;
+  let cfgObj = null;
+  if (cfgRaw) {
+    try {
+      cfgObj = JSON.parse(cfgRaw);
+      cfgOk = !!(cfgObj.apiKey && cfgObj.databaseURL && cfgObj.projectId);
+    } catch(e) {}
+  }
+
+  const fbOk = cfgOk && !!shopId;
+  const allOk = urlOk && fbOk;
+
+  // Cập nhật status bar
+  if (allOk) {
+    dot.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0 bg-emerald-500';
+    txt.textContent = '✅ Sẵn sàng — Khách quét QR là đặt được ngay!';
+    txt.className = 'text-emerald-700 font-semibold';
+    document.getElementById('qr-setup-status').className = 'rounded-xl border p-3 mb-3 flex items-center gap-3 text-sm font-medium transition-all border-emerald-200 bg-emerald-50';
+  } else if (urlOk && !fbOk) {
+    dot.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0 bg-amber-400';
+    txt.textContent = '⚠️ Link OK — nhưng chưa có Firebase → đơn không gửi realtime được';
+    txt.className = 'text-amber-700 font-semibold';
+    document.getElementById('qr-setup-status').className = 'rounded-xl border p-3 mb-3 flex items-center gap-3 text-sm font-medium transition-all border-amber-200 bg-amber-50';
+  } else if (!urlOk) {
+    dot.className = 'w-2.5 h-2.5 rounded-full flex-shrink-0 bg-red-400';
+    txt.textContent = '❌ Chưa có link web → QR không hoạt động khi mở file local';
+    txt.className = 'text-red-700 font-semibold';
+    document.getElementById('qr-setup-status').className = 'rounded-xl border p-3 mb-3 flex items-center gap-3 text-sm font-medium transition-all border-red-200 bg-red-50';
+  }
+
+  // URL preview
+  if (preview) {
+    const base = pubUrl || (curProto !== 'file:' ? window.location.href.replace(/[#?].*$/,'') : '');
+    if (base && shopId) {
+      const sample = base + '?shop=' + encodeURIComponent(shopId) + '&table=1&tname=B%C3%A0n%201#qr-order-1';
+      preview.textContent = '🔗 VD link QR: ' + sample;
+      preview.classList.remove('hidden');
+    } else {
+      preview.classList.add('hidden');
+    }
+  }
+
+  // Gợi ý URL hiện tại
+  if (hintEl) {
+    if (curProto === 'file:') {
+      hintEl.textContent = '📂 Bạn đang mở file:/// → bắt buộc phải điền link GitHub Pages hoặc hosting';
+    } else if (curProto === 'https:' && !pubUrl) {
+      hintEl.textContent = '✅ Đang chạy https:// — có thể để trống (tự dùng URL hiện tại)';
+    } else {
+      hintEl.textContent = '';
+    }
+  }
+
+  // Firebase JSON status
+  if (fbStatus) {
+    if (!cfgRaw) {
+      fbStatus.classList.add('hidden');
+    } else if (cfgOk) {
+      fbStatus.className = 'text-xs rounded-lg px-3 py-2 font-medium bg-emerald-50 border border-emerald-200 text-emerald-700';
+      fbStatus.textContent = '✅ JSON hợp lệ — project: ' + (cfgObj?.projectId || '?');
+      fbStatus.classList.remove('hidden');
+    } else {
+      fbStatus.className = 'text-xs rounded-lg px-3 py-2 font-medium bg-red-50 border border-red-200 text-red-700';
+      fbStatus.textContent = '❌ JSON không hợp lệ hoặc thiếu apiKey / databaseURL / projectId';
+      fbStatus.classList.remove('hidden');
+    }
+  }
+
+  // Shop ID preview
+  if (shopPre) shopPre.textContent = shopId || '...';
+}
+
+// Chạy khi mở tab cài đặt
+(function watchSettingsTab() {
+  const tabBtns = document.querySelectorAll('[data-tab]');
+  tabBtns.forEach(btn => {
+    if (btn.dataset.tab === 'settings') {
+      btn.addEventListener('click', () => setTimeout(refreshQrSetupStatus, 100));
+    }
+  });
+  // Cũng chạy ngay sau khi DOM load
+  if (document.readyState !== 'loading') {
+    setTimeout(refreshQrSetupStatus, 500);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(refreshQrSetupStatus, 500));
+  }
+
+  // Lắng nghe thay đổi trên các ô liên quan
+  ['setting-public-url','setting-firebase-shop-id','setting-firebase-config'].forEach(id => {
+    const tryBind = () => {
+      const el = document.getElementById(id);
+      if (!el) return false;
+      el.addEventListener('input', refreshQrSetupStatus);
+      return true;
+    };
+    if (!tryBind()) {
+      const obs = new MutationObserver(() => { if (tryBind()) obs.disconnect(); });
+      obs.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => obs.disconnect(), 10000);
+    }
+  });
+})();
 
 // ══════════════════════════════════════════════════
 //  SMART AUTOCOMPLETE ENGINE
