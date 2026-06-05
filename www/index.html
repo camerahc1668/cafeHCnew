@@ -1726,33 +1726,138 @@ header > div:first-child > div:nth-child(2) {
               </div>
 
               <!-- Tab: Firebase -->
-              <div id="qrtab-body-firebase" class="hidden">
-                <div class="space-y-3">
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Shop ID <span class="text-slate-400 font-normal">(đặt tên tùy ý, không dấu)</span></label>
-                    <input type="text" id="setting-firebase-shop-id"
-                      placeholder="vd: cafe-hc-2024"
-                      oninput="refreshQrSetupStatus()"
-                      class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-400 focus:outline-none no-ac">
-                    <p class="text-xs text-slate-400 mt-1">Dữ liệu lưu tại Firebase path: <code class="bg-slate-100 px-1 rounded">pos_data/<span id="shopid-preview">...</span>/pending_orders</code></p>
+              <div id="qrtab-body-firebase" class="hidden space-y-4">
+
+                <!-- ① Shop ID -->
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="text-xs font-bold text-slate-700">🏪 Shop ID</label>
+                    <span id="fb-shopid-badge" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
                   </div>
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Firebase Config JSON</label>
-                    <textarea id="setting-firebase-config" rows="5"
-                      placeholder='{"apiKey":"AIza...","authDomain":"xxx.firebaseapp.com","databaseURL":"https://xxx-default-rtdb.firebaseio.com","projectId":"xxx","appId":"1:123:web:abc"}'
-                      oninput="refreshQrSetupStatus()"
-                      class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-orange-400 focus:outline-none no-ac"></textarea>
-                  </div>
-                  <div id="firebase-json-status" class="hidden text-xs rounded-lg px-3 py-2 font-medium"></div>
-                  <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 space-y-1">
-                    <div class="font-bold mb-1">🔥 Lấy Firebase Config ở đâu?</div>
-                    <div>1. Vào <a href="https://console.firebase.google.com" target="_blank" class="text-blue-600 underline font-semibold">console.firebase.google.com</a></div>
-                    <div>2. Tạo project → Realtime Database → Bật</div>
-                    <div>3. Project Settings → <b>Your apps</b> → Web → Copy Config</div>
-                    <div>4. Rules: <code class="bg-blue-100 px-1 rounded">".read":true, ".write":true</code></div>
+                  <input type="text" id="setting-firebase-shop-id"
+                    placeholder="vd: cafe-hc-2024  (không dấu, không cách)"
+                    oninput="fbValidate()"
+                    class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm focus:outline-none transition-colors no-ac"
+                    id="setting-firebase-shop-id">
+                  <p id="fb-shopid-hint" class="text-xs text-slate-400 mt-1.5">
+                    Đặt tên tùy ý — chỉ dùng chữ thường, số, dấu gạch
+                  </p>
+                  <!-- Path preview -->
+                  <div class="mt-2 flex items-center gap-1.5 flex-wrap">
+                    <span class="text-xs text-slate-400">Đơn khách lưu tại:</span>
+                    <code class="text-xs bg-slate-100 border border-slate-200 rounded px-2 py-0.5 text-slate-700 font-mono">
+                      pos_data/<span id="shopid-preview" class="text-orange-600 font-bold">...</span>/pending_orders
+                    </code>
+                    <button onclick="fbCopyPath()" title="Copy path"
+                      class="text-xs text-slate-400 hover:text-slate-600 transition-colors">⎘</button>
                   </div>
                 </div>
-              </div>
+
+                <hr class="border-slate-100">
+
+                <!-- ② Config JSON -->
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="text-xs font-bold text-slate-700">⚙️ Firebase Config JSON</label>
+                    <span id="fb-json-badge" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"></span>
+                  </div>
+                  <textarea id="setting-firebase-config" rows="6"
+                    placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "my-app.firebaseapp.com",
+  "databaseURL": "https://my-app-default-rtdb.firebaseio.com",
+  "projectId": "my-app",
+  "appId": "1:123456:web:abcdef"
+}'
+                    oninput="fbValidate()"
+                    class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-xs font-mono focus:outline-none transition-colors no-ac resize-none leading-relaxed"></textarea>
+
+                  <!-- Kết quả validate từng field -->
+                  <div id="fb-fields-check" class="hidden mt-2 grid grid-cols-2 gap-1.5 text-xs">
+                    <div id="fbc-apiKey"      class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100"><span class="fbc-dot">⬜</span> apiKey</div>
+                    <div id="fbc-authDomain"  class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100"><span class="fbc-dot">⬜</span> authDomain</div>
+                    <div id="fbc-databaseURL" class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100"><span class="fbc-dot">⬜</span> databaseURL</div>
+                    <div id="fbc-projectId"   class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100"><span class="fbc-dot">⬜</span> projectId</div>
+                    <div id="fbc-appId"       class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100 col-span-2"><span class="fbc-dot">⬜</span> appId</div>
+                  </div>
+
+                  <div id="fb-json-error" class="hidden mt-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 font-mono"></div>
+                  <div id="firebase-json-status" class="hidden"></div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <!-- ③ Hướng dẫn 4 bước -->
+                <div>
+                  <div class="text-xs font-bold text-slate-700 mb-3 flex items-center gap-2">
+                    <span class="text-base">📋</span> Cách lấy Firebase Config — 4 bước
+                  </div>
+                  <div class="space-y-2.5">
+
+                    <!-- B1 -->
+                    <div class="flex gap-3 items-start bg-slate-50 rounded-xl p-3 border border-slate-100">
+                      <div class="w-7 h-7 rounded-full bg-orange-500 text-white text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">1</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-slate-800 mb-0.5">Tạo project Firebase</div>
+                        <div class="text-xs text-slate-500 mb-2">Vào trang console, tạo project mới (hoặc dùng project cũ)</div>
+                        <a href="https://console.firebase.google.com" target="_blank"
+                          class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-semibold transition-colors">
+                          🔥 Mở Firebase Console ↗
+                        </a>
+                      </div>
+                    </div>
+
+                    <!-- B2 -->
+                    <div class="flex gap-3 items-start bg-slate-50 rounded-xl p-3 border border-slate-100">
+                      <div class="w-7 h-7 rounded-full bg-orange-500 text-white text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">2</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-slate-800 mb-0.5">Bật Realtime Database</div>
+                        <div class="text-xs text-slate-500 mb-1.5">Build → Realtime Database → Create database → Start in <b>test mode</b></div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5 text-xs text-amber-800">
+                          ⚠️ Sau đó vào <b>Rules</b>, dán đoạn sau rồi nhấn <b>Publish</b>:
+                        </div>
+                        <pre class="mt-1.5 text-xs bg-slate-800 text-emerald-300 rounded-lg p-2.5 overflow-x-auto font-mono leading-relaxed">{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}</pre>
+                      </div>
+                    </div>
+
+                    <!-- B3 -->
+                    <div class="flex gap-3 items-start bg-slate-50 rounded-xl p-3 border border-slate-100">
+                      <div class="w-7 h-7 rounded-full bg-orange-500 text-white text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">3</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-slate-800 mb-0.5">Lấy Config từ Project Settings</div>
+                        <div class="text-xs text-slate-500 space-y-0.5">
+                          <div>① Nhấn ⚙️ <b>Project Settings</b> (bánh răng trên menu trái)</div>
+                          <div>② Kéo xuống mục <b>Your apps</b> → chọn Web app <code class="bg-slate-200 px-1 rounded">&lt;/&gt;</code></div>
+                          <div>③ Nếu chưa có → nhấn <b>Add app</b> → Web → đặt tên bất kỳ</div>
+                          <div>④ Copy đoạn <code class="bg-slate-200 px-1 rounded">firebaseConfig = { ... }</code></div>
+                          <div>⑤ Chỉ lấy phần <b>JSON bên trong</b> <code class="bg-slate-200 px-1 rounded">{ }</code> dán vào ô trên</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- B4 -->
+                    <div class="flex gap-3 items-start bg-emerald-50 rounded-xl p-3 border border-emerald-200">
+                      <div class="w-7 h-7 rounded-full bg-emerald-500 text-white text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">4</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold text-slate-800 mb-0.5">Điền Shop ID &amp; Lưu cài đặt</div>
+                        <div class="text-xs text-slate-500 mb-1.5">
+                          Điền Shop ID ở trên → nhấn <b>Lưu cài đặt</b> → nhấn <b>In QR</b> trên bàn → khách quét là nhận đơn ngay!
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-emerald-700 font-semibold">
+                          <span>✅</span> Miễn phí hoàn toàn với Spark Plan (0 USD/tháng)
+                        </div>
+                      </div>
+                    </div>
+
+                  </div><!-- /steps -->
+                </div><!-- /hướng dẫn -->
+
+              </div><!-- /tab firebase -->
 
               <!-- Tab: Hướng dẫn -->
               <div id="qrtab-body-guide" class="hidden">
@@ -10659,6 +10764,121 @@ updateCartBadge();
 // ══════════════════════════════════════════════════
 //  QR ORDER SETUP PANEL — logic
 // ══════════════════════════════════════════════════
+// ── Firebase tab: validate realtime ──────────────────────
+function fbValidate() {
+  const shopEl  = document.getElementById('setting-firebase-shop-id');
+  const cfgEl   = document.getElementById('setting-firebase-config');
+  const shopVal = (shopEl?.value || '').trim();
+  const cfgRaw  = (cfgEl?.value || '').trim();
+
+  // ── Shop ID ──
+  const shopBadge = document.getElementById('fb-shopid-badge');
+  const shopHint  = document.getElementById('fb-shopid-hint');
+  const shopPre   = document.getElementById('shopid-preview');
+
+  if (shopPre) shopPre.textContent = shopVal || '...';
+
+  if (shopBadge) {
+    shopBadge.classList.remove('hidden');
+    if (!shopVal) {
+      shopBadge.textContent = '⬜ Chưa điền';
+      shopBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500';
+      shopEl.style.borderColor = '#e2e8f0';
+    } else if (/[^\w\-]/.test(shopVal)) {
+      shopBadge.textContent = '❌ Có ký tự không hợp lệ';
+      shopBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600';
+      shopEl.style.borderColor = '#fca5a5';
+      if (shopHint) shopHint.innerHTML = '<span class="text-red-500">Chỉ dùng: a-z, 0-9, dấu gạch ngang -</span>';
+    } else {
+      shopBadge.textContent = '✅ Hợp lệ';
+      shopBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
+      shopEl.style.borderColor = '#6ee7b7';
+      if (shopHint) shopHint.innerHTML = 'Đặt tên tùy ý — chỉ dùng chữ thường, số, dấu gạch';
+    }
+  }
+
+  // ── Config JSON ──
+  const jsonBadge   = document.getElementById('fb-json-badge');
+  const fieldsCheck = document.getElementById('fb-fields-check');
+  const jsonError   = document.getElementById('fb-json-error');
+  const REQUIRED    = ['apiKey','authDomain','databaseURL','projectId','appId'];
+
+  if (!cfgRaw) {
+    if (jsonBadge)   { jsonBadge.classList.add('hidden'); }
+    if (fieldsCheck) { fieldsCheck.classList.add('hidden'); }
+    if (jsonError)   { jsonError.classList.add('hidden'); }
+    if (cfgEl)       { cfgEl.style.borderColor = '#e2e8f0'; }
+    refreshQrSetupStatus(); return;
+  }
+
+  let parsed = null;
+  try {
+    // Thử parse — hỗ trợ cả dạng const x = {...} lẫn JSON thuần
+    let clean = cfgRaw
+      .replace(/^\s*(const|var|let)\s+\w+\s*=\s*/, '')  // bỏ "const firebaseConfig = "
+      .replace(/;\s*$/, '')                               // bỏ dấu ; cuối
+      .replace(/(\w+)\s*:/g, '"$1":')                    // key không quote → thêm quote
+      .replace(/'/g, '"');                                // single quote → double quote
+    parsed = JSON.parse(clean);
+  } catch(e) {
+    // JSON lỗi
+    if (jsonBadge) {
+      jsonBadge.textContent = '❌ JSON không hợp lệ';
+      jsonBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600';
+      jsonBadge.classList.remove('hidden');
+    }
+    if (jsonError) {
+      jsonError.textContent = '⚠ Lỗi cú pháp: ' + e.message.replace(/at position \d+/, '').trim();
+      jsonError.classList.remove('hidden');
+    }
+    if (fieldsCheck) fieldsCheck.classList.add('hidden');
+    if (cfgEl) cfgEl.style.borderColor = '#fca5a5';
+    refreshQrSetupStatus(); return;
+  }
+
+  // JSON hợp lệ — kiểm tra từng field
+  if (jsonError) jsonError.classList.add('hidden');
+  if (fieldsCheck) fieldsCheck.classList.remove('hidden');
+
+  let allOk = true;
+  REQUIRED.forEach(key => {
+    const el = document.getElementById('fbc-' + key);
+    if (!el) return;
+    const dot = el.querySelector('.fbc-dot');
+    const val = parsed[key];
+    const ok  = val && val.toString().length > 3;
+    if (!ok) allOk = false;
+    el.style.background = ok ? '#f0fdf4' : '#fef2f2';
+    el.style.borderColor = ok ? '#bbf7d0' : '#fecaca';
+    if (dot) dot.textContent = ok ? '✅' : '❌';
+
+    // Thêm preview giá trị ngắn
+    const preview = val ? (' — <span style="color:#64748b;font-weight:400">' + String(val).slice(0,28) + (String(val).length > 28 ? '…' : '') + '</span>') : '';
+    el.innerHTML = '<span class="fbc-dot">' + (ok ? '✅' : '❌') + '</span> <b>' + key + '</b>' + preview;
+  });
+
+  if (jsonBadge) {
+    jsonBadge.classList.remove('hidden');
+    if (allOk) {
+      jsonBadge.textContent = '✅ Hợp lệ — ' + (parsed.projectId || '');
+      jsonBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
+      if (cfgEl) cfgEl.style.borderColor = '#6ee7b7';
+    } else {
+      jsonBadge.textContent = '⚠ Thiếu ' + REQUIRED.filter(k => !parsed[k] || parsed[k].length < 3).join(', ');
+      jsonBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700';
+      if (cfgEl) cfgEl.style.borderColor = '#fcd34d';
+    }
+  }
+
+  refreshQrSetupStatus();
+}
+
+function fbCopyPath() {
+  const shopId = (document.getElementById('setting-firebase-shop-id')?.value || '').trim() || '...';
+  const path = 'pos_data/' + shopId + '/pending_orders';
+  navigator.clipboard?.writeText(path).then(() => showToast('📋 Đã copy: ' + path));
+}
+
 function qrSetupTab(name) {
   ['link','firebase','guide'].forEach(t => {
     const btn  = document.getElementById('qrtab-' + t);
@@ -10808,12 +11028,17 @@ function refreshQrSetupStatus() {
   });
   // Cũng chạy ngay sau khi DOM load
   if (document.readyState !== 'loading') {
-    setTimeout(refreshQrSetupStatus, 500);
+    setTimeout(() => { refreshQrSetupStatus(); fbValidate(); }, 500);
   } else {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(refreshQrSetupStatus, 500));
+    document.addEventListener('DOMContentLoaded', () => setTimeout(() => { refreshQrSetupStatus(); fbValidate(); }, 500));
   }
 
   // Lắng nghe thay đổi trên các ô liên quan
+  // Bind fbValidate cho Firebase fields
+  ['setting-firebase-shop-id','setting-firebase-config'].forEach(id => {
+    const tryBindFb = () => { const el = document.getElementById(id); if (!el) return false; el.addEventListener('input', fbValidate); return true; };
+    if (!tryBindFb()) { const o = new MutationObserver(() => { if (tryBindFb()) o.disconnect(); }); o.observe(document.body,{childList:true,subtree:true}); setTimeout(()=>o.disconnect(),10000); }
+  });
   ['setting-public-url','setting-firebase-shop-id','setting-firebase-config'].forEach(id => {
     const tryBind = () => {
       const el = document.getElementById(id);
