@@ -196,13 +196,27 @@
 <title>☕ POS HC</title>
 
 <!-- PWA / Icon cho iPhone & Android -->
+<link rel="apple-touch-icon" sizes="57x57"   href="icon.png">
+<link rel="apple-touch-icon" sizes="60x60"   href="icon.png">
+<link rel="apple-touch-icon" sizes="72x72"   href="icon.png">
+<link rel="apple-touch-icon" sizes="76x76"   href="icon.png">
+<link rel="apple-touch-icon" sizes="114x114" href="icon.png">
+<link rel="apple-touch-icon" sizes="120x120" href="icon.png">
+<link rel="apple-touch-icon" sizes="144x144" href="icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
-<link rel="icon" type="image/png" sizes="512x512" href="icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+<link rel="icon" type="image/png" sizes="512x512"  href="icon.png">
+<link rel="icon" type="image/png" sizes="32x32"    href="icon.png">
+<link rel="icon" type="image/png" sizes="16x16"    href="icon.png">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="POS 206">
+<meta name="apple-mobile-web-app-title" content="POS HC">
+<meta name="application-name" content="POS HC">
 <meta name="theme-color" content="#f97316">
+<meta name="msapplication-TileColor" content="#f97316">
+<meta name="msapplication-TileImage" content="icon.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1420,9 +1434,24 @@ header > div:first-child > div:nth-child(2) {
       <div data-tab-content="inventory">
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-2xl font-bold text-slate-800">Kho nguyên liệu</h2>
-          <button id="btn-add-ingredient" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all">
-            + Thêm nguyên liệu
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="showUnitGuide()" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5">
+              📐 Hướng dẫn quy đổi
+            </button>
+            <button id="btn-add-ingredient" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all">
+              + Thêm nguyên liệu
+            </button>
+          </div>
+        </div>
+        <!-- Quick tip banner -->
+        <div class="mb-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-xl px-4 py-3 flex items-start gap-3">
+          <span class="text-xl mt-0.5">📐</span>
+          <div class="flex-1 text-sm text-slate-600">
+            <span class="font-semibold text-orange-700">Quy đổi đơn vị:</span>
+            Nhập kho bằng <strong>kg, lon, thùng...</strong> → hệ thống tự quy đổi về đơn vị cơ sở.
+            Ví dụ: nhập <strong>2 kg đường</strong> → kho cộng <strong>2000 gram</strong>.
+          </div>
+          <button onclick="this.closest('.mb-4').remove()" class="text-slate-300 hover:text-slate-500 text-lg leading-none mt-0.5">✕</button>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table class="w-full">
@@ -1430,7 +1459,7 @@ header > div:first-child > div:nth-child(2) {
               <tr>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Tên</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Tồn kho</th>
-                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Đơn vị</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Đơn vị cơ sở / Quy đổi</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Định mức tối thiểu</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Trạng thái</th>
                 <th class="px-4 py-3 text-right text-xs font-semibold text-slate-600">Thao tác</th>
@@ -2703,6 +2732,89 @@ function getUnitOptions(inv) {
     if (c.unit !== baseUnit) units.push(c);
   });
   return units;
+}
+
+// ── Hướng dẫn quy đổi đơn vị ─────────────────────────────────
+function showUnitGuide() {
+  showModal(`
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-scale">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📐</span>
+          <div>
+            <h3 class="text-lg font-bold text-slate-800">Hướng dẫn Quy đổi Đơn vị</h3>
+            <p class="text-xs text-slate-400">Nhập kho bằng bất kỳ đơn vị nào</p>
+          </div>
+        </div>
+        <button onclick="hideModal()" class="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+      </div>
+      <div class="p-5 overflow-y-auto max-h-[75vh] space-y-5">
+
+        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-6 h-6 bg-emerald-500 text-white rounded-full text-xs font-bold flex items-center justify-center">1</span>
+            <span class="font-semibold text-emerald-800">Thiết lập nguyên liệu</span>
+          </div>
+          <p class="text-sm text-slate-600 mb-3">Vào <strong>Kho</strong> → bấm <strong>"+ Thêm nguyên liệu"</strong> hoặc <strong>"Sửa"</strong></p>
+          <div class="bg-white rounded-lg p-3 border border-emerald-100 font-mono text-xs space-y-1.5">
+            <div class="text-slate-500">Tên: <span class="text-slate-800 font-bold">Đường</span></div>
+            <div class="text-slate-500">Tồn kho: <span class="text-slate-800 font-bold">5000</span></div>
+            <div class="text-slate-500">Đơn vị cơ sở: <span class="text-orange-600 font-bold">gram</span> ← đơn vị lưu kho</div>
+            <div class="text-slate-500">Định mức tối thiểu: <span class="text-slate-800 font-bold">500</span></div>
+            <div class="border-t border-slate-100 pt-1.5 text-slate-500">Bảng quy đổi:</div>
+            <div class="pl-2 text-emerald-700">1 kg = <strong>1000</strong> gram</div>
+            <div class="pl-2 text-emerald-700">1 muỗng = <strong>5</strong> gram</div>
+          </div>
+        </div>
+
+        <div class="bg-violet-50 rounded-xl p-4 border border-violet-100">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-6 h-6 bg-violet-500 text-white rounded-full text-xs font-bold flex items-center justify-center">2</span>
+            <span class="font-semibold text-violet-800">Nhập hàng</span>
+          </div>
+          <p class="text-sm text-slate-600 mb-3">Vào <strong>Nhập hàng</strong> → <strong>"Tạo phiếu nhập"</strong></p>
+          <div class="bg-white rounded-lg p-3 border border-violet-100 font-mono text-xs space-y-1.5">
+            <div class="text-slate-500">Chọn nguyên liệu: <span class="text-slate-800 font-bold">Đường</span></div>
+            <div class="text-slate-500">Số lượng: <span class="text-slate-800 font-bold">2</span></div>
+            <div class="text-slate-500">Đơn vị: <span class="text-violet-700 font-bold">kg</span> ← chọn từ dropdown</div>
+            <div class="border-t border-slate-100 pt-1.5 bg-violet-50 rounded px-2 py-1 text-violet-700">
+              ⇒ 2 kg = <strong>2000 gram</strong> (lưu vào kho)
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">✅ Kho tự cộng <strong>+2000 gram</strong>, không cần tính tay</p>
+        </div>
+
+        <div class="bg-orange-50 rounded-xl p-4 border border-orange-100">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-6 h-6 bg-orange-500 text-white rounded-full text-xs font-bold flex items-center justify-center">3</span>
+            <span class="font-semibold text-orange-800">Công thức món</span>
+          </div>
+          <p class="text-sm text-slate-600 mb-3">Vào <strong>Thực đơn</strong> → sửa món → phần <strong>Nguyên liệu</strong></p>
+          <div class="bg-white rounded-lg p-3 border border-orange-100 font-mono text-xs space-y-1.5">
+            <div class="text-slate-500">Nguyên liệu: <span class="text-slate-800 font-bold">Đường</span></div>
+            <div class="text-slate-500">Số lượng: <span class="text-slate-800 font-bold">2</span></div>
+            <div class="text-slate-500">Đơn vị: <span class="text-orange-600 font-bold">muỗng</span></div>
+            <div class="border-t border-slate-100 pt-1.5 text-slate-500">Lưu: 2 muỗng = <span class="text-orange-700 font-bold">10 gram</span></div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">✅ Bán 1 ly → kho tự trừ <strong>10 gram đường</strong></p>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+          <p class="text-xs font-semibold text-slate-500 uppercase mb-3">Ví dụ thực tế</p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2"><span class="text-lg">☕</span><span class="text-slate-600"><strong>Cà phê</strong> (gram) — nhập 1 kg → +1000g</span></div>
+            <div class="flex items-center gap-2"><span class="text-lg">🥛</span><span class="text-slate-600"><strong>Sữa đặc</strong> (ml) — nhập 3 lon (380ml) → +1140ml</span></div>
+            <div class="flex items-center gap-2"><span class="text-lg">🍊</span><span class="text-slate-600"><strong>Cam</strong> (trái) — nhập 2 kg (12 trái/kg) → +24 trái</span></div>
+            <div class="flex items-center gap-2"><span class="text-lg">🧊</span><span class="text-slate-600"><strong>Đá lạnh</strong> (gram) — nhập 5 kg → +5000g</span></div>
+          </div>
+        </div>
+
+      </div>
+      <div class="p-4 border-t border-slate-200">
+        <button onclick="hideModal()" class="w-full py-2.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-semibold">Đã hiểu, bắt đầu dùng!</button>
+      </div>
+    </div>
+  `);
 }
 
 function schedulePersist() {
@@ -4438,19 +4550,7 @@ function deleteMenuItem(itemId) {
   showToast(`Đã xóa "${item.name}" khỏi thực đơn`);
 }
 
-// Fix: không gọi filterMenu khi đang gõ dấu tiếng Việt (IME composition)
-(function() {
-  const searchEl = document.getElementById('menu-search');
-  let isComposing = false;
-  searchEl.addEventListener('compositionstart', () => { isComposing = true; });
-  searchEl.addEventListener('compositionend', () => {
-    isComposing = false;
-    requestAnimationFrame(filterMenu);
-  });
-  searchEl.addEventListener('input', () => {
-    if (!isComposing) requestAnimationFrame(filterMenu);
-  });
-})();
+document.getElementById('menu-search').addEventListener('input', filterMenu);
 
 // ==================== CART ====================
 function getCurrentOrder() {
@@ -4482,8 +4582,10 @@ function addToCart(itemId) {
   
   if (existing) {
     existing.qty++;
+    FPT_TTS.speak(item.name + ' thêm một');
   } else {
     order.items.push({...item, qty: 1});
+    FPT_TTS.speak(item.name);
   }
   
   renderCart();
@@ -5034,9 +5136,14 @@ document.getElementById('btn-checkout').addEventListener('click', () => {
     renderTakeaway();
     renderCustomers();
     renderDebts();
-    showToast(outstanding > 0
-      ? `✅ Thu ${formatCurrency(paidAmount)}, ghi nợ ${formatCurrency(outstanding)} cho ${custDisplayName}`
-      : '✅ Thanh toán thành công!');
+    if (outstanding > 0) {
+      const msg = `Thu ${formatCurrency(paidAmount)}, ghi nợ ${formatCurrency(outstanding)} cho ${custDisplayName}`;
+      showToast('✅ ' + msg);
+      FPT_TTS.speak(`Thu ${paidAmount.toLocaleString('vi-VN')} đồng. Ghi nợ ${outstanding.toLocaleString('vi-VN')} đồng.`);
+    } else {
+      showToast('✅ Thanh toán thành công!');
+      FPT_TTS.speak(`Thanh toán thành công. Tổng cộng ${transaction.total.toLocaleString('vi-VN')} đồng. Cảm ơn quý khách!`);
+    }
   };
 });
 
@@ -10228,6 +10335,160 @@ function showImportLog(msg) {
     setTimeout(() => wrap.classList.add('hidden'), 8000);
   }
 }
+
+// ══════════════════════════════════════════════════
+//  FPT AI TEXT-TO-SPEECH ENGINE
+// ══════════════════════════════════════════════════
+const FPT_TTS = (function() {
+  let _apiKey  = localStorage.getItem('fpt_tts_api_key') || '';
+  let _enabled = localStorage.getItem('fpt_tts_enabled') !== 'false';
+  let _voice   = localStorage.getItem('fpt_tts_voice') || 'leminh';
+  let _speed   = parseFloat(localStorage.getItem('fpt_tts_speed') || '0');
+  let _queue   = [];
+  let _playing = false;
+
+  function save() {
+    localStorage.setItem('fpt_tts_api_key', _apiKey);
+    localStorage.setItem('fpt_tts_enabled', _enabled);
+    localStorage.setItem('fpt_tts_voice', _voice);
+    localStorage.setItem('fpt_tts_speed', _speed);
+  }
+
+  async function playNext() {
+    if (_playing || !_queue.length) return;
+    _playing = true;
+    const text = _queue.shift();
+    try {
+      const resp = await fetch('https://api.fpt.ai/hmi/tts/v5', {
+        method: 'POST',
+        headers: { 'api-key': _apiKey, 'voice': _voice, 'speed': String(_speed), 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: text
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const json = await resp.json();
+      if (json.async) {
+        const audio = new Audio(json.async);
+        audio.onended = () => { _playing = false; playNext(); };
+        audio.onerror = () => { _playing = false; playNext(); };
+        audio.play().catch(() => { _playing = false; playNext(); });
+      } else { _playing = false; playNext(); }
+    } catch(e) {
+      console.warn('[FPT TTS]', e.message);
+      _playing = false; playNext();
+    }
+  }
+
+  return {
+    speak(text)   { if (!_enabled || !_apiKey || !text) return; _queue.push(text); playNext(); },
+    setApiKey(k)  { _apiKey = k;  save(); },
+    setEnabled(v) { _enabled = v; save(); },
+    setVoice(v)   { _voice = v;   save(); },
+    setSpeed(s)   { _speed = s;   save(); },
+    getApiKey()   { return _apiKey; },
+    isEnabled()   { return _enabled; },
+    getVoice()    { return _voice; },
+    getSpeed()    { return _speed; },
+    test()        { this.speak('Xin chào! Giọng đọc FPT AI đã hoạt động.'); }
+  };
+})();
+
+// ── Inject panel TTS vào tab Cài đặt ──
+(function injectTTSPanel() {
+  function buildPanel() {
+    const p = document.createElement('div');
+    p.id = 'fpt-tts-panel';
+    p.className = 'bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-4';
+    const enabled = FPT_TTS.isEnabled();
+    p.innerHTML = `
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-xl">🔊</div>
+        <div><h3 class="font-bold text-slate-800">FPT AI Giọng đọc</h3>
+        <p class="text-xs text-slate-500">Đọc tên món &amp; thông báo thanh toán</p></div>
+        <label class="ml-auto flex items-center gap-2 cursor-pointer select-none">
+          <div class="relative w-11 h-6" onclick="
+            var cb=document.getElementById('tts-cb');
+            cb.checked=!cb.checked;
+            FPT_TTS.setEnabled(cb.checked);
+            this.children[0].style.background=cb.checked?'#8b5cf6':'#cbd5e1';
+            this.children[1].style.transform=cb.checked?'translateX(20px)':'';
+            showToast(cb.checked?'🔊 Bật giọng đọc':'🔇 Tắt giọng đọc');
+          ">
+            <input type="checkbox" id="tts-cb" class="sr-only" ${enabled ? 'checked' : ''}>
+            <div class="absolute inset-0 rounded-full transition-colors" style="background:${enabled ? '#8b5cf6' : '#cbd5e1'}"></div>
+            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform" style="${enabled ? 'transform:translateX(20px)' : ''}"></div>
+          </div>
+          <span class="text-sm font-medium text-slate-700">Bật/Tắt</span>
+        </label>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-600 mb-1 block">API Key FPT AI</label>
+          <div class="flex gap-2">
+            <input type="password" id="tts-key" value="${FPT_TTS.getApiKey()}"
+              placeholder="Nhập key từ console.fpt.ai..."
+              class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
+            <button onclick="FPT_TTS.setApiKey(document.getElementById('tts-key').value);showToast('✅ Đã lưu API Key')"
+              class="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors">Lưu</button>
+            <button onclick="FPT_TTS.test()"
+              class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-colors">Test 🔉</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-600 mb-1 block">Giọng đọc</label>
+            <select id="tts-voice" onchange="FPT_TTS.setVoice(this.value);FPT_TTS.speak('Giọng '+this.options[this.selectedIndex].text)"
+              class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
+              <option value="banmai"  ${FPT_TTS.getVoice()==='banmai'  ? 'selected':''}>Ban Mai (Nữ)</option>
+              <option value="leminh"  ${FPT_TTS.getVoice()==='leminh'  ? 'selected':''}>Lê Minh (Nam)</option>
+              <option value="lannhi"  ${FPT_TTS.getVoice()==='lannhi'  ? 'selected':''}>Lan Nhi (Nữ)</option>
+              <option value="myan"    ${FPT_TTS.getVoice()==='myan'    ? 'selected':''}>Mỹ An (Nữ)</option>
+              <option value="giahuy"  ${FPT_TTS.getVoice()==='giahuy'  ? 'selected':''}>Gia Huy (Nam)</option>
+              <option value="ngoclam" ${FPT_TTS.getVoice()==='ngoclam' ? 'selected':''}>Ngọc Lam (Nữ)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600 mb-1 block">Tốc độ đọc</label>
+            <select id="tts-speed" onchange="FPT_TTS.setSpeed(parseFloat(this.value))"
+              class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
+              <option value="-2" ${FPT_TTS.getSpeed()===-2?'selected':''}>Rất chậm</option>
+              <option value="-1" ${FPT_TTS.getSpeed()===-1?'selected':''}>Chậm</option>
+              <option value="0"  ${FPT_TTS.getSpeed()===0 ?'selected':''}>Bình thường</option>
+              <option value="1"  ${FPT_TTS.getSpeed()===1 ?'selected':''}>Nhanh</option>
+              <option value="2"  ${FPT_TTS.getSpeed()===2 ?'selected':''}>Rất nhanh</option>
+            </select>
+          </div>
+        </div>
+        <p class="text-xs text-slate-400">Đăng ký miễn phí tại <a href="https://console.fpt.ai" target="_blank" class="text-violet-500 underline font-medium">console.fpt.ai</a> → API key → Text to Speech</p>
+      </div>`;
+    return p;
+  }
+
+  function tryInject() {
+    if (document.getElementById('fpt-tts-panel')) return true;
+    const target = document.querySelector('[data-tab-content="settings"]') ||
+                   document.getElementById('tab-settings') ||
+                   document.querySelector('.settings-container');
+    if (!target) return false;
+    target.prepend(buildPanel());
+    return true;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!tryInject()) {
+        const obs = new MutationObserver(() => { if (tryInject()) obs.disconnect(); });
+        obs.observe(document.body, { childList: true, subtree: true });
+        setTimeout(() => obs.disconnect(), 15000);
+      }
+    });
+  } else {
+    if (!tryInject()) {
+      const obs = new MutationObserver(() => { if (tryInject()) obs.disconnect(); });
+      obs.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => obs.disconnect(), 15000);
+    }
+  }
+})();
 
 // ══════════════════════════════════════════════════
 //  RESET DATA
