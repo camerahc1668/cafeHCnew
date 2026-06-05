@@ -1698,61 +1698,160 @@ header > div:first-child > div:nth-child(2) {
           </div>
         </div>
 
-        <!-- ELEVENLABS -->
-        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
-          <h3 class="font-semibold text-slate-800 flex items-center gap-2 mb-4">
-            <span class="text-lg">🎙</span> Giọng đọc ElevenLabs
-          </h3>
-          <div class="space-y-3">
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">API Key</label>
-              <div class="flex gap-2">
-                <input type="password" id="setting-elevenlabs-key" placeholder="sk_..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-orange-500">
-                <button onclick="testElevenLabsKey()" class="px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-600 border border-orange-200 rounded-lg text-xs font-bold transition-colors whitespace-nowrap">▶ Test</button>
-              </div>
-              <p class="text-xs text-slate-400 mt-1">Key lưu trên máy bạn. Lấy key tại <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" class="text-orange-500 underline">elevenlabs.io</a></p>
+        <!-- ══ GIỌNG ĐỌC (FPT AI + ElevenLabs) ══ -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 mb-4 overflow-hidden">
+          <!-- Header accordion -->
+          <button onclick="document.getElementById('tts-body').classList.toggle('hidden')"
+            class="w-full flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-base flex-shrink-0">🔊</div>
+            <div class="text-left flex-1">
+              <div class="font-semibold text-slate-800 text-sm">Giọng đọc tự động</div>
+              <div class="text-xs text-slate-400">FPT AI · ElevenLabs · Google TTS</div>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">Chọn giọng nói</label>
-              <select id="setting-elevenlabs-voice" onchange="saveSettings()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 bg-white">
-                <option value="w2KTJ6MO4SIK6nWK4YH8">🎙 Đức Huy (mặc định)</option>
-                <option value="quanHC">🎙 QuanHC</option>
-                <option value="pNInz6obpgDQGcFmaJgB">🎙 Adam</option>
-                <option value="custom">✏️ Nhập Voice ID khác...</option>
-              </select>
-            </div>
-            <div id="elevenlabs-custom-voice-wrap" class="hidden">
-              <label class="block text-sm font-medium text-slate-700 mb-1">Voice ID tùy chỉnh</label>
-              <input type="text" id="setting-elevenlabs-custom-voice" placeholder="Dán Voice ID từ ElevenLabs..." class="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-orange-500" oninput="saveSettings()">
-            </div>
-            <div class="flex items-center gap-3">
+            <!-- Toggle bật/tắt tổng -->
+            <div class="flex items-center gap-2 mr-2" onclick="event.stopPropagation()">
+              <span class="text-xs text-slate-500">Bật</span>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="setting-elevenlabs-enabled" class="sr-only peer" onchange="saveSettings()">
-                <div class="w-9 h-5 bg-slate-200 peer-checked:bg-emerald-500 rounded-full transition-colors"></div>
-                <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4 shadow"></div>
+                <input type="checkbox" id="tts-master-toggle" class="sr-only peer"
+                  onchange="FPT_TTS.setEnabled(this.checked);showToast(this.checked?'🔊 Giọng đọc đã bật':'🔇 Giọng đọc đã tắt')">
+                <div class="w-9 h-5 bg-slate-200 peer-checked:bg-violet-500 rounded-full transition-colors"></div>
+                <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
               </label>
-              <span class="text-sm text-slate-600">Bật giọng ElevenLabs khi có đơn mới</span>
+            </div>
+            <svg id="tts-chevron" class="w-4 h-4 text-slate-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <!-- Body -->
+          <div id="tts-body" class="border-t border-slate-100 px-5 pb-5 pt-4 space-y-5">
+
+            <!-- FPT AI -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full text-xs font-bold">FPT AI</span>
+                <span class="text-xs text-slate-500">Tiếng Việt chuẩn — Khuyến nghị</span>
+                <button onclick="FPT_TTS.test()" class="ml-auto px-3 py-1 bg-violet-50 hover:bg-violet-100 text-violet-600 border border-violet-200 rounded-lg text-xs font-bold transition-colors">▶ Test</button>
+              </div>
+              <div class="space-y-2">
+                <div class="flex gap-2">
+                  <input type="password" id="tts-fpt-key" placeholder="API Key — lấy tại console.fpt.ai"
+                    class="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 font-mono">
+                  <button onclick="FPT_TTS.setApiKey(document.getElementById('tts-fpt-key').value);showToast('✅ Đã lưu FPT Key')"
+                    class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-semibold transition-colors">Lưu</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <select id="tts-fpt-voice" onchange="FPT_TTS.setVoice(this.value)"
+                    class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white">
+                    <option value="banmai"  id="fv-banmai">Ban Mai (Nữ)</option>
+                    <option value="leminh"  id="fv-leminh">Lê Minh (Nam)</option>
+                    <option value="lannhi"  id="fv-lannhi">Lan Nhi (Nữ)</option>
+                    <option value="myan"    id="fv-myan">Mỹ An (Nữ)</option>
+                    <option value="giahuy"  id="fv-giahuy">Gia Huy (Nam)</option>
+                    <option value="ngoclam" id="fv-ngoclam">Ngọc Lam (Nữ)</option>
+                  </select>
+                  <select id="tts-fpt-speed" onchange="FPT_TTS.setSpeed(parseFloat(this.value))"
+                    class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white">
+                    <option value="-2">🐢 Rất chậm</option>
+                    <option value="-1">🚶 Chậm</option>
+                    <option value="0" selected>🚴 Bình thường</option>
+                    <option value="1">🚗 Nhanh</option>
+                    <option value="2">🚀 Rất nhanh</option>
+                  </select>
+                </div>
+                <p class="text-xs text-slate-400">Đăng ký miễn phí → <a href="https://console.fpt.ai" target="_blank" class="text-violet-500 underline font-medium">console.fpt.ai</a> → Text to Speech → Copy API Key</p>
+              </div>
             </div>
 
-            <!-- Google TTS Fallback -->
-            <div class="border-t border-slate-100 pt-3 mt-1">
-              <p class="text-xs font-semibold text-slate-500 mb-2">🔄 Dự phòng khi ElevenLabs lỗi / hết credits</p>
-              <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Giọng Google TTS (fallback)</label>
-                <select id="setting-google-tts-voice" onchange="saveSettings()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 bg-white">
-                  <option value="vi-VN-Standard-A">🇻🇳 Nữ Việt Nam (Standard A)</option>
-                  <option value="vi-VN-Standard-B">🇻🇳 Nam Việt Nam (Standard B)</option>
-                  <option value="vi-VN-Standard-C">🇻🇳 Nữ Việt Nam (Standard C)</option>
-                  <option value="vi-VN-Standard-D">🇻🇳 Nam Việt Nam (Standard D)</option>
-                  <option value="auto">🔍 Tự động chọn giọng tốt nhất</option>
-                </select>
+            <!-- Divider -->
+            <div class="border-t border-slate-100"></div>
+
+            <!-- ElevenLabs -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">ElevenLabs</span>
+                <span class="text-xs text-slate-500">Dự phòng / giọng tùy chỉnh</span>
+                <button onclick="testElevenLabsKey()" class="ml-auto px-3 py-1 bg-orange-50 hover:bg-orange-100 text-orange-600 border border-orange-200 rounded-lg text-xs font-bold transition-colors">▶ Test</button>
               </div>
-              <div class="flex items-center gap-2 mt-2">
-                <button onclick="testGoogleTTS()" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-lg text-xs font-bold transition-colors">▶ Test Google TTS</button>
-                <span class="text-xs text-slate-400">Miễn phí, không cần API key</span>
+              <div class="space-y-2">
+                <div class="flex gap-2">
+                  <input type="password" id="setting-elevenlabs-key" placeholder="sk_..."
+                    class="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 font-mono">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <select id="setting-elevenlabs-voice" onchange="saveSettings()"
+                    class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                    <option value="w2KTJ6MO4SIK6nWK4YH8">Đức Huy (mặc định)</option>
+                    <option value="quanHC">QuanHC</option>
+                    <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
+                    <option value="custom">✏️ Voice ID khác...</option>
+                  </select>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="setting-elevenlabs-enabled" class="sr-only peer" onchange="saveSettings()">
+                    <div class="relative w-9 h-5 bg-slate-200 peer-checked:bg-orange-500 rounded-full transition-colors flex-shrink-0">
+                      <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                    </div>
+                    <span class="text-xs text-slate-600">Bật ElevenLabs</span>
+                  </label>
+                </div>
+                <div id="elevenlabs-custom-voice-wrap" class="hidden">
+                  <input type="text" id="setting-elevenlabs-custom-voice" placeholder="Dán Voice ID..."
+                    class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-400" oninput="saveSettings()">
+                </div>
               </div>
             </div>
-          </div>
+
+            <!-- Divider -->
+            <div class="border-t border-slate-100"></div>
+
+            <!-- Google TTS -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Google TTS</span>
+                <span class="text-xs text-slate-500">Miễn phí · không cần API key</span>
+                <button onclick="testGoogleTTS()" class="ml-auto px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-lg text-xs font-bold transition-colors">▶ Test</button>
+              </div>
+              <select id="setting-google-tts-voice" onchange="saveSettings()"
+                class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+                <option value="vi-VN-Standard-A">🇻🇳 Nữ Việt Nam (Standard A)</option>
+                <option value="vi-VN-Standard-B">🇻🇳 Nam Việt Nam (Standard B)</option>
+                <option value="vi-VN-Standard-C">🇻🇳 Nữ Việt Nam (Standard C)</option>
+                <option value="vi-VN-Standard-D">🇻🇳 Nam Việt Nam (Standard D)</option>
+                <option value="auto">🔍 Tự động chọn giọng tốt nhất</option>
+              </select>
+            </div>
+
+            <!-- Icon App hướng dẫn -->
+            <div class="border-t border-slate-100 pt-4">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">📱 Icon App</span>
+                <span class="text-xs text-slate-500">Thay icon launcher Android / iOS</span>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-4 text-xs text-slate-600 space-y-2">
+                <div class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-600 flex-shrink-0">1.</span>
+                  <span>Chuẩn bị file <b>icon.png</b> kích thước <b>1024×1024px</b> (nền trong hoặc cam #f97316)</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-600 flex-shrink-0">2.</span>
+                  <span>Thay file <code class="bg-white px-1 rounded border">assets/icon/icon.png</code> trong repo GitHub bằng ảnh mới</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-600 flex-shrink-0">3.</span>
+                  <span><b>Android:</b> Thay ảnh trong <code class="bg-white px-1 rounded border">android-resources/</code> (các kích thước mipmap) hoặc dùng <a href="https://icon.kitchen" target="_blank" class="text-blue-500 underline">icon.kitchen</a> tạo tự động</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-600 flex-shrink-0">4.</span>
+                  <span><b>iOS:</b> Thay ảnh trong <code class="bg-white px-1 rounded border">assets/ios/AppIcon.appiconset/</code> — GitHub Actions sẽ tự build</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="font-bold text-emerald-600 flex-shrink-0">5.</span>
+                  <span><b>PWA (web):</b> Thay file <code class="bg-white px-1 rounded border">www/icon.png</code> — icon hiển thị khi "Thêm vào màn hình chính"</span>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /tts-body -->
         </div>
         <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
           <div class="flex items-center justify-between mb-4">
@@ -4582,12 +4681,30 @@ function addToCart(itemId) {
   
   if (existing) {
     existing.qty++;
-    FPT_TTS.speak(item.name + ' thêm một');
   } else {
     order.items.push({...item, qty: 1});
-    FPT_TTS.speak(item.name);
   }
   
+  // FPT TTS: đọc context + tên món
+  (function() {
+    let ctx = '';
+    if (state.currentOrderType && state.currentOrderType.startsWith('takeaway-')) {
+      const slotIdx = state.currentTakeawayId;
+      const twOrd = (state.takeawayQueue || [])[slotIdx];
+      const ch = twOrd?.channel && twOrd.channel !== 'direct'
+        ? (state.appChannels || []).find(c => c.id === twOrd.channel) : null;
+      const custName = twOrd?.customerName || '';
+      if (ch) ctx = ch.name + (custName ? ' ' + custName : '') + ',';
+      else if (custName) ctx = custName + ',';
+      else ctx = 'Đơn ' + (slotIdx + 1) + ',';
+    } else if (state.currentTableId) {
+      const tbl = state.tables.find(t => t.id === state.currentTableId);
+      if (tbl) ctx = tbl.name + ',';
+    }
+    const suffix = existing ? ', thêm một' : '';
+    FPT_TTS.speak(ctx + ' ' + item.name + suffix);
+  })();
+
   renderCart();
   showToast(`Đã thêm ${item.name}`);
 }
@@ -5136,14 +5253,26 @@ document.getElementById('btn-checkout').addEventListener('click', () => {
     renderTakeaway();
     renderCustomers();
     renderDebts();
-    if (outstanding > 0) {
-      const msg = `Thu ${formatCurrency(paidAmount)}, ghi nợ ${formatCurrency(outstanding)} cho ${custDisplayName}`;
-      showToast('✅ ' + msg);
-      FPT_TTS.speak(`Thu ${paidAmount.toLocaleString('vi-VN')} đồng. Ghi nợ ${outstanding.toLocaleString('vi-VN')} đồng.`);
-    } else {
-      showToast('✅ Thanh toán thành công!');
-      FPT_TTS.speak(`Thanh toán thành công. Tổng cộng ${transaction.total.toLocaleString('vi-VN')} đồng. Cảm ơn quý khách!`);
-    }
+    // FPT TTS: đọc vị trí + số tiền khi thanh toán
+    (function() {
+      const loc = transaction.tableName
+        ? transaction.tableName
+        : (transaction.takeawayId !== undefined && transaction.takeawayId !== null
+            ? 'Đơn mang về ' + ((transaction.takeawayId || 0) + 1)
+            : '');
+      const custPart = custDisplayName && custDisplayName !== 'Khách vãng lai' ? custDisplayName + ',' : '';
+      const locPart = loc ? loc + ',' : '';
+      const totalFmt = transaction.total.toLocaleString('vi-VN');
+      const paidFmt  = paidAmount.toLocaleString('vi-VN');
+      const debtFmt  = outstanding.toLocaleString('vi-VN');
+      if (outstanding > 0) {
+        showToast(`✅ Thu ${formatCurrency(paidAmount)}, ghi nợ ${formatCurrency(outstanding)} cho ${custDisplayName}`);
+        FPT_TTS.speak(`${locPart} ${custPart} thu ${paidFmt} đồng. Còn nợ ${debtFmt} đồng.`);
+      } else {
+        showToast('✅ Thanh toán thành công!');
+        FPT_TTS.speak(`${locPart} ${custPart} thanh toán ${totalFmt} đồng. Cảm ơn quý khách!`);
+      }
+    })();
   };
 });
 
@@ -10392,103 +10521,7 @@ const FPT_TTS = (function() {
   };
 })();
 
-// ── Inject panel TTS vào tab Cài đặt ──
-(function injectTTSPanel() {
-  function buildPanel() {
-    const p = document.createElement('div');
-    p.id = 'fpt-tts-panel';
-    p.className = 'bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-4';
-    const enabled = FPT_TTS.isEnabled();
-    p.innerHTML = `
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-xl">🔊</div>
-        <div><h3 class="font-bold text-slate-800">FPT AI Giọng đọc</h3>
-        <p class="text-xs text-slate-500">Đọc tên món &amp; thông báo thanh toán</p></div>
-        <label class="ml-auto flex items-center gap-2 cursor-pointer select-none">
-          <div class="relative w-11 h-6" onclick="
-            var cb=document.getElementById('tts-cb');
-            cb.checked=!cb.checked;
-            FPT_TTS.setEnabled(cb.checked);
-            this.children[0].style.background=cb.checked?'#8b5cf6':'#cbd5e1';
-            this.children[1].style.transform=cb.checked?'translateX(20px)':'';
-            showToast(cb.checked?'🔊 Bật giọng đọc':'🔇 Tắt giọng đọc');
-          ">
-            <input type="checkbox" id="tts-cb" class="sr-only" ${enabled ? 'checked' : ''}>
-            <div class="absolute inset-0 rounded-full transition-colors" style="background:${enabled ? '#8b5cf6' : '#cbd5e1'}"></div>
-            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform" style="${enabled ? 'transform:translateX(20px)' : ''}"></div>
-          </div>
-          <span class="text-sm font-medium text-slate-700">Bật/Tắt</span>
-        </label>
-      </div>
-      <div class="space-y-3">
-        <div>
-          <label class="text-xs font-semibold text-slate-600 mb-1 block">API Key FPT AI</label>
-          <div class="flex gap-2">
-            <input type="password" id="tts-key" value="${FPT_TTS.getApiKey()}"
-              placeholder="Nhập key từ console.fpt.ai..."
-              class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-            <button onclick="FPT_TTS.setApiKey(document.getElementById('tts-key').value);showToast('✅ Đã lưu API Key')"
-              class="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors">Lưu</button>
-            <button onclick="FPT_TTS.test()"
-              class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-colors">Test 🔉</button>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-xs font-semibold text-slate-600 mb-1 block">Giọng đọc</label>
-            <select id="tts-voice" onchange="FPT_TTS.setVoice(this.value);FPT_TTS.speak('Giọng '+this.options[this.selectedIndex].text)"
-              class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-              <option value="banmai"  ${FPT_TTS.getVoice()==='banmai'  ? 'selected':''}>Ban Mai (Nữ)</option>
-              <option value="leminh"  ${FPT_TTS.getVoice()==='leminh'  ? 'selected':''}>Lê Minh (Nam)</option>
-              <option value="lannhi"  ${FPT_TTS.getVoice()==='lannhi'  ? 'selected':''}>Lan Nhi (Nữ)</option>
-              <option value="myan"    ${FPT_TTS.getVoice()==='myan'    ? 'selected':''}>Mỹ An (Nữ)</option>
-              <option value="giahuy"  ${FPT_TTS.getVoice()==='giahuy'  ? 'selected':''}>Gia Huy (Nam)</option>
-              <option value="ngoclam" ${FPT_TTS.getVoice()==='ngoclam' ? 'selected':''}>Ngọc Lam (Nữ)</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-xs font-semibold text-slate-600 mb-1 block">Tốc độ đọc</label>
-            <select id="tts-speed" onchange="FPT_TTS.setSpeed(parseFloat(this.value))"
-              class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
-              <option value="-2" ${FPT_TTS.getSpeed()===-2?'selected':''}>Rất chậm</option>
-              <option value="-1" ${FPT_TTS.getSpeed()===-1?'selected':''}>Chậm</option>
-              <option value="0"  ${FPT_TTS.getSpeed()===0 ?'selected':''}>Bình thường</option>
-              <option value="1"  ${FPT_TTS.getSpeed()===1 ?'selected':''}>Nhanh</option>
-              <option value="2"  ${FPT_TTS.getSpeed()===2 ?'selected':''}>Rất nhanh</option>
-            </select>
-          </div>
-        </div>
-        <p class="text-xs text-slate-400">Đăng ký miễn phí tại <a href="https://console.fpt.ai" target="_blank" class="text-violet-500 underline font-medium">console.fpt.ai</a> → API key → Text to Speech</p>
-      </div>`;
-    return p;
-  }
 
-  function tryInject() {
-    if (document.getElementById('fpt-tts-panel')) return true;
-    const target = document.querySelector('[data-tab-content="settings"]') ||
-                   document.getElementById('tab-settings') ||
-                   document.querySelector('.settings-container');
-    if (!target) return false;
-    target.prepend(buildPanel());
-    return true;
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      if (!tryInject()) {
-        const obs = new MutationObserver(() => { if (tryInject()) obs.disconnect(); });
-        obs.observe(document.body, { childList: true, subtree: true });
-        setTimeout(() => obs.disconnect(), 15000);
-      }
-    });
-  } else {
-    if (!tryInject()) {
-      const obs = new MutationObserver(() => { if (tryInject()) obs.disconnect(); });
-      obs.observe(document.body, { childList: true, subtree: true });
-      setTimeout(() => obs.disconnect(), 15000);
-    }
-  }
-})();
 
 // ══════════════════════════════════════════════════
 //  RESET DATA
@@ -10500,6 +10533,27 @@ function confirmResetData() {
   showToast('Đã xoá dữ liệu. Đang tải lại...');
   setTimeout(() => location.reload(), 1000);
 }
+
+// ── Init FPT TTS toggle + saved values ──
+(function initTTSControls() {
+  function trySync() {
+    const toggle = document.getElementById('tts-master-toggle');
+    const fptKey = document.getElementById('tts-fpt-key');
+    const fptVoice = document.getElementById('tts-fpt-voice');
+    const fptSpeed = document.getElementById('tts-fpt-speed');
+    if (!toggle) return false;
+    toggle.checked = FPT_TTS.isEnabled();
+    if (fptKey) fptKey.value = FPT_TTS.getApiKey();
+    if (fptVoice) fptVoice.value = FPT_TTS.getVoice();
+    if (fptSpeed) fptSpeed.value = String(FPT_TTS.getSpeed());
+    return true;
+  }
+  if (!trySync()) {
+    const obs = new MutationObserver(() => { if (trySync()) obs.disconnect(); });
+    obs.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => obs.disconnect(), 10000);
+  }
+})();
 
 // Init: cart starts closed, position below header
 (function() {
@@ -10513,6 +10567,287 @@ function confirmResetData() {
 })();
 _applyCartState();
 updateCartBadge();
+
+// ══════════════════════════════════════════════════
+//  SMART AUTOCOMPLETE ENGINE
+//  Tự động gợi ý dựa trên lịch sử nhập liệu
+// ══════════════════════════════════════════════════
+(function() {
+  'use strict';
+
+  const STORAGE_KEY = 'pos_ac_history';
+  const MAX_PER_KEY = 30;   // lưu tối đa 30 gợi ý / ô
+  const MIN_CHARS   = 1;    // bắt đầu gợi ý từ 1 ký tự
+  const MAX_SHOW    = 8;    // hiển thị tối đa 8 dòng
+
+  // ── Các ô bị bỏ qua (password, number, setting config...) ──
+  const SKIP_IDS = new Set([
+    'setting-shop-phone','setting-bank-account','setting-bank-name',
+    'setting-firebase-config','setting-firebase-shop-id','setting-public-url',
+    'setting-elevenlabs-key','tts-fpt-key','fb-apiKey','fb-shopId','fb-projectId',
+    'cash-received','transfer-received','discount-amount',
+    'collect-debt-amount','debt-amount','ing-stock','ing-min',
+    'food-price','p-item-qty','ingredient-qty','recipe-prep-time','recipe-serve',
+  ]);
+
+  // ── Load / Save ──
+  let db = {};
+  try { db = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) {}
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); } catch(e) {}
+  }
+
+  function getKey(el) {
+    // Dùng id hoặc placeholder làm key phân biệt ô
+    return (el.id || el.getAttribute('placeholder') || '').trim().slice(0, 60);
+  }
+
+  function record(el) {
+    const key = getKey(el);
+    const val = el.value.trim();
+    if (!key || !val || val.length < 2) return;
+    if (!db[key]) db[key] = [];
+    // Xoá trùng rồi thêm lên đầu (most-recently-used)
+    db[key] = [val, ...db[key].filter(v => v !== val)].slice(0, MAX_PER_KEY);
+    save();
+  }
+
+  function getSuggestions(el, query) {
+    const key = getKey(el);
+    if (!key || !db[key]) return [];
+    const q = query.toLowerCase();
+    return db[key]
+      .filter(v => v.toLowerCase().includes(q) && v !== query)
+      .slice(0, MAX_SHOW);
+  }
+
+  // ── Dropdown UI ──
+  const BOX_ID = 'pos-ac-dropdown';
+  let activeEl = null;
+  let selectedIdx = -1;
+  let currentList = [];
+
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    #${BOX_ID} {
+      position: fixed;
+      z-index: 99999;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      overflow: hidden;
+      max-height: 280px;
+      overflow-y: auto;
+      min-width: 180px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    #${BOX_ID} .ac-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #334155;
+      transition: background 0.1s;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    #${BOX_ID} .ac-item:last-child { border-bottom: none; }
+    #${BOX_ID} .ac-item:hover,
+    #${BOX_ID} .ac-item.active { background: #f5f3ff; color: #6d28d9; }
+    #${BOX_ID} .ac-item .ac-icon { font-size: 11px; opacity: 0.4; flex-shrink: 0; }
+    #${BOX_ID} .ac-item .ac-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #${BOX_ID} .ac-item .ac-del {
+      font-size: 11px; opacity: 0; color: #94a3b8;
+      padding: 2px 4px; border-radius: 4px;
+      flex-shrink: 0; line-height: 1;
+    }
+    #${BOX_ID} .ac-item:hover .ac-del { opacity: 1; }
+    #${BOX_ID} .ac-item .ac-del:hover { color: #ef4444; background: #fee2e2; opacity: 1; }
+    #${BOX_ID} .ac-header {
+      padding: 6px 14px 4px;
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: #fafafa;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    body.dark-mode #${BOX_ID} {
+      background: #1e293b;
+      border-color: rgba(255,255,255,0.1);
+    }
+    body.dark-mode #${BOX_ID} .ac-item { color: #cbd5e1; border-color: rgba(255,255,255,0.05); }
+    body.dark-mode #${BOX_ID} .ac-item:hover,
+    body.dark-mode #${BOX_ID} .ac-item.active { background: rgba(139,92,246,0.15); color: #c4b5fd; }
+    body.dark-mode #${BOX_ID} .ac-header { background: #0f172a; color: #64748b; border-color: rgba(255,255,255,0.06); }
+  `;
+  document.head.appendChild(styleEl);
+
+  const box = document.createElement('div');
+  box.id = BOX_ID;
+  box.style.display = 'none';
+  document.body.appendChild(box);
+
+  function showBox(el, items) {
+    if (!items.length) { hideBox(); return; }
+    currentList = items;
+    selectedIdx = -1;
+
+    const rect = el.getBoundingClientRect();
+    box.style.top    = (rect.bottom + window.scrollY + 4) + 'px';
+    box.style.left   = rect.left + 'px';
+    box.style.width  = Math.max(rect.width, 200) + 'px';
+    box.style.display = 'block';
+
+    box.innerHTML =
+      '<div class="ac-header">🕘 Đã dùng trước đây</div>' +
+      items.map((txt, i) =>
+        `<div class="ac-item" data-idx="${i}" data-val="${txt.replace(/"/g,'&quot;')}">
+          <span class="ac-icon">↩</span>
+          <span class="ac-text">${highlight(txt, el.value)}</span>
+          <span class="ac-del" data-del="${i}" title="Xoá gợi ý">✕</span>
+        </div>`
+      ).join('');
+
+    box.querySelectorAll('.ac-item').forEach(row => {
+      row.addEventListener('mousedown', e => {
+        const del = e.target.closest('[data-del]');
+        if (del) {
+          e.preventDefault();
+          deleteItem(el, parseInt(del.dataset.del));
+          return;
+        }
+        e.preventDefault();
+        pick(el, row.dataset.val);
+      });
+    });
+  }
+
+  function highlight(text, query) {
+    if (!query) return escHtml(text);
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx < 0) return escHtml(text);
+    return escHtml(text.slice(0, idx))
+      + '<b style="color:#7c3aed;font-weight:700">' + escHtml(text.slice(idx, idx + query.length)) + '</b>'
+      + escHtml(text.slice(idx + query.length));
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function hideBox() {
+    box.style.display = 'none';
+    currentList = [];
+    selectedIdx = -1;
+  }
+
+  function pick(el, val) {
+    el.value = val;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    hideBox();
+    el.focus();
+  }
+
+  function deleteItem(el, idx) {
+    const key = getKey(el);
+    if (!db[key]) return;
+    db[key].splice(idx, 1);
+    save();
+    const items = getSuggestions(el, el.value);
+    if (items.length) showBox(el, items);
+    else hideBox();
+  }
+
+  function setActive(n) {
+    const rows = box.querySelectorAll('.ac-item');
+    rows.forEach(r => r.classList.remove('active'));
+    selectedIdx = Math.max(-1, Math.min(n, currentList.length - 1));
+    if (selectedIdx >= 0) rows[selectedIdx]?.classList.add('active');
+  }
+
+  // ── Attach events ──
+  function isEligible(el) {
+    if (!el || el.tagName === 'SELECT') return false;
+    if (el.type === 'password' || el.type === 'number' || el.type === 'file' ||
+        el.type === 'checkbox' || el.type === 'radio') return false;
+    if (el.readOnly || el.disabled) return false;
+    if (el.id && SKIP_IDS.has(el.id)) return false;
+    if (el.classList.contains('no-ac')) return false;
+    const key = getKey(el);
+    return key.length > 0;
+  }
+
+  function attachTo(el) {
+    if (el._acAttached) return;
+    if (!isEligible(el)) return;
+    el._acAttached = true;
+
+    el.addEventListener('focus', () => {
+      activeEl = el;
+      const items = getSuggestions(el, el.value);
+      if (el.value.length >= MIN_CHARS && items.length) showBox(el, items);
+    });
+
+    el.addEventListener('input', () => {
+      activeEl = el;
+      const v = el.value;
+      if (v.length >= MIN_CHARS) showBox(el, getSuggestions(el, v));
+      else hideBox();
+    });
+
+    el.addEventListener('keydown', e => {
+      if (box.style.display === 'none') return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(selectedIdx + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(selectedIdx - 1); }
+      else if (e.key === 'Enter' && selectedIdx >= 0) {
+        e.preventDefault();
+        pick(el, currentList[selectedIdx]);
+      }
+      else if (e.key === 'Escape') hideBox();
+    });
+
+    el.addEventListener('blur', () => {
+      // Delay để mousedown kịp xử lý
+      setTimeout(() => {
+        record(activeEl || el);
+        hideBox();
+        activeEl = null;
+      }, 200);
+    });
+  }
+
+  // Lắng nghe toàn bộ DOM kể cả modal mở sau
+  function scanAndAttach(root) {
+    (root || document).querySelectorAll('input[type="text"], input:not([type]), textarea').forEach(attachTo);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => scanAndAttach());
+  scanAndAttach();
+
+  const mo = new MutationObserver(muts => {
+    muts.forEach(m => m.addedNodes.forEach(n => {
+      if (n.nodeType !== 1) return;
+      if (n.matches?.('input,textarea')) attachTo(n);
+      else n.querySelectorAll?.('input[type="text"], input:not([type]), textarea').forEach(attachTo);
+    }));
+  });
+  mo.observe(document.body, { childList: true, subtree: true });
+
+  // Đóng khi click ra ngoài
+  document.addEventListener('mousedown', e => {
+    if (!box.contains(e.target) && e.target !== activeEl) hideBox();
+  });
+
+  // Đóng khi scroll
+  window.addEventListener('scroll', hideBox, true);
+
+})();
 </script>
 
 </body>
