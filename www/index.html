@@ -1086,6 +1086,33 @@ header > div:first-child > div:nth-child(2) {
 }
 </style>
 
+<style id="kitchen-icon-styles">
+/* ── Animated kitchen icons ── */
+@keyframes flicker {
+  0%,100%{opacity:1;transform:scaleY(1) translateY(0)}
+  25%{opacity:.85;transform:scaleY(1.08) translateY(-1px)}
+  50%{opacity:.7;transform:scaleY(.95) translateY(1px)}
+  75%{opacity:.9;transform:scaleY(1.05) translateY(-1px)}
+}
+@keyframes steam {
+  0%{opacity:0;transform:translateY(0) scaleX(1)}
+  30%{opacity:.7}
+  100%{opacity:0;transform:translateY(-14px) scaleX(1.4)}
+}
+@keyframes pan-shake {
+  0%,100%{transform:rotate(0deg)}
+  20%{transform:rotate(-6deg)}
+  40%{transform:rotate(5deg)}
+  60%{transform:rotate(-4deg)}
+  80%{transform:rotate(3deg)}
+}
+.icon-flame { animation: flicker 0.9s ease-in-out infinite; }
+.icon-steam1 { animation: steam 2s ease-out infinite; }
+.icon-steam2 { animation: steam 2s ease-out 0.6s infinite; }
+.icon-steam3 { animation: steam 2s ease-out 1.2s infinite; }
+.icon-pan    { animation: pan-shake 1.2s ease-in-out infinite; }
+.kitchen-anim-icon { display:inline-flex; align-items:center; vertical-align:middle; }
+</style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
 
@@ -1242,7 +1269,7 @@ header > div:first-child > div:nth-child(2) {
         Bàn
       </button>
       <button data-tab="kitchen" class="tab-btn relative px-6 py-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">
-        🍳 Bếp
+        <span id="kitchen-tab-icon">🫕</span> Bếp
         <span id="kitchen-badge" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">0</span>
       </button>
       <button data-tab="menu" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">
@@ -1354,7 +1381,7 @@ header > div:first-child > div:nth-child(2) {
         <!-- Toolbar -->
         <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
           <div class="flex items-center gap-2">
-            <h2 class="text-2xl font-bold text-slate-800">🍳 Màn hình bếp</h2>
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2"><span id="kitchen-header-icon"></span> Màn hình bếp</h2>
             <span id="kitchen-pending-count" class="badge bg-red-100 text-red-600 font-bold"></span>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
@@ -2014,6 +2041,78 @@ header > div:first-child > div:nth-child(2) {
               </select>
             </div>
 
+
+            <!-- Divider -->
+            <div class="border-t border-slate-100"></div>
+
+            <!-- TTS Triggers -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-rose-100 text-rose-700 rounded-full text-xs font-bold">⚡ Khi nào đọc</span>
+                <span class="text-xs text-slate-500">Tùy chỉnh từng tình huống</span>
+              </div>
+              <div class="space-y-2">
+
+                <!-- Trigger: Có đơn bếp -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div class="flex items-center gap-2 mb-2">
+                    <label class="flex items-center gap-2 cursor-pointer flex-1">
+                      <input type="checkbox" id="tts-trigger-kitchen" class="sr-only peer"
+                        onchange="ttsSaveTriggers()">
+                      <div class="relative w-8 h-4 bg-slate-200 peer-checked:bg-rose-500 rounded-full transition-colors flex-shrink-0">
+                        <div class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                      </div>
+                      <span class="text-xs font-bold text-slate-700">🫕 Khi có đơn lên bếp</span>
+                    </label>
+                  </div>
+                  <input type="text" id="tts-msg-kitchen"
+                    placeholder="vd: Có đơn mới tại {ban}, {mon}"
+                    class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-rose-300"
+                    oninput="ttsSaveTriggers()">
+                  <p class="text-xs text-slate-400 mt-1">Biến: <code class="bg-slate-100 px-1 rounded">{ban}</code> <code class="bg-slate-100 px-1 rounded">{mon}</code> <code class="bg-slate-100 px-1 rounded">{so_mon}</code></p>
+                </div>
+
+                <!-- Trigger: Khách thanh toán -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div class="flex items-center gap-2 mb-2">
+                    <label class="flex items-center gap-2 cursor-pointer flex-1">
+                      <input type="checkbox" id="tts-trigger-payment" class="sr-only peer"
+                        onchange="ttsSaveTriggers()">
+                      <div class="relative w-8 h-4 bg-slate-200 peer-checked:bg-emerald-500 rounded-full transition-colors flex-shrink-0">
+                        <div class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                      </div>
+                      <span class="text-xs font-bold text-slate-700">💳 Khi khách thanh toán</span>
+                    </label>
+                  </div>
+                  <input type="text" id="tts-msg-payment"
+                    placeholder="vd: {ban} thanh toán {tien} đồng, cảm ơn!"
+                    class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                    oninput="ttsSaveTriggers()">
+                  <p class="text-xs text-slate-400 mt-1">Biến: <code class="bg-slate-100 px-1 rounded">{ban}</code> <code class="bg-slate-100 px-1 rounded">{tien}</code> <code class="bg-slate-100 px-1 rounded">{khach}</code></p>
+                </div>
+
+                <!-- Trigger: Kho cảnh báo -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div class="flex items-center gap-2 mb-2">
+                    <label class="flex items-center gap-2 cursor-pointer flex-1">
+                      <input type="checkbox" id="tts-trigger-stock" class="sr-only peer"
+                        onchange="ttsSaveTriggers()">
+                      <div class="relative w-8 h-4 bg-slate-200 peer-checked:bg-amber-500 rounded-full transition-colors flex-shrink-0">
+                        <div class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+                      </div>
+                      <span class="text-xs font-bold text-slate-700">⚠️ Kho sắp hết nguyên liệu</span>
+                    </label>
+                  </div>
+                  <input type="text" id="tts-msg-stock"
+                    placeholder="vd: Cảnh báo! {nguyen_lieu} sắp hết, còn {so_luong}"
+                    class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-amber-300"
+                    oninput="ttsSaveTriggers()">
+                  <p class="text-xs text-slate-400 mt-1">Biến: <code class="bg-slate-100 px-1 rounded">{nguyen_lieu}</code> <code class="bg-slate-100 px-1 rounded">{so_luong}</code> <code class="bg-slate-100 px-1 rounded">{don_vi}</code></p>
+                </div>
+
+              </div>
+            </div>
+
             <!-- Icon App hướng dẫn -->
             <div class="border-t border-slate-100 pt-4">
               <div class="flex items-center gap-2 mb-3">
@@ -2307,7 +2406,7 @@ header > div:first-child > div:nth-child(2) {
     </div>
     <!-- Gửi bếp (không thanh toán) -->
     <button id="btn-send-kitchen" class="w-full px-4 py-2.5 mb-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-bold shadow transition-all disabled:opacity-40 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2">
-      🍳 Gửi bếp
+      🫕 Gửi bếp
       <span class="text-xs opacity-80 font-normal">(chưa thanh toán)</span>
     </button>
     <button id="btn-checkout" class="w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed text-sm">
@@ -3404,8 +3503,8 @@ function renderTables() {
     const isSelected = state.currentTableId === table.id;
 
     // Kitchen status pill
-    const kPill = summary?.kitchenStatus === 'done'    ? '<span class="badge bg-emerald-100 text-emerald-800 text-xs">✅ Sẵn sàng</span>'
-                : summary?.kitchenStatus === 'cooking' ? '<span class="badge bg-amber-100 text-amber-800 text-xs animate-pulse">🍳 Đang làm</span>'
+    const kPill = summary?.kitchenStatus === 'done'    ? '<span class="badge bg-emerald-100 text-emerald-800 text-xs font-bold">✅ Xong</span>'
+                : summary?.kitchenStatus === 'cooking' ? '<span class="badge bg-amber-100 text-amber-800 text-xs font-bold animate-pulse"><span style=&quot;vertical-align:middle&quot;>🔥</span> Đang làm</span>'
                 : summary?.kitchenStatus === 'pending' ? '<span class="badge bg-red-100 text-red-800 text-xs">⏳ Chờ bếp</span>'
                 : '';
 
@@ -5236,8 +5335,14 @@ document.getElementById('btn-send-kitchen').addEventListener('click', () => {
   renderTakeaway(); // cập nhật badge mang về ngay
   schedulePersist();
 
-  showToast(`🍳 Đã gửi ${kitchenEntry.items.length} món lên bếp!`);
-  pushNotification('🍳 Đơn mới lên bếp!', `Có đơn mới từ ${tableName}: ${kitchenEntry.items.map(i=>i.name+' x'+i.qty).join(', ')}`, '🍳');
+  showToast(`🫕 Đã gửi ${kitchenEntry.items.length} món lên bếp!`);
+  // TTS: đọc đơn bếp
+  (function() {
+    const banText = tableName || 'Bếp';
+    const monList = kitchenEntry.items.map(i => i.name + (i.qty > 1 ? ' ' + i.qty + ' phần' : '')).join(', ');
+    ttsSpeak('kitchen', { ban: banText, mon: monList, so_mon: kitchenEntry.items.length });
+  })();
+  pushNotification('🫕 Đơn mới lên bếp!', `Có đơn mới từ ${tableName}: ${kitchenEntry.items.map(i=>i.name+' x'+i.qty).join(', ')}`, '🍳');
 });
 
 document.getElementById('btn-checkout').addEventListener('click', () => {
@@ -5529,10 +5634,10 @@ document.getElementById('btn-checkout').addEventListener('click', () => {
       const debtFmt  = outstanding.toLocaleString('vi-VN');
       if (outstanding > 0) {
         showToast(`✅ Thu ${formatCurrency(paidAmount)}, ghi nợ ${formatCurrency(outstanding)} cho ${custDisplayName}`);
-        FPT_TTS.speak(`${locPart} ${custPart} thu ${paidFmt} đồng. Còn nợ ${debtFmt} đồng.`);
+        ttsSpeak('payment', { ban: loc || locPart, khach: custDisplayName || '', tien: paidFmt + ' đồng. Còn nợ ' + debtFmt });
       } else {
         showToast('✅ Thanh toán thành công!');
-        FPT_TTS.speak(`${locPart} ${custPart} thanh toán ${totalFmt} đồng. Cảm ơn quý khách!`);
+        ttsSpeak('payment', { ban: loc || locPart, khach: custDisplayName || '', tien: totalFmt });
       }
     })();
   };
@@ -6175,9 +6280,9 @@ function renderTakeaway() {
       : twKos.length === 0
         ? '<span class="badge bg-violet-100 text-violet-700 text-xs">📝 Đang gọi món</span>'
         : twKStatuses.every(s => s === 'done')
-          ? '<span class="badge bg-emerald-100 text-emerald-700 text-xs">✅ Sẵn sàng</span>'
+          ? '<span class="badge bg-emerald-100 text-emerald-700 text-xs font-bold">✅ Xong</span>'
           : twKStatuses.some(s => s === 'cooking')
-            ? '<span class="badge bg-amber-100 text-amber-700 text-xs animate-pulse">🍳 Đang làm</span>'
+            ? '<span class="badge bg-amber-100 text-amber-700 text-xs font-bold animate-pulse"><span style=&quot;vertical-align:middle&quot;>🔥</span> Đang làm</span>'
             : '<span class="badge bg-red-100 text-red-700 text-xs">⏳ Chờ bếp</span>';
 
     // Nút dồn món: có đơn khác trong queue không?
@@ -7738,6 +7843,26 @@ function renderReports() {
 
   // Kho cảnh báo
   const lowStock = state.inventory.filter(i => i.stock <= i.minStock);
+  // TTS cảnh báo kho (chỉ đọc 1 lần mỗi lần mở tab reports, không loop)
+  if (lowStock.length && typeof ttsSpeak === 'function') {
+    const firstItem = lowStock[0];
+    ttsSpeak('stock', {
+      nguyen_lieu: firstItem.name,
+      so_luong: firstItem.stock,
+      don_vi: firstItem.unit || '',
+    });
+    if (lowStock.length > 1) {
+      setTimeout(() => {
+        lowStock.slice(1).forEach((item, idx) => {
+          setTimeout(() => ttsSpeak('stock', {
+            nguyen_lieu: item.name,
+            so_luong: item.stock,
+            don_vi: item.unit || '',
+          }), idx * 3500);
+        });
+      }, 3000);
+    }
+  }
 
   // ----- BUILD HTML -----
   const catColors = ['#f97316','#3b82f6','#10b981','#a855f7','#ec4899','#f59e0b','#06b6d4','#ef4444'];
@@ -8093,24 +8218,38 @@ function getCurrentStaff() {
 }
 
 function updateHeaderStaff() {
-  const staff = getCurrentStaff();
   const avatarEl    = document.getElementById('header-staff-avatar');
   const nameEl      = document.getElementById('header-staff-name');
   const shiftTimeEl = document.getElementById('header-shift-time');
   if (!avatarEl || !nameEl) return;
-  if (staff) {
-    avatarEl.textContent = staff.name.charAt(0).toUpperCase();
-    avatarEl.style.background = staff.color || 'linear-gradient(135deg,#f97316,#ec4899)';
-    nameEl.textContent = staff.name;
-    if (shiftTimeEl && typeof _session !== 'undefined' && _session && _session.loginAt) {
-      const t = new Date(_session.loginAt);
+
+  // Uu tien _session (luon co sau khi dang nhap, ke ca Admin)
+  const ses = typeof _session !== 'undefined' ? _session : null;
+  if (ses && ses.staffName) {
+    const perms = (typeof ROLE_PERMISSIONS !== 'undefined' && ROLE_PERMISSIONS[ses.role]) || {};
+    const color = perms.color || 'linear-gradient(135deg,#f97316,#ec4899)';
+    const icon  = perms.icon  || (ses.role === 'admin' ? '👑' : '');
+    avatarEl.textContent      = ses.staffName.charAt(0).toUpperCase();
+    avatarEl.style.background = color;
+    nameEl.innerHTML = ses.staffName + (icon ? ' <span style="font-size:10px;opacity:.7">' + icon + '</span>' : '');
+    if (shiftTimeEl && ses.loginAt) {
+      const t = new Date(ses.loginAt);
       shiftTimeEl.textContent = '▶ ' + t.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
       shiftTimeEl.classList.remove('hidden');
     }
+    return;
+  }
+  // Fallback: tim theo currentStaffId
+  const staff = getCurrentStaff();
+  if (staff) {
+    avatarEl.textContent      = staff.name.charAt(0).toUpperCase();
+    avatarEl.style.background = staff.color || 'linear-gradient(135deg,#f97316,#ec4899)';
+    nameEl.textContent        = staff.name;
+    if (shiftTimeEl) shiftTimeEl.classList.add('hidden');
   } else {
-    avatarEl.textContent = '?';
+    avatarEl.textContent      = '?';
     avatarEl.style.background = 'linear-gradient(135deg,#94a3b8,#64748b)';
-    nameEl.textContent = 'Chưa chọn NV';
+    nameEl.textContent        = 'Chua chon NV';
     if (shiftTimeEl) shiftTimeEl.classList.add('hidden');
   }
 }
@@ -11122,6 +11261,137 @@ function refreshQrSetupStatus() {
     }
   });
 })();
+
+
+// ══════════════════════════════════════════════════
+//  TTS TRIGGERS — lưu/tải cấu hình + thực thi
+// ══════════════════════════════════════════════════
+const TTS_TRIGGER_KEY = 'pos_tts_triggers';
+
+const TTS_TRIGGER_DEFAULTS = {
+  kitchen: { enabled: true,  msg: '{ban} có đơn mới. {mon}' },
+  payment: { enabled: true,  msg: '{ban} {khach} thanh toán {tien} đồng. Cảm ơn quý khách!' },
+  stock:   { enabled: true,  msg: 'Cảnh báo kho! {nguyen_lieu} sắp hết, còn {so_luong} {don_vi}' },
+};
+
+function ttsSaveTriggers() {
+  const data = {
+    kitchen: {
+      enabled: document.getElementById('tts-trigger-kitchen')?.checked ?? true,
+      msg: document.getElementById('tts-msg-kitchen')?.value || TTS_TRIGGER_DEFAULTS.kitchen.msg,
+    },
+    payment: {
+      enabled: document.getElementById('tts-trigger-payment')?.checked ?? true,
+      msg: document.getElementById('tts-msg-payment')?.value || TTS_TRIGGER_DEFAULTS.payment.msg,
+    },
+    stock: {
+      enabled: document.getElementById('tts-trigger-stock')?.checked ?? true,
+      msg: document.getElementById('tts-msg-stock')?.value || TTS_TRIGGER_DEFAULTS.stock.msg,
+    },
+  };
+  localStorage.setItem(TTS_TRIGGER_KEY, JSON.stringify(data));
+}
+
+function ttsLoadTriggers() {
+  let data = TTS_TRIGGER_DEFAULTS;
+  try { const raw = localStorage.getItem(TTS_TRIGGER_KEY); if (raw) data = { ...TTS_TRIGGER_DEFAULTS, ...JSON.parse(raw) }; } catch(e) {}
+
+  const bind = (id, key, field) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (field === 'enabled') el.checked = data[key].enabled;
+    else el.value = data[key].msg;
+  };
+  bind('tts-trigger-kitchen', 'kitchen', 'enabled');
+  bind('tts-msg-kitchen',     'kitchen', 'msg');
+  bind('tts-trigger-payment', 'payment', 'enabled');
+  bind('tts-msg-payment',     'payment', 'msg');
+  bind('tts-trigger-stock',   'stock',   'enabled');
+  bind('tts-msg-stock',       'stock',   'msg');
+  return data;
+}
+
+function getTTSTrigger(key) {
+  let data = TTS_TRIGGER_DEFAULTS;
+  try { const raw = localStorage.getItem(TTS_TRIGGER_KEY); if (raw) data = { ...TTS_TRIGGER_DEFAULTS, ...JSON.parse(raw) }; } catch(e) {}
+  return data[key] || TTS_TRIGGER_DEFAULTS[key];
+}
+
+function ttsSpeak(key, vars) {
+  const t = getTTSTrigger(key);
+  if (!t.enabled) return;
+  let msg = t.msg;
+  Object.entries(vars).forEach(([k, v]) => { msg = msg.replaceAll('{' + k + '}', v); });
+  FPT_TTS.speak(msg);
+}
+
+// ── Gắn SVG icon vào màn hình bếp sau khi DOM ready ──────────
+(function initKitchenIcons() {
+  function inject() {
+    const hdr = document.getElementById('kitchen-header-icon');
+    if (hdr && !hdr.innerHTML) hdr.innerHTML = svgPanFire ? svgPanFire(32) : '🫕';
+    const tab = document.getElementById('kitchen-tab-icon');
+    if (tab && svgFlame) tab.innerHTML = svgFlame(16);
+  }
+  if (document.readyState !== 'loading') inject();
+  else document.addEventListener('DOMContentLoaded', inject);
+  // Re-inject khi tab bếp được click
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-tab="kitchen"]')) setTimeout(inject, 50);
+  });
+})();
+
+// ── Sync trigger UI khi mở tab Cài đặt ───────────────────────
+(function watchSettingsForTTS() {
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-tab="settings"]')) setTimeout(ttsLoadTriggers, 150);
+  });
+  setTimeout(ttsLoadTriggers, 800);
+})();
+
+// ── Animated kitchen SVG icons ──────────────────────────────
+function svgPanFire(size=24) {
+  const s = size;
+  return `<span class="kitchen-anim-icon" style="width:${s}px;height:${s}px">
+  <svg width="${s}" height="${s}" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Flames -->
+    <g class="icon-flame">
+      <ellipse cx="12" cy="13" rx="3.5" ry="5" fill="#ff6b35"/>
+      <ellipse cx="12" cy="14" rx="2" ry="3.5" fill="#ffd93d"/>
+    </g>
+    <g class="icon-flame" style="animation-delay:.3s">
+      <ellipse cx="18" cy="12" rx="3" ry="4.5" fill="#ff4500"/>
+      <ellipse cx="18" cy="13" rx="1.8" ry="3" fill="#ffa500"/>
+    </g>
+    <g class="icon-flame" style="animation-delay:.6s">
+      <ellipse cx="23" cy="14" rx="2.5" ry="4" fill="#ff6b35"/>
+      <ellipse cx="23" cy="15" rx="1.5" ry="2.5" fill="#ffd93d"/>
+    </g>
+    <!-- Pan -->
+    <g class="icon-pan">
+      <rect x="6" y="19" width="20" height="6" rx="3" fill="#374151"/>
+      <rect x="8" y="20" width="16" height="4" rx="2" fill="#4b5563"/>
+      <!-- Handle -->
+      <rect x="26" y="20.5" width="5" height="3" rx="1.5" fill="#6b7280"/>
+    </g>
+    <!-- Steam -->
+    <path class="icon-steam1" d="M10 18 Q9 15 10 12" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0"/>
+    <path class="icon-steam2" d="M16 18 Q15 15 16 11" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0"/>
+    <path class="icon-steam3" d="M22 18 Q21 15 22 12" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0"/>
+  </svg></span>`;
+}
+
+function svgFlame(size=20) {
+  const s = size;
+  return `<span class="kitchen-anim-icon" style="width:${s}px;height:${s}px">
+  <svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g class="icon-flame">
+      <path d="M12 2 C10 6 7 8 7 12 C7 15.3 9.5 18 12 18 C14.5 18 17 15.3 17 12 C17 8 14 6 12 2Z" fill="#ff6b35"/>
+      <path d="M12 7 C11 9 10 11 10 13 C10 14.7 11 16 12 16 C13 16 14 14.7 14 13 C14 11 13 9 12 7Z" fill="#ffd93d"/>
+      <ellipse cx="12" cy="20" rx="5" ry="2" fill="#ff450044"/>
+    </g>
+  </svg></span>`;
+}
 
 // ══════════════════════════════════════════════════
 //  SMART AUTOCOMPLETE ENGINE
