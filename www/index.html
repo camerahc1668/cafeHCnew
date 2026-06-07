@@ -6238,7 +6238,27 @@ document.getElementById('btn-checkout').addEventListener('click', () => {
     }
 
     // Trừ kho nguyên liệu khi bán
-    deductInventoryOnSale(orderCopy.items);
+    // Chỉ trừ các món chưa được trừ ở bếp (inventoryDeducted = true)
+    // Lấy danh sách kitchen orders của đơn này để biết món nào đã trừ rồi
+    const deductedItemIds = new Set();
+    (state.kitchenOrders || []).forEach(ko => {
+      if (ko.inventoryDeducted) {
+        (ko.items || []).forEach(item => {
+          // Track by id+qty key để tránh trừ trùng
+          deductedItemIds.add(`${item.id}_${item.qty}_${ko.id}`);
+        });
+      }
+    });
+    // Chỉ trừ kho nếu đơn không đi qua bếp (order trực tiếp không gửi bếp)
+    const hasKitchenOrders = (state.kitchenOrders || []).some(ko =>
+      !ko.txId &&
+      ((!isTakeaway && ko.tableId === state.currentTableId) ||
+       (isTakeaway && ko.isTakeaway && ko.takeawaySlot === state.currentTakeawayId))
+    );
+    // Nếu không có kitchen order nào chưa thanh toán (tức đã trừ từ bếp) thì mới trừ thêm
+    if (!hasKitchenOrders) {
+      deductInventoryOnSale(orderCopy.items);
+    }
 
     // Clear order
     if (isTakeaway) {
@@ -10067,7 +10087,14 @@ function kitchenAction(id, newStatus) {
   const prev = o.status;
   o.status = newStatus;
   if (newStatus === 'cooking' && !o.startedAt) o.startedAt = new Date().toISOString();
-  if (newStatus === 'done') o.doneAt = new Date().toISOString();
+  if (newStatus === 'done') {
+    o.doneAt = new Date().toISOString();
+    // ── Trừ kho khi bếp hoàn thành đơn (chỉ trừ 1 lần, đánh dấu inventoryDeducted) ──
+    if (!o.inventoryDeducted) {
+      deductInventoryOnSale(o.items || []);
+      o.inventoryDeducted = true;
+    }
+  }
   if (newStatus === 'cooking' && prev === 'done') { o.doneAt = null; }
   schedulePersist();
   // Sync trạng thái bếp lên Firebase để thiết bị khác cập nhật
