@@ -1334,7 +1334,186 @@ header > div:first-child > div:nth-child(2) {
       </button>
     </div>
 
-    <p class="text-center text-xs text-slate-600 mt-5">☕ POS Cafe 206 · v1.0</p>
+    <!-- Hướng dẫn sử dụng toggle -->
+    <div class="mt-4 text-center">
+      <button onclick="document.getElementById('guide-panel').classList.toggle('hidden')"
+        class="text-xs text-slate-500 hover:text-orange-400 transition-colors underline underline-offset-2">
+        📖 Xem hướng dẫn sử dụng
+      </button>
+    </div>
+
+    <!-- Guide Panel -->
+    <div id="guide-panel" class="hidden mt-4 rounded-2xl overflow-hidden" style="background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.13);backdrop-filter:blur(20px)">
+
+      <!-- Tab navigation -->
+      <div class="flex border-b" style="border-color:rgba(255,255,255,.1)">
+        <button onclick="switchGuideTab('overview')" id="gtab-overview"
+          class="guide-tab-btn flex-1 py-2.5 text-xs font-bold transition-colors rounded-tl-2xl"
+          style="background:rgba(249,115,22,.25);color:#fb923c;border-bottom:2px solid #f97316">
+          🗺 Tổng quan
+        </button>
+        <button onclick="switchGuideTab('pos')" id="gtab-pos"
+          class="guide-tab-btn flex-1 py-2.5 text-xs font-bold transition-colors"
+          style="color:rgba(255,255,255,.45);border-bottom:2px solid transparent">
+          🛒 Bán hàng
+        </button>
+        <button onclick="switchGuideTab('kitchen')" id="gtab-kitchen"
+          class="guide-tab-btn flex-1 py-2.5 text-xs font-bold transition-colors"
+          style="color:rgba(255,255,255,.45);border-bottom:2px solid transparent">
+          🍳 Bếp & Kho
+        </button>
+        <button onclick="switchGuideTab('admin')" id="gtab-admin"
+          class="guide-tab-btn flex-1 py-2.5 text-xs font-bold transition-colors rounded-tr-2xl"
+          style="color:rgba(255,255,255,.45);border-bottom:2px solid transparent">
+          ⚙️ Cài đặt
+        </button>
+      </div>
+
+      <!-- Tab: Tổng quan -->
+      <div id="gcontent-overview" class="p-4 space-y-3 max-h-72 overflow-y-auto guide-scroll">
+        <p class="text-xs font-bold text-orange-400 uppercase tracking-wider mb-1">☕ POS HC — Ứng dụng quản lý quán cafe</p>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.08)">
+            <div class="text-orange-400 font-bold mb-1">🪑 Tab Bàn</div>
+            <div class="text-slate-300">Quản lý sơ đồ bàn, gọi món tại bàn, đơn mang về</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.08)">
+            <div class="text-yellow-400 font-bold mb-1">🔥 Tab Bếp</div>
+            <div class="text-slate-300">Xem & xử lý đơn hàng từ bàn và QR order realtime</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.08)">
+            <div class="text-blue-400 font-bold mb-1">📋 Thực đơn</div>
+            <div class="text-slate-300">Thêm/sửa/xoá món, đặt giá, badge nổi bật, ảnh món</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.08)">
+            <div class="text-emerald-400 font-bold mb-1">📦 Kho</div>
+            <div class="text-slate-300">Quản lý nguyên liệu, tồn kho, cảnh báo hết hàng</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.08)">
+            <div class="text-purple-400 font-bold mb-1">👥 Khách hàng</div>
+            <div class="text-slate-300">Lịch sử mua, điểm tích lũy, quản lý công nợ</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.08)">
+            <div class="text-pink-400 font-bold mb-1">📊 Báo cáo</div>
+            <div class="text-slate-300">Doanh thu ngày/tháng, top món, thống kê chi tiết</div>
+          </div>
+        </div>
+        <div class="rounded-xl p-3 text-xs" style="background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3)">
+          <div class="text-orange-300 font-bold mb-1">🔑 Đăng nhập</div>
+          <div class="text-slate-300">• <span class="text-orange-300 font-bold">Admin</span>: chọn "Admin" → nhập PIN <span class="font-mono bg-black/30 px-1 rounded">1234</span></div>
+          <div class="text-slate-300 mt-1">• <span class="text-orange-300 font-bold">Nhân viên</span>: chọn tên → nhập PIN đã cài trong Cài đặt → Quản lý nhân viên</div>
+        </div>
+      </div>
+
+      <!-- Tab: Bán hàng -->
+      <div id="gcontent-pos" class="hidden p-4 space-y-3 max-h-72 overflow-y-auto guide-scroll">
+        <p class="text-xs font-bold text-orange-400 uppercase tracking-wider">🛒 Quy trình bán hàng tại bàn</p>
+        <div class="space-y-2">
+          <div class="flex gap-2 items-start text-xs">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-black flex items-center justify-center flex-shrink-0 text-[10px]">1</span>
+            <div class="text-slate-300">Vào <span class="text-orange-300 font-bold">Tab Bàn</span> → nhấn vào bàn muốn gọi món (xanh = trống, đỏ = đang có khách)</div>
+          </div>
+          <div class="flex gap-2 items-start text-xs">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-black flex items-center justify-center flex-shrink-0 text-[10px]">2</span>
+            <div class="text-slate-300">Panel giỏ hàng hiện ra bên phải → chọn món từ danh sách hoặc dùng <span class="text-orange-300 font-bold">nút giỏ hàng 🛒</span> trên header</div>
+          </div>
+          <div class="flex gap-2 items-start text-xs">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-black flex items-center justify-center flex-shrink-0 text-[10px]">3</span>
+            <div class="text-slate-300">Nhấn <span class="text-yellow-300 font-bold">🍳 Gửi bếp</span> để bếp nhận đơn, hoặc <span class="text-emerald-300 font-bold">✅ Thanh toán</span> ngay</div>
+          </div>
+          <div class="flex gap-2 items-start text-xs">
+            <span class="w-5 h-5 rounded-full bg-orange-500 text-white font-black flex items-center justify-center flex-shrink-0 text-[10px]">4</span>
+            <div class="text-slate-300">Chọn phương thức: <span class="text-green-300">Tiền mặt</span> / <span class="text-blue-300">Chuyển khoản</span> / <span class="text-purple-300">Công nợ</span> → xác nhận</div>
+          </div>
+        </div>
+        <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.07)">
+          <div class="text-slate-300 font-bold mb-1.5">🛵 Đơn mang về / App giao hàng</div>
+          <div class="text-slate-400">Nhấn <span class="text-orange-300">+ Đơn mới</span> ở mục "Đơn mang về" → chọn kênh (GrabFood, Shopee...) → chọn món → thanh toán</div>
+        </div>
+        <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.07)">
+          <div class="text-slate-300 font-bold mb-1.5">📱 QR Order (khách tự gọi)</div>
+          <div class="text-slate-400">Nhấn icon QR trên thẻ bàn → khách quét QR → chọn món trên điện thoại → đơn tự động vào bếp</div>
+        </div>
+      </div>
+
+      <!-- Tab: Bếp & Kho -->
+      <div id="gcontent-kitchen" class="hidden p-4 space-y-3 max-h-72 overflow-y-auto guide-scroll">
+        <p class="text-xs font-bold text-yellow-400 uppercase tracking-wider">🔥 Quản lý bếp</p>
+        <div class="space-y-2 text-xs text-slate-300">
+          <div class="flex gap-2"><span class="text-yellow-400">▸</span><div><span class="font-bold text-white">Đang chờ</span> → nhấn <span class="text-blue-300">Bắt đầu làm</span> khi bếp nhận món</div></div>
+          <div class="flex gap-2"><span class="text-yellow-400">▸</span><div><span class="font-bold text-white">Đang làm</span> → nhấn <span class="text-emerald-300">✅ Xong</span> khi hoàn thành</div></div>
+          <div class="flex gap-2"><span class="text-yellow-400">▸</span><div>Badge đỏ trên tab Bếp = số đơn đang chờ xử lý</div></div>
+        </div>
+        <div class="border-t pt-3" style="border-color:rgba(255,255,255,.1)">
+          <p class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">📦 Quản lý kho</p>
+          <div class="space-y-2 text-xs text-slate-300">
+            <div class="flex gap-2"><span class="text-emerald-400">▸</span><div><span class="font-bold text-white">Thêm nguyên liệu</span>: tên, đơn vị cơ sở, tồn kho, định mức cảnh báo</div></div>
+            <div class="flex gap-2"><span class="text-emerald-400">▸</span><div><span class="font-bold text-white">Quy đổi đơn vị</span>: 1kg = 1000g, nhập kho bằng kg, kho lưu bằng gram tự động</div></div>
+            <div class="flex gap-2"><span class="text-emerald-400">▸</span><div><span class="font-bold text-white">Tự động trừ kho</span>: khi thanh toán đơn → kho nguyên liệu tự trừ theo công thức món</div></div>
+            <div class="flex gap-2"><span class="text-emerald-400">▸</span><div><span class="font-bold text-white">Cảnh báo</span>: nguyên liệu sắp hết hiện màu đỏ/vàng</div></div>
+          </div>
+        </div>
+        <div class="border-t pt-3" style="border-color:rgba(255,255,255,.1)">
+          <p class="text-xs font-bold text-violet-400 uppercase tracking-wider mb-2">🚚 Nhập hàng</p>
+          <div class="text-xs text-slate-300">Tab <span class="text-violet-300 font-bold">Nhập hàng</span> → tạo phiếu nhập → chọn nguyên liệu + số lượng + đơn vị → lưu → kho tự cộng</div>
+        </div>
+      </div>
+
+      <!-- Tab: Cài đặt -->
+      <div id="gcontent-admin" class="hidden p-4 space-y-3 max-h-72 overflow-y-auto guide-scroll">
+        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">⚙️ Cấu hình hệ thống</p>
+        <div class="space-y-2">
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.07)">
+            <div class="text-orange-300 font-bold mb-1">🏪 Thông tin quán</div>
+            <div class="text-slate-400">Cài đặt → Thông tin cửa hàng: tên, địa chỉ, SĐT, logo, tài khoản ngân hàng QR</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.07)">
+            <div class="text-blue-300 font-bold mb-1">👤 Quản lý nhân viên</div>
+            <div class="text-slate-400">Cài đặt → Nhân viên: thêm tên, đặt PIN 4 số, chọn màu avatar, phân quyền</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.07)">
+            <div class="text-red-300 font-bold mb-1">🔥 Firebase Realtime</div>
+            <div class="text-slate-400">Cài đặt → Firebase: nhập config JSON → bật đồng bộ realtime, QR order, multi-device</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.07)">
+            <div class="text-emerald-300 font-bold mb-1">📊 Báo cáo & Xuất dữ liệu</div>
+            <div class="text-slate-400">Tab Báo cáo: xem doanh thu theo ngày/tháng, top món bán chạy, in báo cáo</div>
+          </div>
+          <div class="rounded-xl p-3 text-xs" style="background:rgba(255,255,255,.07)">
+            <div class="text-yellow-300 font-bold mb-1">🌙 Dark Mode</div>
+            <div class="text-slate-400">Nhấn biểu tượng ☀️ trên header để chuyển sáng/tối</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <style>
+      .guide-scroll::-webkit-scrollbar { width: 4px; }
+      .guide-scroll::-webkit-scrollbar-track { background: transparent; }
+      .guide-scroll::-webkit-scrollbar-thumb { background: rgba(249,115,22,.4); border-radius: 2px; }
+    </style>
+    <script>
+      function switchGuideTab(tab) {
+        ['overview','pos','kitchen','admin'].forEach(t => {
+          const btn = document.getElementById('gtab-' + t);
+          const content = document.getElementById('gcontent-' + t);
+          if (t === tab) {
+            btn.style.background = 'rgba(249,115,22,.25)';
+            btn.style.color = '#fb923c';
+            btn.style.borderBottom = '2px solid #f97316';
+            content.classList.remove('hidden');
+          } else {
+            btn.style.background = 'transparent';
+            btn.style.color = 'rgba(255,255,255,.45)';
+            btn.style.borderBottom = '2px solid transparent';
+            content.classList.add('hidden');
+          }
+        });
+      }
+    </script>
+
+    <p class="text-center text-xs text-slate-600 mt-4">☕ POS Cafe 206 · v1.0</p>
   </div>
 </div>
 
