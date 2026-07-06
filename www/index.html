@@ -220,7 +220,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
   
   * {
-    font-family: 'Be Vietnam Pro', sans-serif;
+    font-family: 'Times New Roman', Times, serif;
   }
   
   .glass {
@@ -270,6 +270,111 @@
   .table-card-hover:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+
+  .table-card-hover { align-self: start; }
+
+  .table-visual-wrap {
+    margin: 0 auto;
+    transition: width 0.35s ease, height 0.35s ease;
+  }
+
+  .table-visual-occupied {
+    animation: table-visual-glow 2.6s ease-in-out infinite;
+  }
+
+  @keyframes table-visual-glow {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(var(--tv-glow), 0.35)); }
+    50%      { filter: drop-shadow(0 0 18px rgba(var(--tv-glow), 0.6)); }
+  }
+
+  /* ===== Thẻ bàn lật khi rê chuột: mặt trước = hình bàn, mặt sau = chi tiết ===== */
+  .table-flip-outer {
+    perspective: 1400px;
+  }
+
+  .table-flip-inner {
+    position: relative;
+    display: grid;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .table-card-hover:hover .table-flip-inner {
+    transform: rotateY(180deg);
+  }
+
+  .table-flip-front,
+  .table-flip-back {
+    grid-area: 1 / 1;
+    width: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .table-flip-front {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    pointer-events: auto;
+  }
+
+  .table-flip-back {
+    transform: rotateY(180deg);
+    pointer-events: none;
+  }
+
+  .table-card-hover:hover .table-flip-front {
+    pointer-events: none;
+  }
+
+  .table-card-hover:hover .table-flip-back {
+    pointer-events: auto;
+  }
+
+  /* Món ăn: mặt trước giữ layout khối (ảnh + info) thay vì canh giữa như bàn/giỏ */
+  .menu-flip-front {
+    display: block !important;
+    height: 100%;
+  }
+
+  /* Hiệu ứng nảy nhẹ icon giỏ hàng khi ảnh món "bay" tới */
+  @keyframes cart-bump {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.28); }
+    65%  { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+  .cart-bump {
+    animation: cart-bump 0.35s ease;
+  }
+
+  /* ===== Tab lọc chế độ xem bàn ===== */
+  .table-filter-btn {
+    background: #fff;
+    border-color: #e2e8f0;
+    color: #64748b;
+  }
+  .table-filter-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+  .table-filter-btn.active[data-filter="all"] {
+    background: #1e293b;
+    border-color: #1e293b;
+    color: #fff;
+  }
+  .table-filter-btn.active[data-filter="occupied"] {
+    background: #fff7ed;
+    border-color: #f97316;
+    color: #c2410c;
+  }
+  .table-filter-btn.active[data-filter="empty"] {
+    background: #ecfdf5;
+    border-color: #10b981;
+    color: #047857;
   }
   
   .badge {
@@ -488,14 +593,11 @@ body.dark-mode #btn-dark-mode:hover { background: rgba(255,255,255,0.08); }
   padding: 3px 8px !important;
   font-size: 10px !important;
 }
-.menu-badge.shape-flat .menu-badge-icon {
-  display: none !important;
-}
 
 /* Khung vuông nổi bật */
 .menu-badge.shape-square {
   border-radius: 0 !important;
-  border: 1.5px solid rgba(255,255,255,0.85) !important;
+  border: none !important;
   box-shadow: 3px 3px 0 rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.18) !important;
   backdrop-filter: none;
 }
@@ -768,7 +870,7 @@ table tbody tr:hover{
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px 4px 6px;
+  padding: 5px 12px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 950;
@@ -777,49 +879,41 @@ table tbody tr:hover{
   white-space: nowrap;
   text-transform: uppercase;
   text-shadow: 0 1px 2px rgba(0,0,0,.35);
-  border: 1px solid rgba(255,255,255,.68);
-  box-shadow: 0 0 0 2px rgba(255,255,255,.35), 0 8px 18px rgba(0,0,0,.28);
+  border: none;
+  box-shadow: 0 8px 18px rgba(0,0,0,.28);
   pointer-events: none;
   z-index: 5;
   backdrop-filter: blur(6px);
   background-clip: padding-box;
-  animation: badge-flash 1.15s ease-in-out infinite;
-}
-
-.menu-badge-icon {
-  width: 18px;
-  height: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(255,255,255,.96);
-  color: #ea580c;
-  font-size: 12px;
-  line-height: 1;
-  box-shadow: inset 0 -1px 0 rgba(15,23,42,.14), 0 1px 4px rgba(0,0,0,.22);
-  animation: badge-icon-pop .85s ease-in-out infinite;
 }
 
 .menu-badge-text {
   line-height: 1;
 }
 
-@keyframes badge-flash {
-  0%, 100% {
-    filter: brightness(1) saturate(1.12);
-    transform: translateZ(0) scale(1);
-  }
-  50% {
-    filter: brightness(1.32) saturate(1.45);
-    transform: translateZ(0) scale(1.055);
-    box-shadow: 0 0 0 3px rgba(255,255,255,.55), 0 0 22px rgba(249,115,22,.75), 0 10px 22px rgba(0,0,0,.3);
-  }
+/* ── Viền đổi màu chạy đuổi (rainbow chasing border) cho TẤT CẢ nhãn ── */
+.menu-badge {
+  position: absolute; /* giữ định vị gốc, đồng thời làm gốc cho ::before */
 }
-
-@keyframes badge-icon-pop {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.18) rotate(-7deg); }
+.menu-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: repeating-linear-gradient(90deg,
+    #ff005c 0%, #ff9900 12.5%, #ffee00 25%, #33ff00 37.5%,
+    #00e5ff 50%, #3366ff 62.5%, #cc00ff 75%, #ff005c 87.5%, #ff005c 100%);
+  background-size: 300% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: badge-chase-move 1.6s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+@keyframes badge-chase-move {
+  to { background-position: -300% 0; }
 }
 
 /* ── Logo click hint ── */
@@ -1874,8 +1968,28 @@ header > div:first-child > div:nth-child(2) {
               </svg>
               Đặt bàn
             </button>
+            <!-- Nút Danh sách đặt bàn -->
+            <button id="btn-reservation-list" onclick="openReservationList()" class="relative px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-300 rounded-lg font-semibold text-sm flex items-center gap-1.5 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+              Ds đặt bàn
+              <span id="reservation-badge" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-indigo-600 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center shadow">0</span>
+            </button>
           </div>
         </div>
+
+        <!-- Chế độ xem: Tất cả / Có khách / Trống -->
+        <div id="table-view-filter" class="flex items-center gap-1.5 mb-3 mt-1">
+          <button data-filter="all" class="table-filter-btn px-3.5 py-1.5 rounded-lg text-sm font-bold border transition-colors">
+            Tất cả <span class="table-filter-count opacity-70 font-semibold"></span>
+          </button>
+          <button data-filter="occupied" class="table-filter-btn px-3.5 py-1.5 rounded-lg text-sm font-bold border transition-colors">
+            🟠 Có khách <span class="table-filter-count opacity-70 font-semibold"></span>
+          </button>
+          <button data-filter="empty" class="table-filter-btn px-3.5 py-1.5 rounded-lg text-sm font-bold border transition-colors">
+            🟢 Trống <span class="table-filter-count opacity-70 font-semibold"></span>
+          </button>
+        </div>
+
         <div id="tables-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
 
         <!-- Đơn mang về — gộp chung tab Bàn -->
@@ -2042,6 +2156,9 @@ header > div:first-child > div:nth-child(2) {
   </svg>
 </span> Hướng dẫn quy đổi
             </button>
+            <button onclick="openKiemKe()" class="px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5">
+              📋 Kiểm kê kho
+            </button>
             <button id="btn-add-ingredient" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all">
               + Thêm nguyên liệu
             </button>
@@ -2064,6 +2181,15 @@ header > div:first-child > div:nth-child(2) {
           </div>
           <button onclick="this.closest('.mb-4').remove()" class="text-slate-300 hover:text-slate-500 text-lg leading-none mt-0.5">✕</button>
         </div>
+
+        <!-- Ô tìm kiếm -->
+        <div class="mb-4 relative max-w-sm">
+          <input type="text" id="inventory-search" placeholder="Tìm nguyên liệu..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table class="w-full">
             <thead class="bg-slate-50 border-b border-slate-200">
@@ -2083,18 +2209,28 @@ header > div:first-child > div:nth-child(2) {
 
       <!-- Customers Tab -->
       <div data-tab-content="customers">
-        <div class="mb-4 flex items-center justify-between">
+        <div class="mb-4 flex items-center justify-between flex-wrap gap-3">
           <h2 class="text-2xl font-bold text-slate-800">Khách hàng</h2>
           <button id="btn-add-customer" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all">
             + Thêm khách
           </button>
         </div>
+
+        <!-- Ô tìm kiếm -->
+        <div class="mb-4 relative max-w-sm">
+          <input type="text" id="customers-search" placeholder="Tìm khách hàng theo tên, SĐT..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table class="w-full">
             <thead class="bg-slate-50 border-b border-slate-200">
               <tr>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Tên</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">SĐT</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Hạng</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Điểm</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Tổng chi tiêu</th>
                 <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Công nợ</th>
@@ -2128,6 +2264,15 @@ header > div:first-child > div:nth-child(2) {
             <div id="debt-paid" class="text-3xl font-bold mt-1">0đ</div>
           </div>
         </div>
+
+        <!-- Ô tìm kiếm -->
+        <div class="mb-4 relative max-w-sm">
+          <input type="text" id="debts-search" placeholder="Tìm theo tên khách, SĐT..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table class="w-full">
             <thead class="bg-slate-50 border-b border-slate-200">
@@ -2250,7 +2395,28 @@ header > div:first-child > div:nth-child(2) {
       <!-- Settings Tab -->
       <div data-tab-content="settings">
         <h2 class="text-2xl font-bold text-slate-800 mb-4">Cài đặt hệ thống</h2>
-        
+
+        <!-- Máy in nhiệt -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
+          <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <span class="text-lg">🖨</span> Máy in nhiệt (Bluetooth/USB thật)
+          </h3>
+          <p class="text-xs text-slate-500 mb-3">Kết nối máy in nhiệt ESC/POS qua cổng USB (WebUSB — cần Chrome/Edge trên máy tính). In trực tiếp không cần hộp thoại in của trình duyệt.</p>
+          <div class="flex items-center gap-3 flex-wrap">
+            <button onclick="connectThermalPrinter()" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all text-sm">
+              🔌 Kết nối máy in
+            </button>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">Khổ giấy:</span>
+              <button onclick="setThermalWidth(58)" class="thermal-width-btn px-3 py-1.5 rounded-lg text-xs font-bold border-2 ${(state.settings.thermalWidthMM||58)===58 ? 'border-cyan-400 bg-cyan-50 text-cyan-700' : 'border-slate-200 text-slate-500'}">58mm</button>
+              <button onclick="setThermalWidth(80)" class="thermal-width-btn px-3 py-1.5 rounded-lg text-xs font-bold border-2 ${(state.settings.thermalWidthMM||58)===80 ? 'border-cyan-400 bg-cyan-50 text-cyan-700' : 'border-slate-200 text-slate-500'}">80mm</button>
+            </div>
+            <button onclick="startOnboarding()" class="px-4 py-2 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded-lg font-medium text-sm transition-colors ml-auto">
+              📖 Xem lại hướng dẫn sử dụng
+            </button>
+          </div>
+        </div>
+
         <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 mb-4">
           <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3164,6 +3330,7 @@ const state = {
   currentTableId: null,
   currentTakeawayId: null,
   currentCustomerId: null,
+  tableViewFilter: 'all', // 'all' | 'occupied' | 'empty' — chế độ xem tab Bàn
   orders: {},
   pendingOrders: [],   // orders sent by customers via QR menu
   kitchenOrders: [],   // orders sent to kitchen
@@ -3377,6 +3544,119 @@ function showCartSnackbar(itemName, qty) {
 }
 
 const generateOrderId = () => 'DH' + Date.now().toString().slice(-8);
+
+// ══════════════════════════════════════════════════════════════
+//  MÁY IN NHIỆT THẬT (WebUSB — ESC/POS)
+// ══════════════════════════════════════════════════════════════
+let _thermalDevice = null;
+let _thermalWidthMM = 58; // 58mm hoặc 80mm
+const ESC = 0x1B, GS = 0x1D;
+
+function setThermalWidth(mm) {
+  _thermalWidthMM = mm;
+  state.settings.thermalWidthMM = mm;
+  persistState();
+}
+
+async function connectThermalPrinter() {
+  if (!navigator.usb) {
+    showToast('Trình duyệt không hỗ trợ WebUSB. Hãy dùng Chrome/Edge trên máy tính.', 'error');
+    return false;
+  }
+  try {
+    _thermalDevice = await navigator.usb.requestDevice({ filters: [
+      { classCode: 7 },   // USB Printer class
+      { vendorId: 0x04b8 }, // Epson
+      { vendorId: 0x0519 }, // Star Micronics
+      { vendorId: 0x6868 }, // Generic thermal (Xprinter etc.)
+      { vendorId: 0x0483 }, // Generic (STMicro-based)
+    ]});
+    await _thermalDevice.open();
+    if (_thermalDevice.configuration === null) await _thermalDevice.selectConfiguration(1);
+    await _thermalDevice.claimInterface(0);
+    showToast('✅ Đã kết nối máy in: ' + (_thermalDevice.productName || 'Máy in nhiệt'));
+    return true;
+  } catch (e) {
+    if (e.name !== 'NotFoundError') showToast('Lỗi kết nối máy in: ' + e.message, 'error');
+    return false;
+  }
+}
+
+async function sendToThermalPrinter(bytes) {
+  if (!_thermalDevice) { const ok = await connectThermalPrinter(); if (!ok) return false; }
+  try {
+    const iface = _thermalDevice.configuration.interfaces[0];
+    const endpoint = iface.alternate.endpoints.find(e => e.direction === 'out');
+    if (!endpoint) throw new Error('Không tìm thấy cổng OUT trên máy in');
+    await _thermalDevice.transferOut(endpoint.endpointNumber, bytes);
+    return true;
+  } catch (e) {
+    console.warn('Thermal print error:', e);
+    showToast('Lỗi khi in: ' + e.message, 'error');
+    return false;
+  }
+}
+
+function _escposBuildBytes(lines) {
+  const encoder = new TextEncoder();
+  const cmds = [];
+  const push = (...b) => cmds.push(...b);
+  push(ESC, 0x40); // init
+  lines.forEach(l => {
+    push(ESC, 0x61, l.type === 'center' ? 0x01 : l.type === 'right' ? 0x02 : 0x00);
+    if (l.bold) push(ESC, 0x45, 0x01);
+    if (l.large) push(GS, 0x21, 0x11);
+    cmds.push(...encoder.encode((l.text || '') + '\n'));
+    if (l.large) push(GS, 0x21, 0x00);
+    if (l.bold) push(ESC, 0x45, 0x00);
+  });
+  push(GS, 0x56, 0x42, 0x00); // cut
+  return new Uint8Array(cmds);
+}
+
+function _removeDiacritics(str) {
+  return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+
+function buildThermalReceiptLines(transaction, shop) {
+  const w = _thermalWidthMM === 80 ? 48 : 32;
+  const div = '-'.repeat(w);
+  const shopName = _removeDiacritics(shop.shopName || 'Quan Cafe');
+  const lines = [
+    { type:'center', bold:true, large:true, text: shopName },
+    ...(shop.shopAddress ? [{ type:'center', text:_removeDiacritics(shop.shopAddress) }] : []),
+    ...(shop.shopPhone ? [{ type:'center', text:'DT: '+shop.shopPhone }] : []),
+    { type:'center', text: div },
+    { type:'left', bold:true, text:'HOA DON BAN HANG' },
+    { type:'left', text: (transaction.id||'') + '  ' + new Date(transaction.date).toLocaleString('vi-VN') },
+    { type:'left', text: div },
+  ];
+  (transaction.items||[]).forEach(it => {
+    const name = _removeDiacritics(it.name).substring(0, w-10);
+    const lineTotal = Math.round(it.price*it.qty).toLocaleString('vi-VN');
+    const qtyStr = 'x'+it.qty;
+    const spaces = ' '.repeat(Math.max(1, w - name.length - qtyStr.length - lineTotal.length - 2));
+    lines.push({ type:'left', text: `${name} ${qtyStr}${spaces}${lineTotal}` });
+  });
+  const totalStr = Math.round(transaction.total||0).toLocaleString('vi-VN');
+  lines.push(
+    { type:'left', text: div },
+    { type:'left', bold:true, text: `TONG CONG:${' '.repeat(Math.max(1,w-11-totalStr.length))}${totalStr}d` },
+    { type:'left', text: div },
+    { type:'center', text:'Cam on quy khach!' },
+    { type:'center', text:'' }, { type:'center', text:'' }
+  );
+  return lines;
+}
+
+async function printTransactionThermal(transaction, shop) {
+  const lines = buildThermalReceiptLines(transaction, shop || state.settings);
+  const bytes = _escposBuildBytes(lines);
+  const ok = await sendToThermalPrinter(bytes);
+  if (ok) showToast('✅ Đã gửi lệnh in tới máy in nhiệt!');
+  else showToast('Không in được — kiểm tra kết nối máy in (WebUSB) hoặc dùng "In hóa đơn"', 'error');
+}
+
 // ══════════════════════════════════════════════════════════════
 //  FIREBASE CONFIG & REALTIME SYNC
 //  Điền thông tin Firebase project của bạn vào đây
@@ -3755,39 +4035,27 @@ function renderFBStatus() {
 //  NHÃN HIỆU (Badge) — danh sách mặc định, có thể thêm/xoá
 // ══════════════════════════════════════════════════════════════
 const DEFAULT_BADGES = [
-  { key: 'new',     text: '🆕 Mới',       color: 'from-blue-500 to-cyan-400' },
-  { key: 'best',    text: '⭐ Best',       color: 'from-yellow-500 to-amber-400' },
-  { key: 'hot',     text: '🔥 Hot',        color: 'from-red-500 to-orange-400' },
-  { key: 'yummy',   text: '😋 Siêu ngon', color: 'from-pink-500 to-rose-400' },
-  { key: 'cheap',   text: '💰 Rẻ nhất',   color: 'from-emerald-500 to-teal-400' },
-  { key: 'sale',    text: '🏷 Sale',       color: 'from-violet-500 to-purple-400' },
-  { key: 'limited', text: '⏳ Có hạn',    color: 'from-slate-500 to-gray-400' },
-  { key: 'healthy', text: '🥗 Lành mạnh', color: 'from-lime-500 to-green-400' },
+  { key: 'new',     text: 'Mới',       color: 'from-blue-500 to-cyan-400' },
+  { key: 'best',    text: 'Best',       color: 'from-yellow-500 to-amber-400' },
+  { key: 'hot',     text: 'Hot',        color: 'from-red-500 to-orange-400' },
+  { key: 'yummy',   text: 'Siêu ngon', color: 'from-pink-500 to-rose-400' },
+  { key: 'cheap',   text: 'Rẻ nhất',   color: 'from-emerald-500 to-teal-400' },
+  { key: 'sale',    text: 'Sale',       color: 'from-violet-500 to-purple-400' },
+  { key: 'limited', text: 'Có hạn',    color: 'from-slate-500 to-gray-400' },
+  { key: 'healthy', text: 'Lành mạnh', color: 'from-lime-500 to-green-400' },
 ];
 
 function getBadges() {
-  // Merge DEFAULT with any custom ones saved in settings
+  // Merge DEFAULT with any custom ones saved in settings, minus những nhãn mặc định đã bị xoá
+  const hidden = state.settings?.hiddenBadgeKeys || [];
+  const defaults = DEFAULT_BADGES.filter(b => !hidden.includes(b.key));
   const custom = state.settings?.customBadges || [];
-  return [...DEFAULT_BADGES, ...custom];
+  return [...defaults, ...custom];
 }
 
 function badgeStyle(key) {
   const b = getBadges().find(x => x.key === key);
   return b || { key, text: key, color: 'from-slate-500 to-gray-400' };
-}
-
-function badgeIconFor(key, text) {
-  const map = {
-    new: 'N',
-    best: '★',
-    hot: '🔥',
-    yummy: '❤',
-    cheap: '$',
-    sale: '%',
-    limited: '!',
-    healthy: '✓'
-  };
-  return map[key] || String(text || '★').trim().charAt(0).toUpperCase() || '★';
 }
 
 function badgeColorFor(badge) {
@@ -3806,10 +4074,8 @@ function badgeColorFor(badge) {
 
 function renderBadgeMarkup(badge, shape) {
   if (!badge) return '';
-  const icon = badge.icon || badgeIconFor(badge.key, badge.text);
   const shapeClass = 'shape-' + (shape || badge.shape || 'pill');
   return `<div class="menu-badge bg-gradient-to-r ${badgeColorFor(badge)} ${shapeClass}">
-    <span class="menu-badge-icon">${icon}</span>
     <span class="menu-badge-text">${badge.text}</span>
   </div>`;
 }
@@ -4304,9 +4570,82 @@ function getTableSummary(table) {
   return { totalQty, totalAmt, disc: 0, kitchenStatus };
 }
 
+// Bảng màu cho hình minh hoạ bàn/ghế theo trạng thái
+function tableVisualColors(status) {
+  const map = {
+    empty:    { table: '#10b981', tableDark: '#047857', chair: '#34d399', chairDark: '#059669', glow: '16,185,129' },
+    occupied: { table: '#f97316', tableDark: '#c2410c', chair: '#fb923c', chairDark: '#ea580c', glow: '249,115,22' },
+    booked:   { table: '#3b82f6', tableDark: '#1d4ed8', chair: '#60a5fa', chairDark: '#2563eb', glow: '59,130,246' }
+  };
+  return map[status] || map.empty;
+}
+
+// Hình minh hoạ bàn vuông bo góc + 6 ghế tách rời (phong cách hiện đại, nhìn từ trên xuống)
+// Bàn "Có khách" hiển thị to gấp 3 lần lúc "Trống" để dễ nhận biết
+function renderTableVisual(table) {
+  const c = tableVisualColors(table.status);
+  const isOccupied = table.status === 'occupied';
+  const box = isOccupied ? 168 : 56; // kích thước khung hiển thị (px) — occupied = 3x
+  const uid = 'tv' + table.id;
+  const label = (String(table.name).match(/\d+/) || [table.name])[0];
+
+  return `
+    <div class="table-visual-wrap ${isOccupied ? 'table-visual-occupied' : ''}" style="width:${box}px;height:${box}px;--tv-glow:${c.glow};">
+      <svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="grad-${uid}" cx="32%" cy="28%" r="80%">
+            <stop offset="0%" stop-color="${c.chair}"/>
+            <stop offset="100%" stop-color="${c.table}"/>
+          </radialGradient>
+          <g id="chair-${uid}">
+            <rect x="-12" y="-19" width="24" height="13" rx="6" fill="${c.chairDark}"/>
+            <rect x="-14" y="-7" width="28" height="18" rx="8" fill="${c.chair}"/>
+          </g>
+        </defs>
+        <!-- Bóng đổ -->
+        <rect x="38" y="150" width="124" height="18" rx="9" fill="${c.tableDark}" opacity="0.15"/>
+        <!-- Ghế: 6 chiếc tách rời, đặt cách bàn một khoảng (2 trên · 2 dưới · 1 trái · 1 phải) -->
+        <use href="#chair-${uid}" transform="translate(72 28)"/>
+        <use href="#chair-${uid}" transform="translate(128 28)"/>
+        <use href="#chair-${uid}" transform="translate(72 172) rotate(180)"/>
+        <use href="#chair-${uid}" transform="translate(128 172) rotate(180)"/>
+        <use href="#chair-${uid}" transform="translate(28 100) rotate(-90)"/>
+        <use href="#chair-${uid}" transform="translate(172 100) rotate(90)"/>
+        <!-- Mặt bàn vuông bo góc -->
+        <rect x="48" y="48" width="104" height="104" rx="20" fill="url(#grad-${uid})" stroke="${c.tableDark}" stroke-width="3"/>
+        <rect x="48" y="48" width="104" height="104" rx="20" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.35"/>
+        <text x="100" y="109" text-anchor="middle" font-family="Segoe UI, Roboto, Arial" font-size="32" font-weight="800" fill="#ffffff">${label}</text>
+      </svg>
+    </div>
+  `;
+}
+
 function renderTables() {
   const grid = document.getElementById('tables-grid');
-  grid.innerHTML = state.tables.map(table => {
+
+  // Cập nhật số đếm + trạng thái active của tab lọc
+  const countAll      = state.tables.length;
+  const countOccupied = state.tables.filter(t => t.status === 'occupied').length;
+  const countEmpty     = state.tables.filter(t => t.status === 'empty').length;
+  const filterCounts   = { all: countAll, occupied: countOccupied, empty: countEmpty };
+  document.querySelectorAll('.table-filter-btn').forEach(btn => {
+    const f = btn.dataset.filter;
+    btn.classList.toggle('active', state.tableViewFilter === f);
+    const countEl = btn.querySelector('.table-filter-count');
+    if (countEl) countEl.textContent = `(${filterCounts[f]})`;
+  });
+
+  const filteredTables = state.tables.filter(t => state.tableViewFilter === 'all' ? true : t.status === state.tableViewFilter);
+
+  if (filteredTables.length === 0) {
+    grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">
+      <div class="text-3xl mb-2">🍽️</div>
+      <div class="font-semibold">Không có bàn nào ở chế độ xem này</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filteredTables.map(table => {
     const isDark = document.body.classList.contains('dark-mode');
     const statusColors = {
       empty:    'bg-emerald-50 border-emerald-300 dark:bg-emerald-900/20',
@@ -4354,60 +4693,110 @@ function renderTables() {
       <div class="table-card-hover ${statusColors[table.status]} border-2 rounded-xl p-3 cursor-pointer shadow-sm relative ${isSelected ? 'ring-2 ring-orange-400' : ''} ${isMultiSelected ? 'ring-2 ring-pink-500 ring-offset-1' : ''}" data-table-id="${table.id}">
 
         <!-- Pending badge -->
-        ${hasPending ? `<div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-extrabold rounded-full flex items-center justify-center shadow-lg animate-bounce z-10">${pending.length}</div>` : ''}
+        ${hasPending ? `<div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-extrabold rounded-full flex items-center justify-center shadow-lg animate-bounce z-20">${pending.length}</div>` : ''}
 
         <!-- Multi-select checkbox: chỉ hiện với bàn có khách -->
         ${table.status === 'occupied' ? `
-        <button class="btn-multi-select absolute top-1.5 left-1.5 w-5 h-5 rounded-md flex items-center justify-center transition-all z-10
+        <button class="btn-multi-select absolute top-1.5 left-1.5 w-5 h-5 rounded-md flex items-center justify-center transition-all z-20
           ${isMultiSelected ? 'bg-pink-500 text-white shadow' : 'bg-white/70 text-slate-300 hover:bg-pink-100 hover:text-pink-500 border border-slate-200'}"
           data-table-id="${table.id}" title="Chọn để chuyển món">
           <svg class="w-2.5 h-2.5" fill="${isMultiSelected ? 'white' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
         </button>` : ''}
 
-        <!-- Header: tên bàn + trạng thái -->
-        <div class="flex items-center justify-between mb-1">
-          <h3 class="font-extrabold text-sm text-slate-900">${table.name}</h3>
-          ${statusBadges[table.status]}
-        </div>
+        <!-- Thẻ lật: bình thường hiện hình bàn, rê chuột vào sẽ lật ra chi tiết -->
+        <div class="table-flip-outer">
+          <div class="table-flip-inner">
 
-        <!-- Tên khách -->
-        ${table.customerName ? `<div class="text-xs text-slate-600 mb-1 flex items-center gap-1 truncate">
-          <svg class="w-3 h-3 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-          <span class="font-medium">${table.customerName}</span>
-        </div>` : ''}
+            <!-- MẶT TRƯỚC: chỉ hình minh hoạ bàn + ghế theo màu trạng thái -->
+            <div class="table-flip-front">
+              <div class="flex justify-center mb-1.5">
+                ${renderTableVisual(table)}
+              </div>
+              <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                <h3 class="font-extrabold text-sm text-slate-900">${table.name}</h3>
+                ${statusBadges[table.status]}
+              </div>
+              <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Rê chuột để xem chi tiết
+              </div>
+            </div>
 
-        <!-- Tình trạng bếp -->
-        ${kPill ? `<div class="mb-1">${kPill}</div>` : ''}
+            <!-- MẶT SAU: chi tiết đầy đủ để chọn / xem thông tin -->
+            <div class="table-flip-back">
+              <!-- Header: tên bàn + trạng thái -->
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-extrabold text-sm text-slate-900">${table.name}</h3>
+                ${statusBadges[table.status]}
+              </div>
 
-        <!-- Danh sách món -->
-        ${itemPreview ? `<div class="bg-white/60 rounded-lg px-2 py-1.5 mb-1.5 border border-slate-200/60">${itemPreview}</div>` : ''}
+              <!-- Tên khách -->
+              ${table.customerName ? `<div class="text-xs text-slate-600 mb-1 flex items-center gap-1 truncate">
+                <svg class="w-3 h-3 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="font-medium">${table.customerName}</span>
+              </div>` : ''}
 
-        <!-- Tổng tiền -->
-        ${summary && summary.totalQty > 0 ? `
-        <div class="flex items-center justify-between mb-1.5 px-0.5">
-          <span class="text-xs text-slate-500">🍽 ${summary.totalQty} món</span>
-          <span class="text-sm font-extrabold text-orange-600">${formatCurrency(summary.totalAmt - (summary.disc||0))}</span>
-        </div>` : ''}
+              <!-- Badge bàn đã gộp -->
+              ${table.mergedFrom && table.mergedFrom.length ? `<div class="mb-1"><span class="badge bg-purple-100 text-purple-700 text-xs font-bold">🔗 Đã gộp: ${table.mergedFrom.join(', ')}</span></div>` : ''}
 
-        <!-- Buttons -->
-        <div class="flex gap-1 mt-1.5 flex-wrap">
-          <button class="btn-qr-table flex items-center gap-0.5 px-2 py-1.5 bg-violet-100 hover:bg-violet-200 text-violet-700 border border-violet-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="QR Order">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-            QR
-          </button>
+              <!-- Đếm ngược giờ đặt (bàn đã đặt) -->
+              ${table.status === 'booked' && table.bookedTime ? `<div class="text-xs text-blue-600 font-semibold mb-1">⏰ Giờ đến: ${table.bookedTime}${table.customerPhone ? ' · 📞 '+table.customerPhone : ''}</div>` : ''}
 
-          ${table.status === 'occupied' ? `
-          <button class="btn-move-table flex items-center gap-0.5 px-2 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Đổi bàn">
-            ⇄ Đổi bàn
-          </button>
-          <button class="btn-add-customer flex items-center gap-0.5 px-2 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Thêm khách">
-            👤 Khách
-          </button>` : ''}
+              <!-- Tình trạng bếp -->
+              ${kPill ? `<div class="mb-1">${kPill}</div>` : ''}
 
-          ${hasPending ? `
-          <button class="btn-accept-pending flex items-center gap-0.5 px-2 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg font-bold animate-pulse" data-table-id="${table.id}">
-            🔔 ${pending.length} đơn
-          </button>` : ''}
+              <!-- Danh sách món -->
+              ${itemPreview ? `<div class="bg-white/60 rounded-lg px-2 py-1.5 mb-1.5 border border-slate-200/60">${itemPreview}</div>` : ''}
+
+              <!-- Tổng tiền -->
+              ${summary && summary.totalQty > 0 ? `
+              <div class="flex items-center justify-between mb-1.5 px-0.5">
+                <span class="text-xs text-slate-500">🍽 ${summary.totalQty} món</span>
+                <span class="text-sm font-extrabold text-orange-600">${formatCurrency(summary.totalAmt - (summary.disc||0))}</span>
+              </div>` : ''}
+
+              <!-- Buttons -->
+              <div class="flex gap-1 mt-1.5 flex-wrap">
+                <button class="btn-qr-table flex items-center gap-0.5 px-2 py-1.5 bg-violet-100 hover:bg-violet-200 text-violet-700 border border-violet-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="QR Order">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                  QR
+                </button>
+
+                ${table.status === 'occupied' ? `
+                <button class="btn-move-table flex items-center gap-0.5 px-2 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Đổi bàn">
+                  ⇄ Đổi bàn
+                </button>
+                <button class="btn-split-table flex items-center gap-0.5 px-2 py-1.5 bg-cyan-100 hover:bg-cyan-200 text-cyan-800 border border-cyan-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Tách bàn">
+                  🔀 Tách bàn
+                </button>
+                <button class="btn-merge-table flex items-center gap-0.5 px-2 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Gộp bàn">
+                  🔗 Gộp bàn
+                </button>
+                <button class="btn-add-customer flex items-center gap-0.5 px-2 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Thêm khách">
+                  👤 Khách
+                </button>` : ''}
+
+                ${table.status === 'booked' ? `
+                <button class="btn-checkin-table flex items-center gap-0.5 px-2 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Nhận bàn">
+                  ✅ Nhận bàn
+                </button>
+                <button class="btn-cancel-res flex items-center gap-0.5 px-2 py-1.5 bg-red-100 hover:bg-red-200 text-red-800 border border-red-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Huỷ đặt bàn">
+                  ✕ Huỷ đặt
+                </button>` : ''}
+
+                ${table.mergedFrom && table.mergedFrom.length ? `
+                <button class="btn-unmerge-table flex items-center gap-0.5 px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs rounded-lg font-bold transition-colors" data-table-id="${table.id}" title="Tách gộp">
+                  ↩ Tách gộp
+                </button>` : ''}
+
+                ${hasPending ? `
+                <button class="btn-accept-pending flex items-center gap-0.5 px-2 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs rounded-lg font-bold animate-pulse" data-table-id="${table.id}">
+                  🔔 ${pending.length} đơn
+                </button>` : ''}
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     `;
@@ -4421,6 +4810,11 @@ function renderTables() {
       if (e.target.closest('.btn-accept-pending')) return;
       if (e.target.closest('.btn-move-table'))     return;
       if (e.target.closest('.btn-multi-select'))   return;
+      if (e.target.closest('.btn-split-table'))    return;
+      if (e.target.closest('.btn-merge-table'))    return;
+      if (e.target.closest('.btn-unmerge-table'))  return;
+      if (e.target.closest('.btn-checkin-table'))  return;
+      if (e.target.closest('.btn-cancel-res'))     return;
       selectTable(parseInt(card.dataset.tableId));
     });
   });
@@ -4439,8 +4833,24 @@ function renderTables() {
   document.querySelectorAll('.btn-multi-select').forEach(btn => {
     btn.addEventListener('click', e => { e.stopPropagation(); toggleTableMultiSelect(parseInt(btn.dataset.tableId)); });
   });
+  document.querySelectorAll('.btn-split-table').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); showSplitTableModal(parseInt(btn.dataset.tableId)); });
+  });
+  document.querySelectorAll('.btn-merge-table').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); showMergeTableModal(parseInt(btn.dataset.tableId)); });
+  });
+  document.querySelectorAll('.btn-unmerge-table').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); unmergeTable(parseInt(btn.dataset.tableId)); });
+  });
+  document.querySelectorAll('.btn-checkin-table').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); checkInReservation(parseInt(btn.dataset.tableId)); });
+  });
+  document.querySelectorAll('.btn-cancel-res').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); cancelReservation(parseInt(btn.dataset.tableId)); });
+  });
   // Cập nhật thanh multi-select bar
   _updateMultiSelectBar();
+  updateReservationBadge();
 }
 
 // ══════════════════════════════════════════════════
@@ -4874,6 +5284,280 @@ window.executeTableMove = function(fromId, toId) {
   showToast(`✅ Đã chuyển đơn từ ${from.name} → ${to.name}`);
 };
 
+// ══════════════════════════════════════════════════
+//  TÁCH BÀN (Split Table)
+// ══════════════════════════════════════════════════
+function showSplitTableModal(tableId) {
+  const table = state.tables.find(t => t.id === tableId);
+  if (!table) return;
+  const order = table.orderId ? state.orders[table.orderId] : null;
+  if (!order || !order.items.length) { showToast('Bàn này chưa có món để tách!', 'error'); return; }
+  const emptyTables = state.tables.filter(t => t.status === 'empty');
+  if (!emptyTables.length) { showToast('Không còn bàn trống để tách sang!', 'error'); return; }
+
+  showModal(`
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-scale max-h-[90vh] flex flex-col">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-lg">🔀 Tách bàn – ${table.name}</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Chọn món & số lượng cần tách sang bàn khác</p>
+        </div>
+        <button onclick="hideModal()" class="text-slate-300 hover:text-slate-500 text-2xl leading-none">✕</button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-5 space-y-4">
+        <div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Chọn món cần tách</div>
+          <div class="space-y-2">
+            ${order.items.map((item, idx) => `
+              <div class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-200">
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-semibold text-slate-800 truncate">${item.name}${item.note ? ` <span class="text-amber-500 text-xs">(${item.note})</span>` : ''}</div>
+                  <div class="text-xs text-slate-400">Tổng: ×${item.qty} · ${formatCurrency(item.price * item.qty)}</div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button type="button" onclick="_splitQtyChange(${idx},-1,${item.qty})" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold">−</button>
+                  <span id="split-qty-${idx}" class="w-6 text-center font-bold text-sm" data-max="${item.qty}">0</span>
+                  <button type="button" onclick="_splitQtyChange(${idx},1,${item.qty})" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold">+</button>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Tách sang bàn trống</div>
+          <div class="grid grid-cols-2 gap-2">
+            ${emptyTables.map(t => `<button type="button" class="split-dest-btn py-2.5 px-3 rounded-xl border-2 border-slate-200 hover:border-cyan-300 text-sm font-bold text-slate-700 transition-all text-left" data-id="${t.id}">
+              <div class="font-extrabold">${t.name}</div>
+              <div class="text-xs font-normal text-emerald-500">Trống</div>
+            </button>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="p-5 border-t border-slate-200 flex gap-3">
+        <button onclick="hideModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-semibold text-sm">Huỷ</button>
+        <button onclick="executeSplitTable(${tableId})" class="flex-1 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-bold text-sm shadow-md">🔀 Tách bàn</button>
+      </div>
+    </div>
+  `);
+
+  setTimeout(() => {
+    document.querySelectorAll('.split-dest-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.split-dest-btn').forEach(b => b.classList.remove('ring-2','ring-cyan-400','bg-cyan-50'));
+        btn.classList.add('ring-2','ring-cyan-400','bg-cyan-50');
+      });
+    });
+  }, 50);
+}
+
+window._splitQtyChange = function(idx, delta, max) {
+  const el = document.getElementById('split-qty-' + idx);
+  if (!el) return;
+  const cur = parseInt(el.textContent) || 0;
+  const next = Math.max(0, Math.min(max, cur + delta));
+  el.textContent = next;
+};
+
+window.executeSplitTable = function(tableId) {
+  const table = state.tables.find(t => t.id === tableId);
+  const order = table?.orderId ? state.orders[table.orderId] : null;
+  if (!table || !order) return;
+  const destBtn = document.querySelector('.split-dest-btn.ring-2');
+  if (!destBtn) { showToast('Chọn bàn đích!', 'error'); return; }
+  const destId = parseInt(destBtn.dataset.id);
+  const destTable = state.tables.find(t => t.id === destId);
+  if (!destTable) return;
+
+  const qtyEls = document.querySelectorAll('[id^="split-qty-"]');
+  const movedItems = [];
+  let totalMoved = 0;
+  qtyEls.forEach(el => {
+    const idx = parseInt(el.id.replace('split-qty-', ''));
+    const qty = parseInt(el.textContent) || 0;
+    if (qty > 0) { movedItems.push({ idx, qty }); totalMoved += qty; }
+  });
+  if (!totalMoved) { showToast('Chọn ít nhất 1 món để tách!', 'error'); return; }
+
+  const newItems = [];
+  movedItems.forEach(({ idx, qty }) => {
+    const item = order.items[idx];
+    if (!item) return;
+    newItems.push({ ...item, qty });
+    item.qty -= qty;
+  });
+  order.items = order.items.filter(i => i.qty > 0);
+
+  destTable.status = 'occupied';
+  destTable.orderId = generateOrderId();
+  state.orders[destTable.orderId] = { items: newItems, discount: 0, note: 'Tách từ ' + table.name, customerId: null };
+
+  persistState();
+  hideModal();
+  renderTables();
+  renderCart();
+  showToast(`✅ Đã tách ${totalMoved} món từ ${table.name} → ${destTable.name}`);
+};
+
+// ══════════════════════════════════════════════════
+//  GỘP BÀN (Merge Table)
+// ══════════════════════════════════════════════════
+function showMergeTableModal(tableId) {
+  const table = state.tables.find(t => t.id === tableId);
+  if (!table) return;
+  const candidates = state.tables.filter(t => t.id !== tableId && (t.status === 'occupied' || t.status === 'empty'));
+  if (!candidates.length) { showToast('Không có bàn khác để gộp!', 'error'); return; }
+
+  showModal(`
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm animate-scale max-h-[85vh] flex flex-col">
+      <div class="p-5 border-b border-slate-200">
+        <h3 class="font-extrabold text-slate-800 text-lg">🔗 Gộp bàn</h3>
+        <p class="text-xs text-slate-400 mt-1">Gộp toàn bộ đơn của <strong>${table.name}</strong> vào bàn đích</p>
+      </div>
+      <div class="p-4 space-y-2 overflow-y-auto flex-1">
+        ${candidates.map(t => {
+          const ord = t.orderId ? state.orders[t.orderId] : null;
+          const info = t.status === 'occupied' ? `${ord?.items?.length || 0} món · ${t.customerName || 'Không có khách'}` : 'Trống';
+          return `<button onclick="executeMergeTable(${tableId}, ${t.id})"
+            class="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 ${t.status === 'occupied' ? 'border-purple-200 bg-purple-50 hover:bg-purple-100' : 'border-emerald-200 bg-emerald-50 hover:bg-emerald-100'} text-sm font-bold transition-colors text-left">
+            <span>${t.name}</span>
+            <span class="text-xs font-semibold ${t.status === 'occupied' ? 'text-purple-600' : 'text-emerald-600'}">${info}</span>
+          </button>`;
+        }).join('')}
+      </div>
+      <div class="p-4 border-t border-slate-200">
+        <button onclick="hideModal()" class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl font-semibold text-sm">Huỷ</button>
+      </div>
+    </div>
+  `);
+}
+
+window.executeMergeTable = function(srcId, destId) {
+  const src  = state.tables.find(t => t.id === srcId);
+  const dest = state.tables.find(t => t.id === destId);
+  if (!src || !dest) return;
+  const srcOrd = src.orderId ? state.orders[src.orderId] : null;
+  if (!srcOrd) { showToast('Bàn nguồn chưa có đơn!', 'error'); return; }
+
+  if (dest.status === 'empty') {
+    dest.status = 'occupied';
+    dest.orderId = generateOrderId();
+    state.orders[dest.orderId] = { items: [], discount: 0, note: '', customerId: null };
+  }
+  const destOrd = state.orders[dest.orderId];
+
+  srcOrd.items.forEach(item => {
+    const ex = destOrd.items.find(i => i.id === item.id && (i.note || '') === (item.note || ''));
+    if (ex) ex.qty += item.qty;
+    else destOrd.items.push({ ...item });
+  });
+  destOrd.discount = (destOrd.discount || 0) + (srcOrd.discount || 0);
+
+  if (!dest.customerName && src.customerName) {
+    dest.customerName = src.customerName;
+    dest.customerPhone = src.customerPhone;
+    dest.customerId = src.customerId;
+  }
+
+  if (!Array.isArray(dest.mergedFrom)) dest.mergedFrom = [];
+  dest.mergedFrom.push(src.name);
+
+  // Chuyển các đơn bếp (kitchen orders) từ bàn nguồn sang bàn đích
+  (state.kitchenOrders || []).forEach(ko => {
+    if (ko.tableId === srcId) { ko.tableId = destId; ko.tableName = dest.name; }
+  });
+
+  delete state.orders[src.orderId];
+  src.status = 'empty';
+  src.orderId = null;
+  src.customerId = null;
+  src.customerName = null;
+  src.customerPhone = null;
+  src.mergedFrom = [];
+
+  if (state.currentTableId === srcId) state.currentTableId = destId;
+
+  persistState();
+  hideModal();
+  renderTables();
+  renderCart();
+  showToast(`✅ Đã gộp ${src.name} → ${dest.name}`);
+};
+
+function unmergeTable(tableId) {
+  const table = state.tables.find(t => t.id === tableId);
+  if (!table || !table.mergedFrom || !table.mergedFrom.length) { showToast('Bàn này không có gộp!', 'error'); return; }
+  if (!confirm(`Tách gộp ${table.name} (${table.mergedFrom.join(', ')})?\nCác bàn con sẽ trống lại, đơn hàng vẫn giữ nguyên ở ${table.name}.`)) return;
+  table.mergedFrom = [];
+  persistState();
+  renderTables();
+  showToast(`↩ Đã xoá nhãn gộp cho ${table.name}`);
+}
+
+// ══════════════════════════════════════════════════
+//  ĐẶT BÀN — DANH SÁCH / NHẬN BÀN / HUỶ
+// ══════════════════════════════════════════════════
+function updateReservationBadge() {
+  const badge = document.getElementById('reservation-badge');
+  if (!badge) return;
+  const count = state.tables.filter(t => t.status === 'booked').length;
+  if (count > 0) { badge.textContent = count; badge.classList.remove('hidden'); }
+  else { badge.classList.add('hidden'); }
+}
+
+function openReservationList() {
+  const booked = state.tables.filter(t => t.status === 'booked')
+    .sort((a, b) => (a.bookedTime || '').localeCompare(b.bookedTime || ''));
+
+  showModal(`
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-scale max-h-[85vh] flex flex-col">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-extrabold text-slate-800 text-lg">🗓 Danh sách đặt bàn</h3>
+        <button onclick="hideModal()" class="text-slate-300 hover:text-slate-500 text-2xl leading-none">✕</button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-5 space-y-3">
+        ${booked.length ? booked.map(t => `
+          <div class="p-3.5 rounded-xl border-2 border-blue-200 bg-blue-50">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-extrabold text-slate-800">${t.name}</span>
+              <span class="badge bg-blue-100 text-blue-700 text-xs font-bold">⏰ ${t.bookedTime || '--:--'}</span>
+            </div>
+            <div class="text-sm text-slate-600">👤 ${t.customerName || 'Chưa rõ tên'} ${t.customerPhone ? '· 📞 ' + t.customerPhone : ''}</div>
+            <div class="flex gap-2 mt-2.5">
+              <button onclick="checkInReservation(${t.id})" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold text-xs">✅ Nhận bàn</button>
+              <button onclick="cancelReservation(${t.id})" class="flex-1 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-bold text-xs">✕ Huỷ đặt</button>
+            </div>
+          </div>
+        `).join('') : `<div class="text-center text-slate-400 py-10 text-sm">Chưa có bàn nào được đặt trước.</div>`}
+      </div>
+    </div>
+  `);
+}
+
+function checkInReservation(tableId) {
+  const table = state.tables.find(t => t.id === tableId);
+  if (!table || table.status !== 'booked') return;
+  table.status = 'occupied';
+  table.orderId = table.orderId || generateOrderId();
+  if (!state.orders[table.orderId]) state.orders[table.orderId] = { items: [], discount: 0, note: '', customerId: table.customerId || null };
+  persistState();
+  hideModal();
+  renderTables();
+  showToast(`✅ ${table.name} đã nhận khách`);
+}
+
+function cancelReservation(tableId) {
+  const table = state.tables.find(t => t.id === tableId);
+  if (!table || table.status !== 'booked') return;
+  if (!confirm(`Huỷ đặt bàn cho ${table.name}?`)) return;
+  table.status = 'empty';
+  table.customerName = null;
+  table.customerPhone = null;
+  table.bookedTime = null;
+  persistState();
+  hideModal();
+  renderTables();
+  showToast(`✕ Đã huỷ đặt bàn ${table.name}`);
+}
+
 // ── Mở tab thực đơn + giỏ hàng (dùng khi chọn bàn / đơn mang về) ──
 function openMenuTab() {
   document.querySelectorAll('.tab-btn').forEach(b => {
@@ -5067,7 +5751,7 @@ function printTableQR(tableId, qrUrl, tableName) {
   const sc = 'scr'+'ipt';
   const w = window.open('', '_blank', 'width=380,height=500');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR ${tableName}</title>
-  <style>body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;background:#faf5ff;padding:20px}
+  <style>body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Times New Roman',Times,serif;background:#faf5ff;padding:20px}
   .logo{font-size:28px;margin-bottom:6px}.shop{font-size:16px;font-weight:800;color:#6d28d9;margin-bottom:2px}
   .addr{font-size:11px;color:#94a3b8;margin-bottom:16px}.qr-wrap{padding:14px;background:#fff;border-radius:16px;border:2px solid #ddd6fe;box-shadow:0 4px 16px rgba(109,40,217,.12)}
   img{display:block;width:200px;height:200px}.tname{font-size:20px;font-weight:900;color:#6d28d9;margin-top:14px}.hint{font-size:11px;color:#94a3b8;margin-top:6px;text-align:center}
@@ -5749,6 +6433,57 @@ function matchesSearch(name, query) {
   return false;
 }
 
+// Hiệu ứng "fly-to-cart": ảnh món ăn thu nhỏ bay vào icon giỏ hàng khi chọn món
+function flyToCart(sourceImgEl) {
+  const cartBtn = document.getElementById('btn-cart-toggle');
+  if (!sourceImgEl || !cartBtn) return;
+  if (!sourceImgEl.src) return;
+
+  const startRect = sourceImgEl.getBoundingClientRect();
+  const endRect = cartBtn.getBoundingClientRect();
+  if (startRect.width === 0 || startRect.height === 0) return;
+
+  const clone = document.createElement('img');
+  clone.src = sourceImgEl.src;
+  clone.style.cssText = `
+    position: fixed;
+    left: ${startRect.left}px;
+    top: ${startRect.top}px;
+    width: ${startRect.width}px;
+    height: ${startRect.height}px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid #fff;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.28);
+    z-index: 9999;
+    pointer-events: none;
+    will-change: transform, opacity;
+  `;
+  document.body.appendChild(clone);
+
+  const startX = startRect.left, startY = startRect.top;
+  const endX = endRect.left + endRect.width / 2 - startRect.width / 2;
+  const endY = endRect.top + endRect.height / 2 - startRect.height / 2;
+  // Điểm giữa cong lên trên để tạo quỹ đạo bay tự nhiên (như ném vào giỏ)
+  const midX = (startX + endX) / 2 + (Math.random() * 50 - 25);
+  const midY = Math.min(startY, endY) - 90;
+
+  const dx1 = midX - startX, dy1 = midY - startY;
+  const dx2 = endX - startX, dy2 = endY - startY;
+
+  const anim = clone.animate([
+    { transform: 'translate(0px, 0px) scale(1)',              opacity: 1,   offset: 0 },
+    { transform: `translate(${dx1}px, ${dy1}px) scale(0.55)`, opacity: 1,   offset: 0.55 },
+    { transform: `translate(${dx2}px, ${dy2}px) scale(0.08)`, opacity: 0.4, offset: 1 }
+  ], { duration: 650, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
+
+  anim.onfinish = () => {
+    clone.remove();
+    cartBtn.classList.add('cart-bump');
+    setTimeout(() => cartBtn.classList.remove('cart-bump'), 350);
+  };
+}
+
 function filterMenu() {
   const rawSearch = document.getElementById('menu-search').value.trim();
   const activeCategory = document.querySelector('.category-btn.bg-gradient-to-r')?.dataset.category || 'all';
@@ -5770,33 +6505,67 @@ function filterMenu() {
       ? renderBadgeMarkup(bd, item.badgeShape)
       : '';
 
+    // Danh sách nguyên liệu (tra tên từ kho)
+    const ingList = (item.ingredients || []).map(ing => {
+      const inv = state.inventory.find(i => i.id === ing.id);
+      return {
+        name: inv ? inv.name : '(Nguyên liệu đã xoá)',
+        amount: `${ing.inputQty ?? ing.qty} ${ing.inputUnit || ing.unit || ''}`.trim()
+      };
+    });
+    const shownIng = ingList.slice(0, 6);
+    const moreIng = ingList.length - 6;
+    const prepTime = item?.recipe?.prepTime;
+
     return `
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition-all cursor-pointer group relative" data-item-id="${item.id}">
-      <!-- ảnh -->
-      <div class="relative h-32 bg-gradient-to-br from-orange-100 to-pink-100 overflow-hidden">
-        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
-        <!-- Nhãn hiệu góc trái -->
-        ${badgeHtml}
-        <!-- Nút sửa / xóa -->
-        <div class="absolute top-2 right-2 flex gap-1">
-          <button class="btn-edit-item bg-white/90 hover:bg-white p-1.5 rounded-lg shadow-sm transition-colors" data-id="${item.id}" title="Sửa món">
-            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-          </button>
-          <button class="btn-delete-item bg-red-500/90 hover:bg-red-600 p-1.5 rounded-lg shadow-sm transition-colors" data-id="${item.id}" title="Xóa món">
-            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      <!-- info -->
-      <div class="p-3">
-        <h3 class="font-semibold text-slate-800 text-sm mb-1 line-clamp-1">${item.name}</h3>
-        <div class="flex items-center justify-between">
-          <span class="text-orange-600 font-bold text-sm">${formatCurrency(item.price)}</span>
-          <span class="text-xs text-slate-400">${item.unit}</span>
+    <div class="table-card-hover bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition-all relative" data-item-id="${item.id}">
+      <div class="table-flip-outer">
+        <div class="table-flip-inner">
+
+          <!-- MẶT TRƯỚC: ảnh có viền trắng bao quanh, tên dưới-trái, giá dưới-phải -->
+          <div class="table-flip-front menu-flip-front group cursor-pointer p-2">
+            <div class="relative h-44 w-full rounded-lg border-4 border-white shadow-sm bg-gradient-to-br from-orange-100 to-pink-100 overflow-hidden">
+              <img src="${item.image}" alt="${item.name}" class="menu-fly-img w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
+              <!-- Nhãn hiệu góc trái -->
+              ${badgeHtml}
+              <!-- Tên món: dưới, trái -->
+              <h3 class="absolute bottom-1.5 left-1.5 max-w-[65%] bg-white/85 backdrop-blur-sm px-2 py-0.5 rounded-full text-slate-900 text-xs font-bold line-clamp-1 shadow-sm">${item.name}</h3>
+              <!-- Giá: dưới, phải -->
+              <span class="absolute bottom-1.5 right-1.5 bg-white/85 backdrop-blur-sm px-2 py-0.5 rounded-full text-orange-500 text-xs font-extrabold shadow-sm">${formatCurrency(item.price)}</span>
+            </div>
+          </div>
+
+          <!-- MẶT SAU: thành phần nguyên liệu + nút sửa/xoá -->
+          <div class="table-flip-back h-full bg-gradient-to-br from-orange-50 to-white p-3 flex flex-col">
+            <div class="flex items-center justify-between mb-1.5 gap-1">
+              <h3 class="font-extrabold text-slate-800 text-sm line-clamp-1 flex items-center gap-1">
+                🧂 ${item.name}
+              </h3>
+              <div class="flex gap-1 shrink-0">
+                <button class="btn-edit-item bg-white hover:bg-slate-50 border border-slate-200 p-1.5 rounded-lg shadow-sm transition-colors" data-id="${item.id}" title="Sửa món">
+                  <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                </button>
+                <button class="btn-delete-item bg-red-500 hover:bg-red-600 p-1.5 rounded-lg shadow-sm transition-colors" data-id="${item.id}" title="Xóa món">
+                  <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            ${prepTime ? `<div class="text-[11px] text-slate-400 mb-1.5">⏱ ${prepTime} phút chế biến</div>` : ''}
+            <div class="flex-1 space-y-1 overflow-hidden">
+              ${shownIng.length > 0 ? shownIng.map(ing => `
+                <div class="flex items-center justify-between text-xs bg-white/70 rounded-lg px-2 py-1 border border-orange-100">
+                  <span class="text-slate-600 truncate">${ing.name}</span>
+                  <span class="font-semibold text-slate-700 ml-2 shrink-0">${ing.amount}</span>
+                </div>`).join('') + (moreIng > 0 ? `<div class="text-[11px] text-slate-400 text-center pt-0.5">+${moreIng} nguyên liệu nữa…</div>` : '')
+                : `<div class="text-xs text-slate-400 italic text-center py-4">Chưa có công thức<br>Nhấn nút sửa để thêm nguyên liệu</div>`}
+            </div>
+            <div class="text-[10px] text-slate-400 text-center pt-1.5 border-t border-orange-100 mt-1.5">${formatCurrency(item.price)} / ${item.unit}</div>
+          </div>
+
         </div>
       </div>
     </div>`;
@@ -5810,6 +6579,8 @@ function filterMenu() {
   document.querySelectorAll('[data-item-id]').forEach(card => {
     card.addEventListener('click', e => {
       if (!e.target.closest('.btn-edit-item') && !e.target.closest('.btn-delete-item')) {
+        const imgEl = card.querySelector(".menu-fly-img");
+        if (imgEl) flyToCart(imgEl);
         addToCart(parseInt(card.dataset.itemId));
       }
     });
@@ -6907,12 +7678,19 @@ function showReceipt(transaction) {
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
           In hóa đơn
         </button>
+        <button id="btn-print-thermal" class="flex-1 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
+          🖨 Máy in nhiệt
+        </button>
         <button id="btn-export-pdf-real" class="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           Xuất PDF
         </button>
       </div>
     </div>`);
+
+  document.getElementById('btn-print-thermal')?.addEventListener('click', () => {
+    printTransactionThermal(transaction, shop);
+  });
 
   // ── Real PDF export using jsPDF ───────────────────────────
   document.getElementById('btn-export-pdf-real').addEventListener('click', () => {
@@ -6986,24 +7764,37 @@ function showReceipt(transaction) {
 document.getElementById('btn-discount').addEventListener('click', () => {
   const order = getCurrentOrder();
   if (!order) return;
-  
+  const subtotal = order.items.reduce((s,i) => s + i.price * i.qty, 0);
+  const curType = order.discountType || 'amt';
+
   showModal(`
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm animate-scale">
       <div class="p-6 border-b border-slate-200">
-        <h3 class="text-xl font-bold text-slate-800">Giảm giá</h3>
+        <h3 class="text-xl font-bold text-slate-800">🏷 Giảm giá / Voucher</h3>
       </div>
       <div class="p-6 space-y-4">
+        <div class="flex gap-2">
+          <button type="button" id="disc-type-amt" class="disc-type-btn flex-1 py-2 rounded-lg text-sm font-bold border-2 ${curType==='amt'?'border-orange-400 bg-orange-50 text-orange-700':'border-slate-200 text-slate-500'}">Số tiền (đ)</button>
+          <button type="button" id="disc-type-pct" class="disc-type-btn flex-1 py-2 rounded-lg text-sm font-bold border-2 ${curType==='pct'?'border-orange-400 bg-orange-50 text-orange-700':'border-slate-200 text-slate-500'}">Phần trăm (%)</button>
+        </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-2">Số tiền giảm</label>
-          <input type="number" id="discount-amount" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${order.discount || 0}">
+          <label class="block text-sm font-medium text-slate-700 mb-2">Giá trị giảm</label>
+          <input type="number" id="discount-amount" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500" value="${order.discount ? (curType==='pct' ? order.discountRaw||'' : order.discount) : ''}" oninput="previewVoucherDiscount()">
         </div>
-        <div class="grid grid-cols-3 gap-2">
-          <button onclick="setDiscount(10000)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium">10k</button>
-          <button onclick="setDiscount(20000)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium">20k</button>
-          <button onclick="setDiscount(50000)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium">50k</button>
+        <div class="grid grid-cols-3 gap-2" id="voucher-preset-amt" style="${curType==='pct'?'display:none':''}">
+          <button type="button" onclick="applyVoucherPreset(10000,'amt')" class="voucher-chip-btn px-3 py-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-700 rounded-lg text-sm font-medium transition-colors">-10k</button>
+          <button type="button" onclick="applyVoucherPreset(20000,'amt')" class="voucher-chip-btn px-3 py-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-700 rounded-lg text-sm font-medium transition-colors">-20k</button>
+          <button type="button" onclick="applyVoucherPreset(50000,'amt')" class="voucher-chip-btn px-3 py-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-700 rounded-lg text-sm font-medium transition-colors">-50k</button>
         </div>
+        <div class="grid grid-cols-3 gap-2" id="voucher-preset-pct" style="${curType==='pct'?'':'display:none'}">
+          <button type="button" onclick="applyVoucherPreset(10,'pct')" class="voucher-chip-btn px-3 py-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-700 rounded-lg text-sm font-medium transition-colors">-10%</button>
+          <button type="button" onclick="applyVoucherPreset(15,'pct')" class="voucher-chip-btn px-3 py-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-700 rounded-lg text-sm font-medium transition-colors">-15%</button>
+          <button type="button" onclick="applyVoucherPreset(20,'pct')" class="voucher-chip-btn px-3 py-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-700 rounded-lg text-sm font-medium transition-colors">-20%</button>
+        </div>
+        <div id="voucher-preview" class="text-sm font-semibold text-orange-600 min-h-[20px]"></div>
       </div>
       <div class="p-6 border-t border-slate-200 flex gap-3">
+        <button onclick="clearVoucherDiscount()" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg font-medium transition-colors text-sm">Bỏ giảm</button>
         <button onclick="hideModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
           Hủy
         </button>
@@ -7013,18 +7804,59 @@ document.getElementById('btn-discount').addEventListener('click', () => {
       </div>
     </div>
   `);
-  
+
+  let _discType = curType;
+
+  window.applyVoucherPreset = (val, type) => {
+    _discType = type;
+    document.getElementById('discount-amount').value = val;
+    document.querySelectorAll('.disc-type-btn').forEach(b => b.classList.remove('border-orange-400','bg-orange-50','text-orange-700'));
+    document.querySelectorAll('.disc-type-btn').forEach(b => b.classList.add('border-slate-200','text-slate-500'));
+    const activeBtn = document.getElementById(type === 'pct' ? 'disc-type-pct' : 'disc-type-amt');
+    activeBtn.classList.remove('border-slate-200','text-slate-500');
+    activeBtn.classList.add('border-orange-400','bg-orange-50','text-orange-700');
+    document.getElementById('voucher-preset-amt').style.display = type === 'pct' ? 'none' : '';
+    document.getElementById('voucher-preset-pct').style.display = type === 'pct' ? '' : 'none';
+    previewVoucherDiscount();
+  };
+
+  document.getElementById('disc-type-amt').addEventListener('click', () => { _discType = 'amt'; window.applyVoucherPreset(parseFloat(document.getElementById('discount-amount').value)||0, 'amt'); });
+  document.getElementById('disc-type-pct').addEventListener('click', () => { _discType = 'pct'; window.applyVoucherPreset(parseFloat(document.getElementById('discount-amount').value)||0, 'pct'); });
+
+  window.previewVoucherDiscount = () => {
+    const val = parseFloat(document.getElementById('discount-amount').value) || 0;
+    const prev = document.getElementById('voucher-preview');
+    if (!val) { prev.textContent = ''; return; }
+    const saved = _discType === 'pct' ? Math.round(subtotal * val / 100) : Math.min(val, subtotal);
+    prev.textContent = `Giảm ${_discType === 'pct' ? val + '%' : formatCurrency(val)} → tiết kiệm ${formatCurrency(saved)} · Còn lại: ${formatCurrency(subtotal - saved)}`;
+  };
+
   window.setDiscount = (amount) => {
     document.getElementById('discount-amount').value = amount;
+    previewVoucherDiscount();
   };
-  
+
   window.applyDiscount = () => {
-    const amount = parseInt(document.getElementById('discount-amount').value) || 0;
+    const val = parseFloat(document.getElementById('discount-amount').value) || 0;
+    const amount = _discType === 'pct' ? Math.round(subtotal * val / 100) : Math.min(val, subtotal);
     order.discount = amount;
+    order.discountType = _discType;
+    order.discountRaw = val;
     hideModal();
     renderCart();
     showToast('Đã áp dụng giảm giá');
   };
+
+  window.clearVoucherDiscount = () => {
+    order.discount = 0;
+    order.discountType = 'amt';
+    order.discountRaw = 0;
+    hideModal();
+    renderCart();
+    showToast('Đã bỏ giảm giá');
+  };
+
+  previewVoucherDiscount();
 });
 
 document.getElementById('btn-note').addEventListener('click', () => {
@@ -7068,16 +7900,64 @@ function renderAppChannelsBar() {
   const activeChannels = (state.appChannels || []).filter(c => c.active);
   if (activeChannels.length === 0) { bar.innerHTML = ''; return; }
   bar.innerHTML = activeChannels.map(ch => `
-    <button onclick="addTakeawayQueue('${ch.id}')"
-      class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition-all hover:opacity-80 active:scale-95"
-      style="border-color:${ch.color};color:${ch.color};background:${ch.color}18">
-      ${appLogoHtml(ch, 22)} ${ch.name}
-    </button>
+    <div class="relative inline-flex">
+      <button onclick="addTakeawayQueue('${ch.id}')"
+        class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition-all hover:opacity-80 active:scale-95"
+        style="border-color:${ch.color};color:${ch.color};background:${ch.color}18">
+        ${appLogoHtml(ch, 22)} ${ch.name}
+      </button>
+      <button onclick="event.stopPropagation(); deleteAppChannelById('${ch.id}')"
+        class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 text-white text-[10px] leading-none flex items-center justify-center shadow transition-colors"
+        title="Xoá kênh ${ch.name}">✕</button>
+    </div>
   `).join('') + `
     <button onclick="addTakeawayQueue('direct')"
       class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-slate-300 text-slate-600 bg-slate-50 hover:bg-slate-100 transition-all">
       🛍 Trực tiếp
     </button>`;
+}
+
+// Bảng màu cho hình minh hoạ giỏ mang về theo trạng thái đơn
+function takeawayVisualColors(bagState) {
+  const map = {
+    empty:   { bag: '#94a3b8', bagLight: '#cbd5e1', bagDark: '#64748b', handle: '#64748b', glow: '148,163,184' },
+    new:     { bag: '#8b5cf6', bagLight: '#c4b5fd', bagDark: '#6d28d9', handle: '#7c3aed', glow: '139,92,246' },
+    pending: { bag: '#ef4444', bagLight: '#fca5a5', bagDark: '#b91c1c', handle: '#dc2626', glow: '239,68,68' },
+    cooking: { bag: '#f59e0b', bagLight: '#fcd34d', bagDark: '#b45309', handle: '#d97706', glow: '245,158,11' },
+    done:    { bag: '#10b981', bagLight: '#6ee7b7', bagDark: '#047857', handle: '#059669', glow: '16,185,129' }
+  };
+  return map[bagState] || map.empty;
+}
+
+// Hình minh hoạ giỏ mang về (phong cách hiện đại, tách quai/thân) theo màu trạng thái
+// Đơn "có món" hiển thị to gấp 3 lần lúc "trống" — đồng bộ với hình bàn
+function renderTakeawayVisual(slotIndex, label, bagState, big) {
+  const c = takeawayVisualColors(bagState);
+  const box = big ? 168 : 56;
+  const uid = 'twv' + slotIndex;
+
+  return `
+    <div class="table-visual-wrap ${big ? 'table-visual-occupied' : ''}" style="width:${box}px;height:${box}px;--tv-glow:${c.glow};">
+      <svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="grad-${uid}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${c.bagLight}"/>
+            <stop offset="100%" stop-color="${c.bag}"/>
+          </linearGradient>
+        </defs>
+        <!-- Bóng đổ -->
+        <ellipse cx="100" cy="177" rx="58" ry="10" fill="${c.bagDark}" opacity="0.15"/>
+        <!-- Quai giỏ: tách rời khỏi thân -->
+        <path d="M76,80 C76,42 124,42 124,80" fill="none" stroke="${c.handle}" stroke-width="9" stroke-linecap="round"/>
+        <!-- Thân giỏ -->
+        <path d="M62,78 L138,78 L150,168 Q150,176 142,176 L58,176 Q50,176 50,168 Z" fill="url(#grad-${uid})" stroke="${c.bagDark}" stroke-width="3" stroke-linejoin="round"/>
+        <!-- Nắp gấp trên thân -->
+        <rect x="58" y="74" width="84" height="14" rx="7" fill="${c.bagDark}" opacity="0.45"/>
+        <!-- Số thứ tự đơn -->
+        <text x="100" y="140" text-anchor="middle" font-family="Segoe UI, Roboto, Arial" font-size="34" font-weight="800" fill="#ffffff">${label}</text>
+      </svg>
+    </div>
+  `;
 }
 
 function renderTakeaway() {
@@ -7154,95 +8034,133 @@ function renderTakeaway() {
       : isFirst ? 'bg-emerald-500 text-white'
       : 'bg-blue-400 text-white';
 
+    // Trạng thái màu cho hình giỏ mang về (đồng bộ với hình bàn)
+    let bagState = 'empty';
+    if (order) {
+      if (!hasAnyItems || twKos.length === 0) bagState = 'new';
+      else if (twKStatuses.every(s => s === 'done')) bagState = 'done';
+      else if (twKStatuses.some(s => s === 'cooking')) bagState = 'cooking';
+      else bagState = 'pending';
+    }
+    const bagBig = hasAnyItems; // phóng to gấp 3 khi đơn đã có món, giống bàn có khách
+
     return `
-      <div class="rounded-2xl shadow-sm border-2 ${headerClass} p-4 transition-all flex flex-col gap-2">
-        <!-- Header -->
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="w-7 h-7 rounded-full ${slotNumClass} flex items-center justify-center font-extrabold text-sm shrink-0">${slotIndex + 1}</span>
-            <div>
-              <div class="font-extrabold text-slate-800 text-sm leading-tight">${slotLabel}</div>
-              ${order ? `<div class="text-xs text-slate-400">${new Date(order.createdAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</div>` : '<div class="text-xs text-slate-400 italic">Trống</div>'}
+      <div class="table-card-hover rounded-2xl shadow-sm border-2 ${headerClass} p-4 transition-all relative">
+        <div class="table-flip-outer">
+          <div class="table-flip-inner">
+
+            <!-- MẶT TRƯỚC: chỉ hình giỏ mang về theo màu trạng thái -->
+            <div class="table-flip-front">
+              ${renderTakeawayVisual(slotIndex, slotIndex + 1, bagState, bagBig)}
+              <div class="font-extrabold text-sm text-slate-800 mt-1">${slotLabel}</div>
+              <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Rê chuột để xem chi tiết
+              </div>
             </div>
-          </div>
-          <div class="flex items-center gap-1.5 flex-wrap justify-end">
-            ${channelBadge}
-            ${statusPill}
-            ${hasAnyItems ? `<span class="badge bg-blue-100 text-blue-700 text-xs">${totalQty} món</span>` : ''}
+
+            <!-- MẶT SAU: toàn bộ chi tiết + chức năng để chọn / xem thông tin -->
+            <div class="table-flip-back flex flex-col gap-2">
+              <!-- Header -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-full ${slotNumClass} flex items-center justify-center font-extrabold text-sm shrink-0">${slotIndex + 1}</span>
+                  <div>
+                    <div class="font-extrabold text-slate-800 text-sm leading-tight">${slotLabel}</div>
+                    ${order ? `<div class="text-xs text-slate-400">${new Date(order.createdAt).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}</div>` : '<div class="text-xs text-slate-400 italic">Trống</div>'}
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  ${channelBadge}
+                  ${statusPill}
+                  ${hasAnyItems ? `<span class="badge bg-blue-100 text-blue-700 text-xs">${totalQty} món</span>` : ''}
+                </div>
+              </div>
+
+              ${order ? `
+                ${ch ? `
+                <!-- Mã đơn do app cung cấp (thay cho gắn khách hàng) -->
+                <div class="w-full flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all" style="border-color:${ch.color}55;background:${ch.color}10;color:${ch.color}">
+                  ${appLogoHtml(ch, 16)}
+                  <input type="text" class="tw-order-code-input flex-1 bg-transparent outline-none placeholder:text-slate-400"
+                    placeholder="Nhập mã đơn ${ch.name}..." value="${order.appOrderCode || ''}" data-slot="${slotIndex}">
+                </div>
+                ` : `
+                <!-- Khách -->
+                <button onclick="showTakeawayQueueCustomerModal(${slotIndex})"
+                  class="w-full flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all
+                  ${isVangLai ? 'border-dashed border-slate-300 text-slate-400 hover:border-blue-400 hover:text-blue-500' : 'border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100'}">
+                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  ${isVangLai ? '+ Gắn khách hàng' : `👤 ${displayName}`}
+                </button>
+                `}
+
+                <!-- Danh sách món -->
+                <div class="space-y-0.5 min-h-6">
+                  ${hasAnyItems ? (() => {
+                    // Gộp items từ cart + kitchen để hiển thị tối đa 3 dòng
+                    const cartItemsDisplay = hasItems ? order.items.map(item => ({
+                      name: item.name, note: item.note || '', qty: item.qty,
+                      priceStr: formatCurrency(item.price * item.qty)
+                    })) : [];
+                    const kitchenItemsDisplay = kitchenItems.map(i => {
+                      const menuItem = (state.menuItems || []).find(m => m.id === i.id);
+                      return { name: i.name, note: i.note || '', qty: i.qty,
+                        priceStr: menuItem ? formatCurrency(menuItem.price * i.qty) : '' };
+                    });
+                    const allDisplay = [...cartItemsDisplay, ...kitchenItemsDisplay];
+                    const shown = allDisplay.slice(0, 3);
+                    const more = allDisplay.length - 3;
+                    return shown.map(item => `
+                      <div class="flex justify-between text-xs text-slate-600">
+                        <span class="truncate">${item.name}${item.note ? ` <span class='text-amber-500'>(${item.note})</span>` : ''} ×${item.qty}</span>
+                        <span class="font-semibold ml-2 shrink-0">${item.priceStr}</span>
+                      </div>`).join('') + (more > 0 ? `<div class="text-xs text-slate-400">+${more} món nữa…</div>` : '');
+                  })() : '<div class="text-xs text-slate-400 italic">Chưa có món — nhấn Gọi món để đặt</div>'}
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-1.5 pt-2 border-t border-slate-100 flex-wrap">
+                  <button onclick="selectTakeawaySlot(${slotIndex})"
+                    class="flex-1 py-2 rounded-xl font-bold text-xs transition-all ${isSelected
+                      ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow'
+                      : 'bg-slate-100 hover:bg-orange-100 text-slate-600 hover:text-orange-700 border border-slate-200'}">
+                    ${isSelected ? '✅ Đang chọn' : '📋 Gọi món'}
+                  </button>
+                  ${canTransfer ? `
+                  <button onclick="showTransferTakeawayModal(${slotIndex})"
+                    class="px-2.5 py-2 rounded-xl text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition-colors" title="Dồn món sang đơn khác">
+                    ⇄ Dồn
+                  </button>` : ''}
+                  <button class="btn-tw-complete flex-1 py-2 rounded-xl font-bold text-xs transition-all ${hasAnyItems ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow hover:opacity-90' : 'bg-slate-100 text-slate-300 cursor-not-allowed'}"
+                    data-slot="${slotIndex}" ${!hasAnyItems ? 'disabled' : ''}>
+                    💳 Thanh toán
+                  </button>
+                  <button class="btn-tw-print px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${hasAnyItems ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' : 'bg-slate-50 text-slate-300 cursor-not-allowed'}"
+                    data-slot="${slotIndex}" ${!hasAnyItems ? 'disabled' : ''}>
+                    🖨
+                  </button>
+                  <button onclick="cancelTakeawaySlot(${slotIndex})"
+                    class="px-3 py-2 rounded-xl text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-500 transition-colors" title="Huỷ đơn">
+                    ✕
+                  </button>
+                </div>
+              ` : `
+                <div class="text-center py-4 text-slate-300 text-sm">
+                  <div class="text-2xl mb-1">⬆️</div>
+                  <div>Đơn mới sẽ dồn lên đây</div>
+                </div>
+              `}
+
+              ${hasAnyItems ? `
+                <div class="flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2">
+                  <span class="text-xs text-slate-500">${totalQty} món</span>
+                  <span class="font-extrabold text-base ${isFirst ? 'text-emerald-600' : 'text-blue-600'}">${formatCurrency(total)}</span>
+                </div>` : ''}
+            </div>
+
           </div>
         </div>
-
-        ${order ? `
-          <!-- Khách -->
-          <button onclick="showTakeawayQueueCustomerModal(${slotIndex})"
-            class="w-full flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all
-            ${isVangLai ? 'border-dashed border-slate-300 text-slate-400 hover:border-blue-400 hover:text-blue-500' : 'border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100'}">
-            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            ${isVangLai ? '+ Gắn khách hàng' : `👤 ${displayName}`}
-          </button>
-
-          <!-- Danh sách món -->
-          <div class="space-y-0.5 min-h-6">
-            ${hasAnyItems ? (() => {
-              // Gộp items từ cart + kitchen để hiển thị tối đa 3 dòng
-              const cartItemsDisplay = hasItems ? order.items.map(item => ({
-                name: item.name, note: item.note || '', qty: item.qty,
-                priceStr: formatCurrency(item.price * item.qty)
-              })) : [];
-              const kitchenItemsDisplay = kitchenItems.map(i => {
-                const menuItem = (state.menuItems || []).find(m => m.id === i.id);
-                return { name: i.name, note: i.note || '', qty: i.qty,
-                  priceStr: menuItem ? formatCurrency(menuItem.price * i.qty) : '' };
-              });
-              const allDisplay = [...cartItemsDisplay, ...kitchenItemsDisplay];
-              const shown = allDisplay.slice(0, 3);
-              const more = allDisplay.length - 3;
-              return shown.map(item => `
-                <div class="flex justify-between text-xs text-slate-600">
-                  <span class="truncate">${item.name}${item.note ? ` <span class='text-amber-500'>(${item.note})</span>` : ''} ×${item.qty}</span>
-                  <span class="font-semibold ml-2 shrink-0">${item.priceStr}</span>
-                </div>`).join('') + (more > 0 ? `<div class="text-xs text-slate-400">+${more} món nữa…</div>` : '');
-            })() : '<div class="text-xs text-slate-400 italic">Chưa có món — nhấn Gọi món để đặt</div>'}
-          </div>
-
-          <!-- Actions -->
-          <div class="flex gap-1.5 pt-2 border-t border-slate-100 flex-wrap">
-            <button onclick="selectTakeawaySlot(${slotIndex})"
-              class="flex-1 py-2 rounded-xl font-bold text-xs transition-all ${isSelected
-                ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow'
-                : 'bg-slate-100 hover:bg-orange-100 text-slate-600 hover:text-orange-700 border border-slate-200'}">
-              ${isSelected ? '✅ Đang chọn' : '📋 Gọi món'}
-            </button>
-            ${canTransfer ? `
-            <button onclick="showTransferTakeawayModal(${slotIndex})"
-              class="px-2.5 py-2 rounded-xl text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition-colors" title="Dồn món sang đơn khác">
-              ⇄ Dồn
-            </button>` : ''}
-            <button class="btn-tw-complete flex-1 py-2 rounded-xl font-bold text-xs transition-all ${hasAnyItems ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow hover:opacity-90' : 'bg-slate-100 text-slate-300 cursor-not-allowed'}"
-              data-slot="${slotIndex}" ${!hasAnyItems ? 'disabled' : ''}>
-              💳 Thanh toán
-            </button>
-            <button class="btn-tw-print px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${hasAnyItems ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' : 'bg-slate-50 text-slate-300 cursor-not-allowed'}"
-              data-slot="${slotIndex}" ${!hasAnyItems ? 'disabled' : ''}>
-              🖨
-            </button>
-            <button onclick="cancelTakeawaySlot(${slotIndex})"
-              class="px-3 py-2 rounded-xl text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-500 transition-colors" title="Huỷ đơn">
-              ✕
-            </button>
-          </div>
-        ` : `
-          <div class="text-center py-4 text-slate-300 text-sm">
-            <div class="text-2xl mb-1">⬆️</div>
-            <div>Đơn mới sẽ dồn lên đây</div>
-          </div>
-        `}
-
-        ${hasAnyItems ? `
-          <div class="flex items-center justify-between bg-slate-50 rounded-xl px-3 py-2">
-            <span class="text-xs text-slate-500">${totalQty} món</span>
-            <span class="font-extrabold text-base ${isFirst ? 'text-emerald-600' : 'text-blue-600'}">${formatCurrency(total)}</span>
-          </div>` : ''}
       </div>`;
   }).join('');
 
@@ -7253,6 +8171,20 @@ function renderTakeaway() {
   document.querySelectorAll('.btn-tw-print').forEach(btn => {
     btn.addEventListener('click', () => printTakeawaySlot(parseInt(btn.dataset.slot)));
   });
+  document.querySelectorAll('.tw-order-code-input').forEach(input => {
+    input.addEventListener('change', () => saveTakeawayOrderCode(parseInt(input.dataset.slot), input.value));
+    input.addEventListener('click', e => e.stopPropagation());
+  });
+}
+
+// Lưu mã đơn do app cung cấp (Grab/Be/Shopee/Xanh SM...) thay cho việc gắn khách hàng
+window.saveTakeawayOrderCode = function(slotIndex, value) {
+  const queue = state.takeawayQueue || [];
+  const order = queue[slotIndex];
+  if (!order) return;
+  order.appOrderCode = value.trim();
+  persistState();
+  showToast('✅ Đã lưu mã đơn');
 }
 
 // ── Thêm đơn vào queue ────────────────────────────────────────
@@ -7264,6 +8196,7 @@ function addTakeawayQueue(channel) {
     items: [], discount: 0, note: '',
     customerId: null, customerName: '', customerPhone: '',
     channel: channel,
+    appOrderCode: '',
     createdAt: new Date().toISOString()
   });
   const newSlotIndex = state.takeawayQueue.length - 1;
@@ -7648,6 +8581,9 @@ window.showManageAppChannelsModal = function() {
               <div class="w-9 h-5 bg-slate-200 peer-checked:bg-emerald-500 rounded-full transition-colors"></div>
               <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4 shadow"></div>
             </label>
+            <button onclick="deleteAppChannel(${i})" class="p-1.5 rounded-lg text-red-500 hover:bg-red-100 transition-colors shrink-0" title="Xoá kênh ${ch.name}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
           </div>`).join('')}
       </div>
       <div class="px-4 pb-4 space-y-2">
@@ -7677,6 +8613,31 @@ window.toggleAppChannel = function(idx) {
     persistState();
     renderAppChannelsBar();
   }
+};
+
+window.deleteAppChannel = function(idx) {
+  const ch = state.appChannels && state.appChannels[idx];
+  if (!ch) return;
+  if (!confirm(`Xoá kênh "${ch.name}"? Các đơn cũ dùng kênh này vẫn giữ nguyên nhưng sẽ không hiện tên/logo kênh nữa.`)) return;
+  state.appChannels.splice(idx, 1);
+  persistState();
+  renderAppChannelsBar();
+  renderTakeaway();
+  showManageAppChannelsModal(); // vẽ lại danh sách trong modal
+  showToast(`🗑 Đã xoá kênh ${ch.name}`);
+};
+
+// Xoá kênh theo id — dùng cho nút xoá nhanh ngay trên thanh chọn kênh ở tab Mang về
+window.deleteAppChannelById = function(id) {
+  const idx = (state.appChannels || []).findIndex(c => c.id === id);
+  if (idx === -1) return;
+  const ch = state.appChannels[idx];
+  if (!confirm(`Xoá kênh "${ch.name}"? Các đơn cũ dùng kênh này vẫn giữ nguyên nhưng sẽ không hiện tên/logo kênh nữa.`)) return;
+  state.appChannels.splice(idx, 1);
+  persistState();
+  renderAppChannelsBar();
+  renderTakeaway();
+  showToast(`🗑 Đã xoá kênh ${ch.name}`);
 };
 
 window.addAppChannel = function() {
@@ -7743,20 +8704,7 @@ function showEditFoodModal(itemId = null) {
         <!-- NHÃN HIỆU -->
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-2">🏷 Nhãn hiệu <span class="text-xs text-slate-400 font-normal">(hiện góc trái ảnh món)</span></label>
-          <div class="flex flex-wrap gap-2 mb-2" id="badge-picker">
-            <button type="button" onclick="selectBadge('',this)"
-              class="badge-opt px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all
-                ${!item?.badge ? 'border-slate-800 bg-slate-800 text-white' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'}">
-              Không nhãn
-            </button>
-            ${getBadges().map(b => `
-              <button type="button" onclick="selectBadge('${b.key}',this)"
-                class="badge-opt px-3 py-1.5 rounded-full text-xs font-extrabold border-2 transition-all bg-gradient-to-r ${badgeColorFor(b)} text-white shadow-sm
-                  ${item?.badge === b.key ? 'border-slate-900 scale-110 shadow-lg' : 'border-white/70 opacity-90 hover:opacity-100 hover:scale-110 hover:shadow-lg'}"
-                data-key="${b.key}">
-                <span class="inline-flex items-center gap-1"><span class="bg-white text-orange-600 rounded-full w-4 h-4 inline-flex items-center justify-center text-[10px]">${b.icon || badgeIconFor(b.key,b.text)}</span>${b.text}</span>
-              </button>`).join('')}
-          </div>
+          <div class="flex flex-wrap gap-2 mb-2" id="badge-picker"></div>
           <!-- Thêm nhãn tuỳ chỉnh -->
           <div class="flex gap-2 mt-1 items-center">
             <input id="custom-badge-text" type="text" maxlength="15" placeholder="Nhãn tùy chỉnh..." 
@@ -7811,6 +8759,7 @@ function showEditFoodModal(itemId = null) {
               </button>`
             : `<p class="text-xs text-slate-400">Vào tab <strong>Kho</strong> để thêm nguyên liệu trước</p>`
           }
+          <div id="cogs-preview" class="mt-3 p-3 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 text-xs"></div>
         </div>
 
         <!-- CÔNG THỨC LÀM MÓN -->
@@ -7892,6 +8841,14 @@ function showEditFoodModal(itemId = null) {
       addIngredientRow(ing.id, ing.inputQty || ing.qty, ing.inputUnit || ing.unit || '');
     });
   }
+  updateCOGSPreview();
+  document.getElementById('ingredient-list')?.addEventListener('input', (e) => {
+    if (e.target.classList.contains('ingredient-qty')) updateCOGSPreview();
+  });
+  document.getElementById('ingredient-list')?.addEventListener('change', (e) => {
+    if (e.target.classList.contains('ingredient-unit')) updateCOGSPreview();
+  });
+  document.getElementById('food-price')?.addEventListener('input', updateCOGSPreview);
   
   document.getElementById('food-image').addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -7951,7 +8908,7 @@ function showEditFoodModal(itemId = null) {
 
   // Init badge picker selection state from item
   const picker = document.getElementById('badge-picker');
-  if (picker) picker.dataset.selected = item?.badge || '';
+  if (picker) { picker.dataset.selected = item?.badge || ''; renderBadgePickerOptions(); }
 
   // Init badge shape picker
   const shapePicker = document.getElementById('badge-shape-picker');
@@ -7967,6 +8924,80 @@ window.selectBadgeShape = function(shape, el) {
 };
 
 // ── Badge picker helpers ──────────────────────────────────────
+// Vẽ lại toàn bộ danh sách chip nhãn (dùng chung khi mở modal / sau khi sửa / xoá nhãn)
+window.renderBadgePickerOptions = function() {
+  const picker = document.getElementById('badge-picker');
+  if (!picker) return;
+  const selectedKey = picker.dataset.selected || '';
+  const customKeys = new Set((state.settings.customBadges || []).map(b => b.key));
+
+  picker.innerHTML = `
+    <button type="button" onclick="selectBadge('',this)"
+      class="badge-opt px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-all
+        ${!selectedKey ? 'border-slate-800 bg-slate-800 text-white' : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400'}">
+      Không nhãn
+    </button>
+    ${getBadges().map(b => {
+      const isCustom = customKeys.has(b.key);
+      return `
+      <div class="relative inline-flex">
+        <button type="button" onclick="selectBadge('${b.key}',this)"
+          class="badge-opt px-3 py-1.5 rounded-full text-xs font-extrabold border-2 transition-all bg-gradient-to-r ${badgeColorFor(b)} text-white shadow-sm
+            ${selectedKey === b.key ? 'border-slate-900 scale-110 shadow-lg' : 'border-white/70 opacity-90 hover:opacity-100 hover:scale-110 hover:shadow-lg'}"
+          data-key="${b.key}">
+          <span class="inline-flex items-center gap-1">${b.text}</span>
+        </button>
+        <span class="absolute -top-1.5 -right-1.5 flex gap-1">
+          ${isCustom ? `<button type="button" onclick="event.stopPropagation(); editBadgeLabel('${b.key}')" title="Sửa nhãn"
+            class="w-4 h-4 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-[9px] leading-none flex items-center justify-center shadow">✎</button>` : ''}
+          <button type="button" onclick="event.stopPropagation(); deleteBadgeLabel('${b.key}')" title="Xoá nhãn"
+            class="w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 text-white text-[9px] leading-none flex items-center justify-center shadow">✕</button>
+        </span>
+      </div>`;
+    }).join('')}
+  `;
+};
+
+// Sửa nhãn tuỳ chỉnh (chỉ áp dụng cho nhãn do quán tự thêm)
+window.editBadgeLabel = function(key) {
+  const badge = (state.settings.customBadges || []).find(b => b.key === key);
+  if (!badge) { showToast('Không thể sửa nhãn mặc định của hệ thống', 'error'); return; }
+  const newText = prompt('Sửa tên nhãn:', badge.text);
+  if (newText === null) return;
+  const trimmed = newText.trim();
+  if (!trimmed) { showToast('Tên nhãn không được để trống', 'error'); return; }
+  badge.text = trimmed;
+  schedulePersist();
+  renderBadgePickerOptions();
+  filterMenu(); // cập nhật lại nhãn hiển thị trên các món đang dùng nhãn này
+  showToast('Đã cập nhật nhãn');
+};
+
+// Xoá nhãn: nhãn tuỳ chỉnh -> xoá khỏi danh sách; nhãn mặc định -> ẩn đi (không xoá được vĩnh viễn khỏi hệ thống)
+window.deleteBadgeLabel = function(key) {
+  const isCustom = (state.settings.customBadges || []).some(b => b.key === key);
+  const badge = badgeStyle(key);
+  if (!confirm(`Xoá nhãn "${badge.text}"? Các món đang gắn nhãn này sẽ không còn hiện nhãn.`)) return;
+
+  if (isCustom) {
+    state.settings.customBadges = state.settings.customBadges.filter(b => b.key !== key);
+  } else {
+    if (!state.settings.hiddenBadgeKeys) state.settings.hiddenBadgeKeys = [];
+    if (!state.settings.hiddenBadgeKeys.includes(key)) state.settings.hiddenBadgeKeys.push(key);
+  }
+
+  // Gỡ nhãn khỏi các món đang dùng nhãn vừa xoá
+  (state.menuItems || []).forEach(i => { if (i.badge === key) i.badge = ''; });
+
+  const picker = document.getElementById('badge-picker');
+  if (picker && picker.dataset.selected === key) picker.dataset.selected = '';
+
+  schedulePersist();
+  renderBadgePickerOptions();
+  filterMenu();
+  showToast('🗑 Đã xoá nhãn');
+};
+
 window.selectBadge = function(key, el) {
   const picker = document.getElementById('badge-picker');
   if (picker) picker.dataset.selected = key;
@@ -7995,21 +9026,15 @@ window.addCustomBadge = function() {
   const key = 'custom_' + Date.now();
   const colors = ['from-orange-500 via-pink-500 to-rose-500','from-teal-400 via-cyan-400 to-blue-500','from-indigo-500 via-violet-500 to-fuchsia-500','from-lime-400 via-emerald-500 to-teal-500'];
   const color  = colors[Math.floor(Math.random() * colors.length)];
-  const newBadge = { key, text, icon: text.charAt(0).toUpperCase(), color };
+  const newBadge = { key, text, color };
   if (!state.settings.customBadges) state.settings.customBadges = [];
   state.settings.customBadges.push(newBadge);
   schedulePersist();
-  // Add button to picker
+
   const picker = document.getElementById('badge-picker');
   if (picker) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.dataset.key = key;
-    btn.className = `badge-opt px-3 py-1.5 rounded-full text-xs font-extrabold border-2 transition-all bg-gradient-to-r ${color} text-white border-white/70 opacity-90 hover:opacity-100 hover:scale-110 hover:shadow-lg`;
-    btn.innerHTML = `<span class="inline-flex items-center gap-1"><span class="bg-white text-orange-600 rounded-full w-4 h-4 inline-flex items-center justify-center text-[10px]">${newBadge.icon}</span>${text}</span>`;
-    btn.onclick = () => window.selectBadge(key, btn);
-    picker.insertBefore(btn, picker.lastElementChild.nextSibling);
-    window.selectBadge(key, btn);
+    picker.dataset.selected = key;
+    renderBadgePickerOptions();
   }
   if (input) input.value = '';
   showToast(`✅ Đã thêm nhãn "${text}"`);
@@ -8041,7 +9066,11 @@ window.reindexSteps = function() {
 // ==================== INVENTORY ====================
 function renderInventory() {
   const tbody = document.getElementById('inventory-tbody');
-  tbody.innerHTML = state.inventory.map(item => {
+  const searchInput = document.getElementById('inventory-search');
+  const q = (searchInput?.value || '').trim().toLowerCase();
+  const list = state.inventory.filter(item => !q || item.name.toLowerCase().includes(q));
+
+  tbody.innerHTML = list.map(item => {
     const status = item.stock <= item.minStock ? 
       '<span class="badge bg-red-100 text-red-700">Sắp hết</span>' : 
       '<span class="badge bg-emerald-100 text-emerald-700">Còn hàng</span>';
@@ -8066,7 +9095,12 @@ function renderInventory() {
         </td>
       </tr>
     `;
-  }).join('');
+  }).join('') || `<tr><td colspan="6" class="px-4 py-10 text-center text-slate-400 text-sm">Không tìm thấy nguyên liệu phù hợp</td></tr>`;
+
+  if (searchInput && !searchInput._boundSearch) {
+    searchInput._boundSearch = true;
+    searchInput.addEventListener('input', renderInventory);
+  }
   
   document.querySelectorAll('.btn-edit-inventory').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -8090,6 +9124,93 @@ function renderInventory() {
 document.getElementById('btn-add-ingredient').addEventListener('click', () => {
   showEditInventoryModal();
 });
+
+// ══════════════════════════════════════════════════
+//  KIỂM KÊ KHO (chênh lệch tồn thực tế vs hệ thống)
+// ══════════════════════════════════════════════════
+if (!Array.isArray(state.inventoryLog)) state.inventoryLog = [];
+
+function openKiemKe() {
+  if (!state.inventory.length) { showToast('Chưa có nguyên liệu trong kho!', 'error'); return; }
+  showModal(`
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-scale max-h-[90vh] flex flex-col">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-lg">📋 Kiểm kê kho</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Nhập số lượng thực tế đếm được, chỉ điền các mục có chênh lệch</p>
+        </div>
+        <button onclick="hideModal()" class="text-slate-300 hover:text-slate-500 text-2xl leading-none">✕</button>
+      </div>
+      <div class="p-5 pb-0 grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-500 mb-1 block">Ngày kiểm kê</label>
+          <input type="date" id="kiemke-date" value="${new Date().toISOString().slice(0,10)}" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-500 mb-1 block">Ghi chú</label>
+          <input type="text" id="kiemke-note" placeholder="VD: Kiểm kê cuối ngày" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm">
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-5 space-y-2" id="kiemke-items-list">
+        ${state.inventory.map(nl => `
+          <div class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-200">
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold text-slate-800 truncate">${nl.name}</div>
+              <div class="text-xs text-slate-400">Hệ thống: ${nl.stock} ${nl.unit}</div>
+              <div class="text-xs font-semibold hidden" id="kiemke-diff-${nl.id}"></div>
+            </div>
+            <input type="number" min="0" step="any" placeholder="${nl.stock}" oninput="updateKiemKeDiff(${nl.id})"
+              class="w-24 px-3 py-2 border-2 border-orange-200 rounded-lg text-sm text-right font-semibold" id="kiemke-qty-${nl.id}">
+          </div>`).join('')}
+      </div>
+      <div class="p-5 border-t border-slate-200 flex gap-3">
+        <button onclick="hideModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-semibold text-sm">Huỷ</button>
+        <button onclick="saveKiemKe()" class="flex-1 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl font-bold text-sm shadow-md">📋 Lưu kiểm kê</button>
+      </div>
+    </div>
+  `);
+}
+
+function updateKiemKeDiff(nlId) {
+  const nl = state.inventory.find(i => i.id === nlId);
+  if (!nl) return;
+  const inp = document.getElementById('kiemke-qty-' + nlId);
+  const diffEl = document.getElementById('kiemke-diff-' + nlId);
+  const val = inp.value;
+  if (val === '') { diffEl.classList.add('hidden'); return; }
+  const actual = parseFloat(val) || 0;
+  const diff = actual - nl.stock;
+  if (diff === 0) { diffEl.classList.add('hidden'); return; }
+  diffEl.classList.remove('hidden');
+  diffEl.textContent = diff < 0
+    ? `⚠ Hao hụt: ${Math.abs(diff)} ${nl.unit}`
+    : `✅ Thừa: +${diff} ${nl.unit}`;
+  diffEl.className = 'text-xs font-semibold ' + (diff < 0 ? 'text-red-500' : 'text-emerald-500');
+}
+
+function saveKiemKe() {
+  const date = document.getElementById('kiemke-date').value || new Date().toISOString().slice(0,10);
+  const note = document.getElementById('kiemke-note').value || '';
+  let count = 0;
+  state.inventory.forEach(nl => {
+    const inp = document.getElementById('kiemke-qty-' + nl.id);
+    if (!inp || inp.value === '') return;
+    const actual = parseFloat(inp.value) || 0;
+    const diff = actual - nl.stock;
+    if (diff === 0) return;
+    state.inventoryLog.push({
+      id: Date.now() + Math.random(), type: 'kiemke', ingredientId: nl.id, name: nl.name,
+      before: nl.stock, after: actual, diff, unit: nl.unit, note, date, time: new Date().toISOString()
+    });
+    nl.stock = actual;
+    count++;
+  });
+  if (!count) { showToast('Không có thay đổi nào!', 'error'); hideModal(); return; }
+  persistState();
+  hideModal();
+  renderInventory();
+  showToast(`📋 Đã điều chỉnh ${count} nguyên liệu theo kiểm kê!`);
+}
 
 function showEditInventoryModal(itemId = null) {
   const item = itemId ? state.inventory.find(i => i.id === itemId) : null;
@@ -8228,12 +9349,27 @@ function showEditInventoryModal(itemId = null) {
 }
 
 // ==================== CUSTOMERS ====================
+function vipTier(spent) {
+  if (spent >= 5000000) return { label:'💎 Kim Cương', cls:'bg-gradient-to-r from-cyan-400 to-blue-500 text-white' };
+  if (spent >= 2000000) return { label:'🥇 Vàng',      cls:'bg-gradient-to-r from-amber-400 to-yellow-500 text-white' };
+  if (spent >= 500000)  return { label:'🥈 Bạc',       cls:'bg-gradient-to-r from-slate-300 to-slate-400 text-white' };
+  return { label:'🥉 Đồng', cls:'bg-gradient-to-r from-orange-300 to-orange-400 text-white' };
+}
+
 function renderCustomers() {
   syncCustomerDebts();
   const tbody = document.getElementById('customers-tbody');
-  tbody.innerHTML = state.customers.map(c => {
+  const searchInput = document.getElementById('customers-search');
+  const q = (searchInput?.value || '').trim().toLowerCase();
+
+  const list = state.customers.filter(c =>
+    !q || c.name.toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
+  );
+
+  tbody.innerHTML = list.map(c => {
     const txns = (state.transactions || []).filter(t => t.customerId === c.id);
     const lastVisit = txns.length ? new Date(txns[txns.length-1].date).toLocaleDateString('vi-VN') : '—';
+    const tier = vipTier(c.totalSpent || 0);
     return `
     <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
       <td class="px-4 py-3">
@@ -8241,6 +9377,7 @@ function renderCustomers() {
         <div class="text-xs text-slate-400 mt-0.5">Lần cuối: ${lastVisit}</div>
       </td>
       <td class="px-4 py-3 text-sm text-slate-600">${c.phone || '-'}</td>
+      <td class="px-4 py-3"><span class="badge ${tier.cls} text-xs font-bold">${tier.label}</span></td>
       <td class="px-4 py-3 text-sm text-slate-600">${c.points} điểm</td>
       <td class="px-4 py-3 text-sm font-semibold text-orange-600">${formatCurrency(c.totalSpent)}</td>
       <td class="px-4 py-3 text-sm font-semibold ${c.debt > 0 ? 'text-red-600' : 'text-emerald-600'}">${formatCurrency(c.debt || 0)}</td>
@@ -8250,7 +9387,12 @@ function renderCustomers() {
         <button class="btn-delete-customer text-red-600 hover:text-red-700 text-xs font-medium" data-id="${c.id}">Xóa</button>
       </td>
     </tr>`;
-  }).join('');
+  }).join('') || `<tr><td colspan="7" class="px-4 py-10 text-center text-slate-400 text-sm">Không tìm thấy khách hàng phù hợp</td></tr>`;
+
+  if (searchInput && !searchInput._boundSearch) {
+    searchInput._boundSearch = true;
+    searchInput.addEventListener('input', renderCustomers);
+  }
 
   document.querySelectorAll('.btn-cust-history').forEach(btn => {
     btn.addEventListener('click', () => showCustomerHistory(parseInt(btn.dataset.id)));
@@ -8402,6 +9544,9 @@ function showEditCustomerModal(customerId = null) {
 function renderDebts() {
   syncCustomerDebts();
   const tbody = document.getElementById('debts-tbody');
+  const searchInput = document.getElementById('debts-search');
+  const q = (searchInput?.value || '').trim().toLowerCase();
+
   const totalDebt = state.debts.reduce((sum, debt) => sum + Math.max(0, (Number(debt.amount) || 0) - (Number(debt.paid) || 0)), 0);
   const totalPaid = state.debts.reduce((sum, debt) => sum + (Number(debt.paid) || 0), 0);
   const debtCount = state.customers.filter(customer => (customer.debt || 0) > 0).length;
@@ -8410,16 +9555,25 @@ function renderDebts() {
   document.getElementById('debt-count').textContent = debtCount;
   document.getElementById('debt-paid').textContent = formatCurrency(totalPaid);
 
-  if (!state.debts.length) {
+  if (searchInput && !searchInput._boundSearch) {
+    searchInput._boundSearch = true;
+    searchInput.addEventListener('input', renderDebts);
+  }
+
+  const filteredDebts = state.debts.filter(debt =>
+    !q || (debt.customerName || '').toLowerCase().includes(q) || (debt.customerPhone || '').toLowerCase().includes(q)
+  );
+
+  if (!filteredDebts.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="8" class="px-4 py-8 text-center text-sm text-slate-400">Chưa có công nợ nào</td>
+        <td colspan="8" class="px-4 py-8 text-center text-sm text-slate-400">${state.debts.length ? 'Không tìm thấy công nợ phù hợp' : 'Chưa có công nợ nào'}</td>
       </tr>
     `;
     return;
   }
 
-  tbody.innerHTML = state.debts.map(debt => {
+  tbody.innerHTML = filteredDebts.map(debt => {
     const remaining = Math.max(0, (Number(debt.amount) || 0) - (Number(debt.paid) || 0));
     const statusText = remaining === 0 ? 'Đã trả' : (Number(debt.paid) || 0) > 0 ? 'Trả một phần' : 'Chưa trả';
     const statusClass = remaining === 0 ? 'bg-emerald-100 text-emerald-700' : (Number(debt.paid) || 0) > 0 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700';
@@ -8540,6 +9694,19 @@ function showAddDebtModal() {
   };
 }
 
+// ══════════════════════════════════════════════════
+//  TÍNH GIÁ VỐN (COGS) THEO CÔNG THỨC NGUYÊN LIỆU
+// ══════════════════════════════════════════════════
+function calcMenuItemCOGS(menuItem) {
+  if (!menuItem || !Array.isArray(menuItem.ingredients) || !menuItem.ingredients.length) return null;
+  let cost = 0, hasCost = false;
+  menuItem.ingredients.forEach(ing => {
+    const inv = state.inventory.find(i => i.id === ing.id);
+    if (inv && inv.lastCost) { cost += (ing.qty || 0) * inv.lastCost; hasCost = true; }
+  });
+  return hasCost ? cost : null;
+}
+
 function collectIngredientRows() {
   const rows = document.querySelectorAll('#ingredient-list .ing-row');
   const ingredients = [];
@@ -8585,23 +9752,65 @@ function addIngredientRow(ingId = '', ingQty = '', ingUnit = '') {
           ).join('');
         })()}
       </select>
-      <button type="button" onclick="this.closest('.ing-row').remove()" class="text-red-400 hover:text-red-600 font-bold px-2 text-lg leading-none">✕</button>
+      <button type="button" onclick="this.closest('.ing-row').remove(); updateCOGSPreview();" class="text-red-400 hover:text-red-600 font-bold px-2 text-lg leading-none">✕</button>
     </div>
   `;
   container.insertAdjacentHTML('beforeend', html);
+  updateCOGSPreview();
 }
 
 window.onIngRowChange = function(sel) {
   const row = sel.closest('.ing-row');
   const unitSel = row.querySelector('.ingredient-unit');
   const itemId = parseInt(sel.value);
-  if (!itemId) { unitSel.innerHTML = '<option value="">--</option>'; return; }
+  if (!itemId) { unitSel.innerHTML = '<option value="">--</option>'; updateCOGSPreview(); return; }
   const inv = state.inventory.find(i => i.id === itemId);
   if (!inv) return;
   unitSel.innerHTML = getUnitOptions(inv).map(u =>
     `<option value="${u.unit}">${u.unit}</option>`
   ).join('');
+  updateCOGSPreview();
 };
+
+// ── Giá vốn ước tính (COGS) — cập nhật trực tiếp theo công thức đang nhập ──
+function updateCOGSPreview() {
+  const box = document.getElementById('cogs-preview');
+  if (!box) return;
+  const rows = document.querySelectorAll('#ingredient-list .ing-row');
+  let cost = 0, missing = 0, counted = 0;
+  rows.forEach(row => {
+    const id = parseInt(row.querySelector('.ingredient-id')?.value);
+    const qty = parseFloat(row.querySelector('.ingredient-qty')?.value) || 0;
+    const unit = row.querySelector('.ingredient-unit')?.value || '';
+    if (!id || qty <= 0) return;
+    const inv = state.inventory.find(i => i.id === id);
+    if (!inv) return;
+    counted++;
+    const baseQty = convertToBase(inv, qty, unit);
+    if (inv.lastCost) cost += baseQty * inv.lastCost;
+    else missing++;
+  });
+  const priceInp = document.getElementById('food-price');
+  const price = priceInp ? (parseInt(priceInp.value) || 0) : 0;
+
+  if (!counted) { box.innerHTML = `<span class="text-slate-400">Chưa có công thức nguyên liệu — không tính được giá vốn.</span>`; return; }
+
+  const margin = price > 0 ? price - cost : null;
+  const marginPct = price > 0 ? Math.round((margin / price) * 100) : null;
+
+  box.innerHTML = `
+    <div class="flex items-center justify-between flex-wrap gap-1.5">
+      <span class="font-semibold text-slate-600">💰 Giá vốn ước tính:</span>
+      <span class="font-extrabold text-slate-800">${formatCurrency(Math.round(cost))}</span>
+    </div>
+    ${missing ? `<div class="text-amber-600 mt-1">⚠ ${missing} nguyên liệu chưa có giá nhập (cần nhập kho ít nhất 1 lần)</div>` : ''}
+    ${margin !== null ? `
+    <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-200">
+      <span class="font-semibold text-slate-600">📈 Lợi nhuận / món:</span>
+      <span class="font-extrabold ${margin >= 0 ? 'text-emerald-600' : 'text-red-600'}">${formatCurrency(Math.round(margin))} (${marginPct}%)</span>
+    </div>` : ''}
+  `;
+}
 
 // (ingredient rows are read inside saveFood)
 
@@ -8710,6 +9919,36 @@ function renderReports() {
   const pm = {cash:0, transfer:0};
   filtered.forEach(t => { pm[t.paymentMethod] = (pm[t.paymentMethod]||0) + 1; });
 
+  // ── Lợi nhuận theo món (COGS ước tính theo công thức + giá vốn nhập kho gần nhất) ──
+  const dishProfit = {};
+  filtered.forEach(t => t.items.forEach(it => {
+    const menuItem = state.menuItems.find(m => m.id === it.id);
+    const unitCost = menuItem ? calcMenuItemCOGS(menuItem) : null;
+    if (!dishProfit[it.name]) dishProfit[it.name] = { qty:0, revenue:0, cost:0, hasCost:false };
+    dishProfit[it.name].qty += it.qty;
+    dishProfit[it.name].revenue += it.price * it.qty;
+    if (unitCost !== null) { dishProfit[it.name].cost += unitCost * it.qty; dishProfit[it.name].hasCost = true; }
+  }));
+  const dishProfitList = Object.entries(dishProfit).map(([name, d]) => ({
+    name, qty: d.qty, revenue: d.revenue,
+    cost: d.hasCost ? d.cost : null,
+    profit: d.hasCost ? d.revenue - d.cost : null,
+    marginPct: d.hasCost && d.revenue > 0 ? Math.round(((d.revenue - d.cost) / d.revenue) * 100) : null
+  })).sort((a,b) => (b.profit ?? -Infinity) - (a.profit ?? -Infinity));
+  const totalEstCost = dishProfitList.reduce((s,d) => s + (d.cost || 0), 0);
+  const totalEstProfit = dishProfitList.some(d=>d.profit!==null) ? totalRevenue - totalEstCost : null;
+
+  // ── Giờ cao điểm (số đơn & doanh thu theo khung giờ trong ngày) ──
+  const hourStats = Array.from({length:24}, () => ({ count:0, revenue:0 }));
+  filtered.forEach(t => {
+    const h = new Date(t.date).getHours();
+    hourStats[h].count++;
+    hourStats[h].revenue += t.total;
+  });
+  const peakHourIdx = hourStats.reduce((best,cur,i,arr) => cur.revenue > arr[best].revenue ? i : best, 0);
+  const hourLabels = hourStats.map((_,h) => `${h}h`);
+  const hourRevData = hourStats.map(h => h.revenue);
+
   // Kho cảnh báo
   const lowStock = state.inventory.filter(i => i.stock <= i.minStock);
   // TTS cảnh báo kho (chỉ đọc 1 lần mỗi lần mở tab reports, không loop)
@@ -8791,6 +10030,13 @@ function renderReports() {
       </div>
     </div>` : ''}
 
+    <!-- ===== SECTION: Phân tích doanh thu ===== -->
+    <div class="flex items-center gap-2 mb-3">
+      <span class="w-1.5 h-5 bg-orange-500 rounded-full"></span>
+      <h3 class="text-sm font-extrabold text-slate-500 uppercase tracking-wide">Phân tích doanh thu</h3>
+    </div>
+    <div class="bg-slate-50/70 border border-slate-100 rounded-3xl p-4 mb-6 space-y-4">
+
     <!-- Charts row 1 -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
       <!-- Revenue 7 days -->
@@ -8845,6 +10091,57 @@ function renderReports() {
           Doanh thu theo danh mục
         </h3>
         ${Object.keys(catRev).length ? `<div style="height:200px;position:relative"><canvas id="chart-category"></canvas></div>` : '<p class="text-sm text-slate-400 text-center py-8">Chưa có dữ liệu</p>'}
+      </div>
+    </div>
+
+    <!-- Giờ cao điểm -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 mb-4">
+      <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+        🔥 Giờ cao điểm
+      </h3>
+      <p class="text-xs text-slate-400 mb-3">Khung giờ đông khách nhất: <span class="font-bold text-amber-600">${peakHourIdx}h - ${peakHourIdx+1}h</span> (${formatCurrency(hourStats[peakHourIdx].revenue)}, ${hourStats[peakHourIdx].count} đơn)</p>
+      <div style="height:180px;position:relative"><canvas id="chart-peak-hour"></canvas></div>
+    </div>
+
+    </div><!-- /Phân tích doanh thu -->
+
+    <!-- ===== SECTION: Chi tiết dữ liệu ===== -->
+    <div class="flex items-center gap-2 mb-3">
+      <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span>
+      <h3 class="text-sm font-extrabold text-slate-500 uppercase tracking-wide">Chi tiết dữ liệu</h3>
+    </div>
+
+    <!-- Lợi nhuận theo món -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between flex-wrap gap-2">
+        <h3 class="font-bold text-slate-800">💹 Lợi nhuận theo món</h3>
+        ${totalEstProfit !== null ? `<span class="badge bg-emerald-100 text-emerald-700 font-bold">Lợi nhuận ước tính: ${formatCurrency(Math.round(totalEstProfit))}</span>` : `<span class="badge bg-amber-100 text-amber-700 text-xs">⚠ Cần khai báo công thức + nhập kho để tính giá vốn</span>`}
+      </div>
+      <div class="overflow-x-auto max-h-96 overflow-y-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 border-b border-slate-200 sticky top-0">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500">Món</th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500">SL bán</th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500">Doanh thu</th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500">Giá vốn</th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500">Lợi nhuận</th>
+              <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500">Biên LN</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${dishProfitList.length ? dishProfitList.map(d => `
+              <tr class="border-b border-slate-100 hover:bg-slate-50">
+                <td class="px-4 py-2.5 font-semibold text-slate-700">${d.name}</td>
+                <td class="px-4 py-2.5 text-right text-slate-600">${d.qty}</td>
+                <td class="px-4 py-2.5 text-right font-semibold text-slate-800">${formatCurrency(d.revenue)}</td>
+                <td class="px-4 py-2.5 text-right text-slate-500">${d.cost !== null ? formatCurrency(Math.round(d.cost)) : '—'}</td>
+                <td class="px-4 py-2.5 text-right font-bold ${d.profit !== null ? (d.profit>=0?'text-emerald-600':'text-red-500') : 'text-slate-300'}">${d.profit !== null ? formatCurrency(Math.round(d.profit)) : '—'}</td>
+                <td class="px-4 py-2.5 text-right">${d.marginPct !== null ? `<span class="badge ${d.marginPct>=50?'bg-emerald-100 text-emerald-700':d.marginPct>=20?'bg-amber-100 text-amber-700':'bg-red-100 text-red-700'} text-xs font-bold">${d.marginPct}%</span>` : '—'}</td>
+              </tr>`).join('') : '<tr><td colspan="6" class="px-4 py-10 text-center text-slate-400 text-sm">Chưa có dữ liệu</td></tr>'}
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -8956,6 +10253,30 @@ function renderReports() {
         plugins: {
           legend: { position:'bottom', labels:{font:{size:10}, padding:8} },
           tooltip: { callbacks:{ label:ctx => ` ${ctx.label}: ${formatCurrency(ctx.raw)}` } }
+        }
+      }
+    });
+
+    // Chart 4: Peak hour bar
+    if (state.charts.peakHour) { state.charts.peakHour.destroy(); state.charts.peakHour = null; }
+    const ctx4 = document.getElementById('chart-peak-hour');
+    if (ctx4) state.charts.peakHour = new Chart(ctx4, {
+      type: 'bar',
+      data: {
+        labels: hourLabels,
+        datasets: [{
+          label: 'Doanh thu',
+          data: hourRevData,
+          backgroundColor: hourRevData.map((_,i) => i===peakHourIdx ? 'rgba(245,158,11,0.9)' : 'rgba(245,158,11,0.35)'),
+          borderRadius: 6, borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend:{display:false}, tooltip:{callbacks:{label:c=>`${formatCurrency(c.raw)}`}} },
+        scales: {
+          y: { ticks:{callback:v=>v>=1000?Math.round(v/1000)+'k':v, font:{size:9}}, grid:{color:'rgba(0,0,0,0.04)'}, border:{display:false} },
+          x: { ticks:{font:{size:8}}, grid:{display:false}, border:{display:false} }
         }
       }
     });
@@ -9458,7 +10779,7 @@ function showQRMenuModal() {
   const menuHTML = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Menu - ${shopName}</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Times New Roman',Times,serif}
   body{background:#fff8f5;color:#1e293b}
   header{background:linear-gradient(135deg,#f97316,#ec4899);padding:20px;text-align:center;color:#fff}
   header h1{font-size:22px;font-weight:800}
@@ -9532,7 +10853,7 @@ ${cats.map(cat => `
     const w = window.open('', '_blank', 'width=400,height=500');
     const sc = 'scr'+'ipt';
     w.document.write(`<!DOCTYPE html><html><head><title>QR Menu</title>
-    <style>body{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;background:#fff}
+    <style>body{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Times New Roman',Times,serif;background:#fff}
     h2{font-size:18px;margin-bottom:8px;color:#f97316}p{font-size:12px;color:#64748b;margin-bottom:16px}img{border:3px solid #f97316;border-radius:12px;padding:8px}
     </style></head><body>
     <h2>☕ ${shopName}</h2><p>Quét QR để xem thực đơn</p>
@@ -10448,7 +11769,7 @@ function renderQROrderPage(data) {
   try { const ps = JSON.parse(localStorage.getItem('pos-cafe-206-v1') || '{}'); knownCustomers = ps.customers || []; } catch(e) {}
 
   document.body.innerHTML = `
-  <div id="qr-app" style="max-width:480px;margin:0 auto;min-height:100vh;background:#fff;font-family:'Segoe UI',sans-serif;">
+  <div id="qr-app" style="max-width:480px;margin:0 auto;min-height:100vh;background:#fff;font-family:'Times New Roman',Times,serif;">
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#6d28d9,#ec4899);padding:16px 16px 12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(109,40,217,.25)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -10725,17 +12046,63 @@ function showAddPurchaseModal() {
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Số lượng</label>
-                            <input type="number" id="p-item-qty" value="1" min="0.001" step="any" class="w-full px-4 py-2 border rounded-lg outline-none">
+                            <input type="number" id="p-item-qty" value="1" min="0.001" step="any" oninput="updatePurchasePriceBreakdown()" class="w-full px-4 py-2 border rounded-lg outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Đơn vị</label>
-                            <select id="p-item-unit" class="w-full px-4 py-2 border rounded-lg outline-none">
+                            <select id="p-item-unit" onchange="updatePurchasePriceBreakdown()" class="w-full px-4 py-2 border rounded-lg outline-none">
                                 <option value="">-- Chọn NL trước --</option>
                             </select>
                         </div>
                     </div>
-                    <div class="mt-3 flex items-center gap-3">
-                        <div id="p-conversion-preview" class="flex-1 text-xs text-violet-600 bg-violet-50 rounded-lg px-3 py-1.5 hidden"></div>
+
+                    <!-- Chế độ nhập giá -->
+                    <div class="mt-3 flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Nhập giá theo:</span>
+                        <button type="button" id="p-mode-unit-btn" onclick="setPurchaseInputMode('unit')" class="px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-violet-400 bg-violet-50 text-violet-700">Đơn giá / đơn vị</button>
+                        <button type="button" id="p-mode-total-btn" onclick="setPurchaseInputMode('total')" class="px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-slate-200 text-slate-500">Tổng tiền cả lô</button>
+                    </div>
+
+                    <!-- Mode: Đơn giá theo đơn vị -->
+                    <div id="p-mode-unit-fields" class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Đơn giá (đ / đơn vị đã chọn)</label>
+                            <input type="number" id="p-item-unit-price" min="0" step="any" placeholder="VD: 28000" oninput="updatePurchasePriceBreakdown()" class="w-full px-4 py-2 border rounded-lg outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Mode: Tổng tiền cả lô -->
+                    <div id="p-mode-total-fields" class="mt-3 space-y-3 hidden">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tổng tiền cả lô (đ)</label>
+                            <input type="number" id="p-item-total-price" min="0" step="any" placeholder="VD: 56000" oninput="updatePurchasePriceBreakdown()" class="w-full px-4 py-2 border rounded-lg outline-none">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="p-item-has-secondary" onchange="togglePurchaseSecondaryUnit()" class="w-4 h-4 accent-violet-600">
+                            <label for="p-item-has-secondary" class="text-xs font-semibold text-slate-600">Biết thêm số lượng theo đơn vị khác (VD: 14 trái) để tự quy đổi giá</label>
+                        </div>
+                        <div id="p-secondary-fields" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3 bg-white p-3 rounded-lg border border-slate-200">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Số lượng khác</label>
+                                <input type="number" id="p-item-secondary-qty" min="0.001" step="any" placeholder="VD: 14" oninput="updatePurchasePriceBreakdown()" class="w-full px-3 py-2 border rounded-lg outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Đơn vị khác</label>
+                                <input type="text" id="p-item-secondary-unit" placeholder="VD: trái" oninput="updatePurchasePriceBreakdown()" class="w-full px-3 py-2 border rounded-lg outline-none">
+                            </div>
+                            <div class="flex items-end">
+                                <label class="flex items-center gap-1.5 text-xs text-slate-600">
+                                    <input type="checkbox" id="p-item-save-conversion" checked class="w-4 h-4 accent-violet-600">
+                                    Lưu quy đổi này vào nguyên liệu
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div id="p-conversion-preview" class="text-xs text-violet-700 bg-violet-50 rounded-lg px-3 py-2 hidden space-y-0.5"></div>
+                    </div>
+                    <div class="mt-3 flex justify-end">
                         <button onclick="addItemToPurchase()" class="py-2 px-6 bg-violet-600 text-white rounded-lg font-bold hover:bg-violet-700 transition-colors">+ Thêm vào phiếu</button>
                     </div>
                 </div>
@@ -10770,13 +12137,29 @@ function showAddPurchaseModal() {
     `);
 }
 
+let _purchaseInputMode = 'unit'; // 'unit' | 'total'
+
+function setPurchaseInputMode(mode) {
+    _purchaseInputMode = mode;
+    document.getElementById('p-mode-unit-btn').className = 'px-3 py-1.5 rounded-lg text-xs font-bold border-2 ' + (mode==='unit' ? 'border-violet-400 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500');
+    document.getElementById('p-mode-total-btn').className = 'px-3 py-1.5 rounded-lg text-xs font-bold border-2 ' + (mode==='total' ? 'border-violet-400 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500');
+    document.getElementById('p-mode-unit-fields').classList.toggle('hidden', mode !== 'unit');
+    document.getElementById('p-mode-total-fields').classList.toggle('hidden', mode !== 'total');
+    updatePurchasePriceBreakdown();
+}
+
+function togglePurchaseSecondaryUnit() {
+    const on = document.getElementById('p-item-has-secondary').checked;
+    document.getElementById('p-secondary-fields').classList.toggle('hidden', !on);
+    updatePurchasePriceBreakdown();
+}
+
 function onPurchaseItemChange() {
     const itemId = parseInt(document.getElementById('p-item-select').value);
     const unitSel = document.getElementById('p-item-unit');
-    const preview = document.getElementById('p-conversion-preview');
     if (!itemId) {
         unitSel.innerHTML = '<option value="">-- Chọn NL trước --</option>';
-        preview.classList.add('hidden');
+        document.getElementById('p-conversion-preview').classList.add('hidden');
         return;
     }
     const inv = state.inventory.find(i => i.id === itemId);
@@ -10785,29 +12168,60 @@ function onPurchaseItemChange() {
     unitSel.innerHTML = units.map(u =>
         `<option value="${u.unit}" data-factor="${u.factor}">${u.unit}${u.factor > 1 ? ` (×${u.factor})` : ''}</option>`
     ).join('');
-    updatePurchasePreview(inv, units[0]);
-    unitSel.onchange = () => {
-        const sel = unitSel.options[unitSel.selectedIndex];
-        updatePurchasePreview(inv, { unit: sel.value, factor: parseFloat(sel.dataset.factor) });
-    };
+    updatePurchasePriceBreakdown();
 }
 
-function updatePurchasePreview(inv, conv) {
+// ── Tính & hiển thị giá quy đổi ra các đơn vị khác theo thời gian thực ──
+function updatePurchasePriceBreakdown() {
     const preview = document.getElementById('p-conversion-preview');
-    const qty = parseFloat(document.getElementById('p-item-qty').value) || 1;
+    const itemId = parseInt(document.getElementById('p-item-select')?.value);
+    const inv = state.inventory.find(i => i.id === itemId);
+    const qty = parseFloat(document.getElementById('p-item-qty')?.value) || 0;
+    const unitSel = document.getElementById('p-item-unit');
+    const mainUnit = unitSel?.value || '';
+    const factorOpt = unitSel?.options[unitSel.selectedIndex];
+    const mainFactor = factorOpt ? (parseFloat(factorOpt.dataset.factor) || 1) : 1;
+
+    if (!inv || !mainUnit || qty <= 0) { preview.classList.add('hidden'); return; }
     const base = inv.baseUnit || inv.unit;
-    if (!conv || conv.unit === base) {
-        preview.classList.add('hidden');
-        return;
+    const baseQty = qty * mainFactor;
+
+    let pricePerMainUnit = 0;
+    const lines = [];
+
+    if (_purchaseInputMode === 'unit') {
+        pricePerMainUnit = parseFloat(document.getElementById('p-item-unit-price')?.value) || 0;
+        if (!pricePerMainUnit) { preview.classList.add('hidden'); return; }
+    } else {
+        const total = parseFloat(document.getElementById('p-item-total-price')?.value) || 0;
+        if (!total) { preview.classList.add('hidden'); return; }
+        pricePerMainUnit = total / qty;
+        lines.push(`💰 Tổng ${formatCurrency(total)} ÷ ${qty} ${mainUnit} = <strong>${formatCurrency(Math.round(pricePerMainUnit))}/${mainUnit}</strong>`);
+
+        const hasSecondary = document.getElementById('p-item-has-secondary')?.checked;
+        if (hasSecondary) {
+            const secQty = parseFloat(document.getElementById('p-item-secondary-qty')?.value) || 0;
+            const secUnit = (document.getElementById('p-item-secondary-unit')?.value || '').trim();
+            if (secQty > 0 && secUnit) {
+                const pricePerSecUnit = total / secQty;
+                lines.push(`💰 Tổng ${formatCurrency(total)} ÷ ${secQty} ${secUnit} = <strong>${formatCurrency(Math.round(pricePerSecUnit))}/${secUnit}</strong>`);
+            }
+        }
     }
-    const converted = qty * conv.factor;
-    preview.textContent = `⇒ ${qty} ${conv.unit} = ${converted} ${base} (lưu vào kho)`;
+
+    // Giá quy theo đơn vị cơ sở của kho
+    const pricePerBase = pricePerMainUnit / mainFactor;
+    if (mainUnit !== base) lines.push(`📦 Quy ra kho: <strong>${formatCurrency(Math.round(pricePerBase))}/${base}</strong> (${qty} ${mainUnit} = ${baseQty} ${base})`);
+
+    // Hiển thị các đơn vị quy đổi khác đã khai báo sẵn cho nguyên liệu này
+    (inv.conversions || []).forEach(c => {
+        if (c.unit === mainUnit) return;
+        const priceForThatUnit = pricePerBase * c.factor;
+        lines.push(`↳ ${c.unit}: <strong>${formatCurrency(Math.round(priceForThatUnit))}/${c.unit}</strong>`);
+    });
+
+    preview.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
     preview.classList.remove('hidden');
-    // Update live on qty change
-    document.getElementById('p-item-qty').oninput = () => {
-        const q = parseFloat(document.getElementById('p-item-qty').value) || 0;
-        preview.textContent = `⇒ ${q} ${conv.unit} = ${q * conv.factor} ${base} (lưu vào kho)`;
-    };
 }
 
 function addItemToPurchase() {
@@ -10827,28 +12241,65 @@ function addItemToPurchase() {
     if (!inv) return;
 
     const baseUnit = inv.baseUnit || inv.unit;
-    // Tính hệ số quy đổi
     const conv = (inv.conversions || []).find(c => c.unit === selectedUnit);
     const factor = conv ? conv.factor : 1;
-    const baseQty = qty * factor; // số lượng quy đổi về đơn vị cơ sở
+    const baseQty = qty * factor;
+
+    // Xác định đơn giá theo đơn vị chính, tuỳ theo chế độ nhập
+    let pricePerMainUnit = 0;
+    if (_purchaseInputMode === 'unit') {
+        pricePerMainUnit = parseFloat(document.getElementById('p-item-unit-price')?.value) || 0;
+    } else {
+        const total = parseFloat(document.getElementById('p-item-total-price')?.value) || 0;
+        if (!total) { showToast('Vui lòng nhập tổng tiền!', 'error'); return; }
+        pricePerMainUnit = total / qty;
+
+        // Lưu quy đổi mới nếu có khai báo đơn vị phụ và người dùng chọn lưu
+        const hasSecondary = document.getElementById('p-item-has-secondary')?.checked;
+        if (hasSecondary) {
+            const secQty = parseFloat(document.getElementById('p-item-secondary-qty')?.value) || 0;
+            const secUnit = (document.getElementById('p-item-secondary-unit')?.value || '').trim();
+            const saveConv = document.getElementById('p-item-save-conversion')?.checked;
+            if (secQty > 0 && secUnit && saveConv) {
+                const secFactor = baseQty / secQty; // 1 đơn vị phụ = ? đơn vị cơ sở
+                const existingConv = inv.conversions.find(c => c.unit.toLowerCase() === secUnit.toLowerCase());
+                if (existingConv) existingConv.factor = secFactor;
+                else inv.conversions.push({ unit: secUnit, factor: secFactor });
+                if (!state.units.includes(secUnit)) state.units.push(secUnit);
+                showToast(`✅ Đã lưu quy đổi: 1 ${secUnit} = ${secFactor.toFixed(4)} ${baseUnit}`);
+            }
+        }
+    }
+
+    if (!pricePerMainUnit) { showToast('Vui lòng nhập đơn giá hoặc tổng tiền!', 'error'); return; }
 
     const existing = currentPurchaseItems.find(i => i.id === itemId && i.inputUnit === selectedUnit);
     if (existing) {
         existing.inputQty += qty;
         existing.qty += baseQty;
+        existing.price = pricePerMainUnit;
     } else {
         currentPurchaseItems.push({
             id: inv.id,
             name: inv.name,
-            inputQty: qty,         // số lượng người nhập (VD: 2 kg)
-            inputUnit: selectedUnit || baseUnit, // đơn vị người nhập (VD: kg)
-            qty: baseQty,          // số lượng quy đổi về baseUnit (VD: 2000 gram)
-            unit: baseUnit,        // đơn vị cơ sở
+            inputQty: qty,
+            inputUnit: selectedUnit || baseUnit,
+            qty: baseQty,
+            unit: baseUnit,
             factor: factor,
-            price: 0
+            price: pricePerMainUnit
         });
     }
     renderPurchaseItems();
+
+    // Reset các trường nhập giá sau khi thêm
+    document.getElementById('p-item-unit-price').value = '';
+    document.getElementById('p-item-total-price').value = '';
+    document.getElementById('p-item-has-secondary').checked = false;
+    document.getElementById('p-item-secondary-qty').value = '';
+    document.getElementById('p-item-secondary-unit').value = '';
+    document.getElementById('p-secondary-fields').classList.add('hidden');
+    document.getElementById('p-conversion-preview').classList.add('hidden');
 }
 
 function renderPurchaseItems() {
@@ -10918,6 +12369,10 @@ function savePurchase() {
         const invItem = state.inventory.find(i => i.id === pItem.id);
         if (invItem) {
             invItem.stock += pItem.qty; // pItem.qty = đã quy đổi về baseUnit
+            // Lưu giá vốn gần nhất (quy đổi về baseUnit) để tính COGS món
+            if (pItem.qty > 0 && pItem.price > 0) {
+                invItem.lastCost = (pItem.inputQty * pItem.price) / pItem.qty;
+            }
         }
     });
 
@@ -11126,6 +12581,111 @@ function updateDots() {
 }
 
 // ── Show / Hide app ──────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  ONBOARDING — Hướng dẫn lần đầu sử dụng
+// ══════════════════════════════════════════════════════════════
+const ONBOARD_SLIDES = [
+  { title: '👋 Chào mừng!', items: [
+    { icon:'☕', title:'Phần mềm quản lý quán', desc:'Quản lý bàn, gọi món, bếp, kho, khách hàng và báo cáo doanh thu — tất cả trong một ứng dụng.' },
+    { icon:'📱', title:'Dùng trên mọi thiết bị', desc:'Hoạt động tốt trên điện thoại, máy tính bảng và máy tính. Có thể bật đồng bộ Firebase để dùng nhiều thiết bị cùng lúc.' },
+  ]},
+  { title:'🪑 Sơ đồ bàn', items:[
+    { icon:'🟢', title:'Bàn trống', desc:'Viền xanh lá — nhấn vào để bắt đầu gọi món cho bàn này.' },
+    { icon:'🟠', title:'Có khách', desc:'Viền cam — hiển thị món đã gọi, tổng tiền tạm tính và trạng thái bếp.' },
+    { icon:'🔵', title:'Đã đặt trước', desc:'Viền xanh dương — bàn đã được đặt trước, hiển thị giờ hẹn và tên khách.' },
+    { icon:'🔀', title:'Tách / Gộp bàn', desc:'Tách bớt món sang bàn khác, hoặc gộp 2 bàn thành 1 hoá đơn khi khách ghép bàn.' },
+  ]},
+  { title:'📝 Gọi món', items:[
+    { icon:'➕', title:'Thêm món vào giỏ', desc:'Chọn bàn (hoặc đơn mang về) rồi nhấn vào món trong tab Thực đơn.' },
+    { icon:'🔍', title:'Tìm nhanh bằng viết tắt', desc:'Gõ "ca sua" hoặc "cs" đều ra "Cà Phê Sữa" — tìm kiếm hiểu cả không dấu và viết tắt.' },
+    { icon:'🏷', title:'Giảm giá / Voucher', desc:'Áp dụng giảm theo % hoặc số tiền cố định, có sẵn các mức phổ biến để chọn nhanh.' },
+  ]},
+  { title:'🍳 Bếp & Mang về', items:[
+    { icon:'👨‍🍳', title:'Tab Bếp', desc:'Đơn gửi bếp hiển thị theo thời gian thực — đánh dấu xong khi hoàn thành món.' },
+    { icon:'📦', title:'Đơn mang về', desc:'Quản lý nhiều đơn mang về cùng lúc, gắn nền tảng giao hàng (Grab/Shopee/Be...).' },
+  ]},
+  { title:'📦 Kho & Món ăn', items:[
+    { icon:'🧪', title:'Công thức nguyên liệu', desc:'Gắn nguyên liệu + số lượng cho từng món để tự trừ kho khi bán, và ước tính giá vốn (COGS).' },
+    { icon:'📋', title:'Kiểm kê kho', desc:'Đối chiếu tồn kho thực tế so với hệ thống định kỳ, tự động ghi nhận hao hụt.' },
+    { icon:'🧾', title:'Nhập hàng', desc:'Ghi phiếu nhập từ nhà cung cấp — tự cập nhật tồn kho và giá vốn gần nhất.' },
+  ]},
+  { title:'👥 Khách hàng & Công nợ', items:[
+    { icon:'👤', title:'Hồ sơ khách hàng', desc:'Lưu tên, SĐT, điểm tích luỹ và tổng chi tiêu của từng khách.' },
+    { icon:'👑', title:'Khách VIP', desc:'Tự động xếp hạng Đồng/Bạc/Vàng/Kim Cương theo tổng chi tiêu trong báo cáo.' },
+    { icon:'💸', title:'Công nợ', desc:'Ghi nhận khách trả thiếu và theo dõi lịch sử thu nợ.' },
+  ]},
+  { title:'📊 Báo cáo', items:[
+    { icon:'💰', title:'Doanh thu & lợi nhuận', desc:'Xem doanh thu theo ngày/tuần/tháng, và lợi nhuận ước tính theo từng món (đã trừ giá vốn).' },
+    { icon:'🔥', title:'Giờ cao điểm', desc:'Biểu đồ doanh thu theo khung giờ trong ngày — giúp sắp lịch nhân viên hợp lý.' },
+    { icon:'📊', title:'Xuất Excel', desc:'Xuất toàn bộ dữ liệu giao dịch ra file Excel để phân tích thêm.' },
+  ]},
+  { title:'⚙️ Cài đặt', items:[
+    { icon:'🖨', title:'Máy in nhiệt', desc:'Kết nối máy in nhiệt thật qua USB (ESC/POS) để in bill nhanh không cần hộp thoại in.' },
+    { icon:'🔥', title:'Đồng bộ Firebase', desc:'Kết nối Firebase để dùng đồng thời trên nhiều thiết bị.' },
+    { icon:'💾', title:'Sao lưu dữ liệu', desc:'Xuất file backup định kỳ để phòng mất dữ liệu.' },
+  ]},
+];
+
+let _obSlideIdx = 0;
+
+function startOnboarding() {
+  _obSlideIdx = 0;
+  showModal(_renderOnboardSlideHTML());
+  _bindOnboardEvents();
+}
+
+function _renderOnboardSlideHTML() {
+  const slide = ONBOARD_SLIDES[_obSlideIdx];
+  const isLast = _obSlideIdx === ONBOARD_SLIDES.length - 1;
+  const progressPct = Math.round(((_obSlideIdx + 1) / ONBOARD_SLIDES.length) * 100);
+  return `
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg animate-scale overflow-hidden">
+      <div class="h-1.5 bg-slate-100">
+        <div class="h-full bg-gradient-to-r from-orange-500 to-pink-500 transition-all" style="width:${progressPct}%"></div>
+      </div>
+      <div class="p-6">
+        <h3 class="text-xl font-extrabold text-slate-800 mb-4">${slide.title}</h3>
+        <div class="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
+          ${slide.items.map(it => `
+            <div class="flex gap-3 items-start">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center text-xl shrink-0">${it.icon}</div>
+              <div class="min-w-0">
+                <div class="font-bold text-slate-800 text-sm">${it.title}</div>
+                <div class="text-xs text-slate-500 mt-0.5">${it.desc}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+        <div class="flex justify-center gap-1.5 my-4">
+          ${ONBOARD_SLIDES.map((_,i) => `<span class="w-1.5 h-1.5 rounded-full ${i===_obSlideIdx?'bg-orange-500 w-4':'bg-slate-200'} transition-all"></span>`).join('')}
+        </div>
+        <div class="flex gap-3">
+          <button id="ob-skip-btn" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-semibold text-sm transition-colors">Bỏ qua</button>
+          <button id="ob-next-btn" class="flex-[2] py-2.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all">${isLast ? '🎉 Bắt đầu dùng!' : 'Tiếp theo →'}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function _bindOnboardEvents() {
+  document.getElementById('ob-skip-btn')?.addEventListener('click', finishOnboarding);
+  document.getElementById('ob-next-btn')?.addEventListener('click', () => {
+    if (_obSlideIdx < ONBOARD_SLIDES.length - 1) {
+      _obSlideIdx++;
+      showModal(_renderOnboardSlideHTML());
+      _bindOnboardEvents();
+    } else {
+      finishOnboarding();
+    }
+  });
+}
+
+function finishOnboarding() {
+  state.settings.hasSeenOnboarding = true;
+  persistState();
+  hideModal();
+}
+
 function showApp() {
   document.getElementById('login-screen').classList.add('hidden');
   const appEl = document.getElementById('app');
@@ -11138,6 +12698,9 @@ function showApp() {
   updateKitchenBadge();
   _loginPin = '';
   updateDots();
+  if (!state.settings.hasSeenOnboarding) {
+    setTimeout(startOnboarding, 400);
+  }
 }
 
 function showLoginScreen() {
@@ -11366,6 +12929,14 @@ function init() {
   loadSettings();
   updateHeader();
   renderCart();
+
+  // Chế độ xem bàn: Tất cả / Có khách / Trống
+  document.querySelectorAll('.table-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.tableViewFilter = btn.dataset.filter;
+      renderTables();
+    });
+  });
 }
 
 // ══════════════════════════════════════════════════
@@ -12516,7 +14087,7 @@ function switchTtsTab(tab) {
       max-height: 280px;
       overflow-y: auto;
       min-width: 180px;
-      font-family: 'Be Vietnam Pro', sans-serif;
+      font-family: 'Times New Roman', Times, serif;
     }
     #${BOX_ID} .ac-item {
       display: flex;
